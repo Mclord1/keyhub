@@ -1,21 +1,25 @@
+import time
+
 from dynamorm import DynaModel
 from marshmallow import fields
-import time
+
 now_timestamp = int(time.time())
 # Our objects are defined as DynaModel classes
 
 
-class State(DynaModel):
+class Lga(DynaModel):
     # Define our DynamoDB properties
     class Table:
-        name = 'tbl_state'
-        hash_key = 'state_id'
-        range_key = 'country_id'
+        name = 'tbl_lga'
+        hash_key = 'lga_id'
+        range_key = 'state_id'
         read = 1
         write = 1
 
     # Define our data schema, each property here will become a property on instances of the Book class
     class Schema:
+        lga_id = fields.String(required=True)
+        lga_name = fields.String(required=True)
         state_id = fields.String(required=True)
         country_id = fields.String()
         state_name = fields.String()

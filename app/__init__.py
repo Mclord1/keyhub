@@ -1,7 +1,9 @@
 import os
-from flask_sqlalchemy import SQLAlchemy
-from config.DBConfig import DB_SETUP
+
 from flask_lambda import FlaskLambda
+from flask_sqlalchemy import SQLAlchemy
+
+from config.DBConfig import DB_SETUP
 
 app = FlaskLambda(__name__)
 app.app_context().push()

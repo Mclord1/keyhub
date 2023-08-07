@@ -1,8 +1,6 @@
-from sqlalchemy import UniqueConstraint, BigInteger, func, or_, and_
-from sqlalchemy import case, not_
+from sqlalchemy import UniqueConstraint, BigInteger, func, and_
 
 from app import db
-from app.Enums import Enums
 from app.Mixins.GenericMixins import GenericMixin
 import enum
 

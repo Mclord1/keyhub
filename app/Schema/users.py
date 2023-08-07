@@ -1,7 +1,6 @@
 from typing import Optional, Union
 
 from pydantic import BaseModel, EmailStr, constr, field_validator
-
 from submodule_util_3kle.util.custom_exception.custom_exception import CustomException
 
 

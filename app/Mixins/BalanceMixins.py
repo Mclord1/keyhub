@@ -1,7 +1,6 @@
 from operator import and_
 
 from sqlalchemy import func, case
-
 from submodule_models_3kle import db
 
 
@@ -10,7 +9,6 @@ class BalanceMixins(object):
     def get_balance(self, use_service_id: bool = False, filter_date=None):
         from submodule_models_3kle.models import Transaction
         from submodule_models_3kle.models.transaction import TransactionStatusEnum
-        from submodule_models_3kle.models.channel import Channel
 
         """
             In this optimized function, we use a single query with case statements to calculate the sums of 

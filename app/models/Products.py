@@ -1,5 +1,4 @@
 import time
-import uuid
 
 from dynamorm import DynaModel, GlobalIndex, ProjectAll
 from marshmallow import fields

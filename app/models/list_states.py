@@ -1,6 +1,8 @@
-from dynamorm import DynaModel, GlobalIndex, ProjectAll
-from marshmallow import fields, validate
 import time
+
+from dynamorm import DynaModel, GlobalIndex, ProjectAll
+from marshmallow import fields
+
 now_timestamp = int(time.time())
 # Our objects are defined as DynaModel classes
 

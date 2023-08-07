@@ -1,6 +1,7 @@
+import time
+
 from dynamorm import DynaModel
 from marshmallow import fields
-import time
 
 now_timestamp = int(time.time())
 

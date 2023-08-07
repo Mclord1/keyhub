@@ -1,8 +1,9 @@
 from enum import Enum
 
+from submodule_util_3kle.util.custom_exception.custom_exception import CustomException, ExceptionCode
+
 from app import db
 from app.Mixins.GenericMixins import GenericMixin
-from submodule_util_3kle.util.custom_exception.custom_exception import CustomException, ExceptionCode
 
 
 class ChannelEnum(Enum):

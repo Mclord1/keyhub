@@ -1,17 +1,21 @@
+from traceback import print_exc
+
 import bcrypt
-import jsonschema, boto3
+import boto3
+import jsonschema
 from marshmallow import (
     ValidationError,
     validates,
 )
-from traceback import print_exc
 from sqlalchemy import func, JSON, BigInteger
-# from submodule_util_3kle.util.get_cognito_client import CLIENT_ID, USER_POOL_ID
 
 from app import db
 from app.Enums.Enums import *
 from app.Mixins.GenericMixins import GenericMixin
 from exceptions.custom_exception import CustomException, ExceptionCode
+
+
+# from submodule_util_3kle.util.get_cognito_client import CLIENT_ID, USER_POOL_ID
 
 
 class User(GenericMixin, db.Model):

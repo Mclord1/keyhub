@@ -1,7 +1,9 @@
-from sqlalchemy import Column, BigInteger, func
+from typing import TypeVar
+
+from sqlalchemy import BigInteger, func
 from sqlalchemy.ext.declarative import declared_attr
 from submodule_models_3kle import db
-from typing import TypeVar
+
 T = TypeVar('T')
 
 

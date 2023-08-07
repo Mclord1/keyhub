@@ -8,7 +8,6 @@ from app.models.phone_verification import PhoneVerification
 from app.models.user_audit import UserAudit
 from app.models.bank import Bank
 from app.models.bill_payment import BillPayment
-from app.models.budget_spending import BudgetSpending, BudgetCategory
 from app.models.complaint_ticket import Ticket
 from app.models.country import Country
 from app.models.Verifications import Verification
@@ -29,6 +28,5 @@ from app.models.merchant import Merchant, SubMerchant, QRCodeTypeEnum
 from app.models.mcashplus import MoneyRequestMCashPlus
 from app.models.services import Services
 from app.models.grp_savings_payment import GroupPayment, PaymentStatusEnum, PaymentTypeEnum
-from app.models.grp_savings_member import GroupMember, MemberStatusEnum
 from app.models.group_savings import GroupSavings, GroupStatusEnum, ContributionPeriodEnum
 from app.models.Overdraft import Overdraft

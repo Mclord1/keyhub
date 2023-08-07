@@ -1,4 +1,5 @@
 import enum
+
 import jsonschema
 from jsonschema.exceptions import ValidationError
 from sqlalchemy import JSON

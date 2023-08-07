@@ -1,9 +1,10 @@
-from app.Enums.Enums import NotificationClassesEnum
-from exceptions.custom_exception import CustomException, ExceptionCode
 from sqlalchemy import JSON
-from app.Enums import Enums
+
 from app import db
+from app.Enums import Enums
+from app.Enums.Enums import NotificationClassesEnum
 from app.Mixins.GenericMixins import GenericMixin
+from exceptions.custom_exception import CustomException, ExceptionCode
 
 
 class Notification(db.Model, GenericMixin):
