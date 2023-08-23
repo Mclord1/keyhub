@@ -1,16 +1,9 @@
 DB_SETUP = {
     "development": {
-        "username": 'trikle',
-        "password": 'trikle',
+        "username": 'keyhub',
+        "password": 'keyhub',
         "host": 'localhost',
         "port": 5431,
-        'database': 'trikle'
+        'database': 'keyhub'
     },
-    "stage": {
-        "username": 'root',
-        "password": 'root',
-        "host": 'localhost',
-        "port": 5431,
-        'database': 'trikle_db_stage'
-    }
 }

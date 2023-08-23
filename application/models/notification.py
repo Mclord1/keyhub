@@ -1,9 +1,9 @@
 from sqlalchemy import JSON
 
-from app import db
-from app.Enums import Enums
-from app.Enums.Enums import NotificationClassesEnum
-from app.Mixins.GenericMixins import GenericMixin
+from application import db
+from application.Enums import Enums
+from application.Enums.Enums import NotificationClassesEnum
+from application.Mixins.GenericMixins import GenericMixin
 from exceptions.custom_exception import CustomException, ExceptionCode
 
 

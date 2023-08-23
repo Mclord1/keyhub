@@ -1,12 +1,9 @@
 import os
 import traceback
-
 from botocore.exceptions import ClientError
-from dynamorm.exceptions import ValidationError
-
-from __init__ import app
-from app.utils.output import OutputObj
-from app.utils.output import return_json
+from application import app
+from application.utils.output import OutputObj
+from application.utils.output import return_json
 from exceptions.custom_exception import CustomException
 
 EXEC_ENV = os.environ.get('EXEC_ENV')
@@ -26,10 +23,6 @@ def error_handling(error):
         message = error.message
         response_code = error.response_code
         code = error.status_code
-
-    elif isinstance(error, ValidationError):
-        message = "Enter valid data"
-        code = 400
     else:
         error = CustomException()
         message = error.message

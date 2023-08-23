@@ -1,3 +1,5 @@
+from codes import  ExceptionCode
+
 class CustomException(Exception):
     def __init__(self, exception_code=None, status_code=500, payload=None, response_code=1999,
                  message="Internal Server Error. Please try again later"):

@@ -1,5 +1,5 @@
-from app import db
-from app.Mixins.GenericMixins import GenericMixin
+from application import db
+from application.Mixins.GenericMixins import GenericMixin
 
 
 class Country(db.Model, GenericMixin):
