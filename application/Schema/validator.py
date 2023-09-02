@@ -1,7 +1,7 @@
 from typing import Type
 
 from pydantic import BaseModel, ValidationError
-from submodule_util_3kle.util.custom_exception.custom_exception import CustomException
+from exceptions.custom_exception import CustomException
 
 
 def validate_data(model: Type[BaseModel], data: dict):

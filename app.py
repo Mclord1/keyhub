@@ -1,34 +1,27 @@
 import os
-import traceback
-from botocore.exceptions import ClientError
-from application import app
-from application.utils.output import OutputObj
-from application.utils.output import return_json
-from exceptions.custom_exception import CustomException
+from application import app, jwt
+from application.api import *
+from application.models import User
 
 EXEC_ENV = os.environ.get('EXEC_ENV')
 
+# BLUEPRINT REGISTRATION
+app.register_blueprint(auth_blueprint, url_prefix='/auth')
+app.register_blueprint(admin_blueprint, url_prefix='/admin')
+app.register_blueprint(roles_permission_blueprint, url_prefix='/role-permission')
 
-@app.errorhandler(Exception)
-def error_handling(error):
-    traceback.print_exc()
-    message = 'Internal server error!!!!!'
-    code = 500
-    response_code = 1000
-    if isinstance(error, ClientError):
-        message = error.response.get('Error', {}).get(
-            'Code') + " : " + error.response.get('Error', {}).get('Message')
-        code = 400
-    elif isinstance(error, CustomException):
-        message = error.message
-        response_code = error.response_code
-        code = error.status_code
-    else:
-        error = CustomException()
-        message = error.message
-        code = error.status_code
-    output = OutputObj(code=code, message=message, response_code=response_code)
-    return return_json(output)
+
+# @jwt.user_identity_loader
+# def _user_identity_lookup(user):
+#     return user.id
+
+
+@jwt.user_lookup_loader
+def _user_lookup_callback(_jwt_header, jwt_data):
+    identity = jwt_data['sub']
+    # Retrieve the user object based on the identity (user ID)
+    user = User.query.filter_by(id=identity).first()
+    return user
 
 
 if __name__ == '__main__':

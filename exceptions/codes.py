@@ -98,6 +98,7 @@ class ExceptionCode(Enum):
     BAD_REQUEST = {'response_code': 1940, 'message': 'Bad Request!', 'status_code': 400}
     KYC_ALREADY_EXISTS = {'response_code': 1939, 'message': 'KYC exists already!', 'status_code': 400}
     INVALID_PAGE_NUMBER = {'response_code': 1938, 'message': 'Invalid page number', 'status_code': 400}
+    PERMISSION_DENIED = {'response_code': 1937, 'message': 'Permission denied', 'status_code': 403}
 
     '''
         ERROR TYPE : SUBSCRIPTION ERRORS

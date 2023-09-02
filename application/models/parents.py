@@ -10,8 +10,6 @@ class Parent(db.Model, GenericMixin):
     address = db.Column(db.String(350), nullable=True)
     work_address = db.Column(db.String(350), nullable=True)
     residential_address = db.Column(db.String(350), nullable=True)
-    isDeactivated = db.Column(db.Boolean, default=True)
-    deactivate_reason = db.Column(db.String(450), nullable=True)
     projects = db.relationship("Project", back_populates='parents')
     students = db.relationship("Student", back_populates='parents')
     schools = db.relationship("School", secondary='school_parent', back_populates='parents')

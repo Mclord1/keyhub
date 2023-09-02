@@ -11,3 +11,4 @@ from application.models.reports import Report
 from application.models.audit import Audit
 from application.models.users import User, UserRole
 from application.models.permission import RolePermission, Permission
+from application.models.confirmation_code import ConfirmationCode

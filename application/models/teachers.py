@@ -15,8 +15,7 @@ class Teacher(db.Model, GenericMixin):
     user = db.relationship("User", back_populates='teachers')
     address = db.Column(db.String(350), nullable=True)
     reg_number = db.Column(db.String(350), nullable=True, unique=True)
-    isDeactivated = db.Column(db.Boolean, default=True)
-    deactivate_reason = db.Column(db.String(450), nullable=True)
+
     projects = db.relationship("Project", back_populates='teachers')
     students = db.relationship("Student", secondary='teacher_student', back_populates='teachers')
     schools = db.relationship("School", secondary='school_teacher', back_populates='teachers')

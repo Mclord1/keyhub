@@ -8,6 +8,10 @@ T = TypeVar('T')
 
 
 class GenericMixin(object):
+
+    def __init__(cls, **kwargs):
+        super(GenericMixin, cls).__init__(**kwargs)
+
     @declared_attr
     def created_at(cls):
         return db.Column(BigInteger, default=func.extract('epoch', func.current_timestamp()))
@@ -29,13 +33,10 @@ class GenericMixin(object):
 
         db.session.commit()
         return valid_updates
-    
-    def save(cls, refresh: bool=False):
+
+    def save(cls, refresh: bool = False):
         db.session.add(cls)
         db.session.commit()
 
         if refresh:
             db.session.refresh(cls)
-
-
-

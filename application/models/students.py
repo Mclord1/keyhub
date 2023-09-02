@@ -11,8 +11,6 @@ class Student(db.Model, GenericMixin):
     school_id = db.Column(db.Integer, db.ForeignKey('school.id'), nullable=True)
     address = db.Column(db.String(350), nullable=True)
     residential_address = db.Column(db.String(350), nullable=True)
-    isDeactivated = db.Column(db.Boolean, default=True)
-    deactivate_reason = db.Column(db.String(450), nullable=True)
     projects = db.relationship("Project", back_populates='students')
     parents = db.relationship("Parent", back_populates='students')
     schools = db.relationship("School",  back_populates='students')

@@ -1,17 +1,25 @@
 from typing import Optional, Union
 
 from pydantic import BaseModel, EmailStr, constr, field_validator
-from submodule_util_3kle.util.custom_exception.custom_exception import CustomException
+from exceptions.custom_exception import CustomException
 
 
 class UserExistSchema(BaseModel):
-    email: EmailStr
+    email: str
     phone_number: str
 
 
-class AdminSignupSchema(UserExistSchema):
-    password: str
-    user_type: Optional[str] = 'admin'
+class SystemAdminSchema(BaseModel):
+    email: str
+    msisdn: str
+    first_name: str
+    last_name: str
+    gender: str
+    country: str
+    state: str
+    address: str
+    role: int
+    img: Optional[str] = None
 
 
 class LoginSchema(BaseModel):
