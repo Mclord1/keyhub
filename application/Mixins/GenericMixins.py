@@ -2,6 +2,7 @@ from typing import TypeVar
 
 from sqlalchemy import BigInteger, func
 from sqlalchemy.ext.declarative import declared_attr
+
 from application import db
 
 T = TypeVar('T')
@@ -11,6 +12,7 @@ class GenericMixin(object):
 
     def __init__(cls, **kwargs):
         super(GenericMixin, cls).__init__(**kwargs)
+
 
     @declared_attr
     def created_at(cls):

@@ -13,5 +13,3 @@ class Admin(db.Model, GenericMixin):
     residence = db.Column(db.String(250), nullable=True)
     gender = db.Column(db.String(150), nullable=True)
     audits = db.relationship("Audit", back_populates='admins')
-
-

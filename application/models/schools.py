@@ -1,5 +1,6 @@
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
+from exceptions.custom_exception import CustomException
 
 
 class SchoolTeacher(db.Model, GenericMixin):
@@ -34,3 +35,10 @@ class School(db.Model, GenericMixin):
     parents = db.relationship("Parent", secondary='school_parent', back_populates='schools')
     projects = db.relationship("Project", back_populates='schools')
     reports = db.relationship("Report", back_populates='schools')
+
+    @classmethod
+    def GetSchool(cls, school_id):
+        user = School.query.filter_by(id=school_id).first()
+        if not user:
+            raise CustomException(message="School does not exist")
+        return user

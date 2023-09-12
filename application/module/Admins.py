@@ -6,7 +6,7 @@ class SystemAdmins:
         pass
 
     @classmethod
-    def CreateAdmin(cls, data):
+    def create_admin(cls, data):
 
         req: SystemAdminSchema = validator.validate_data(SystemAdminSchema, data)
 
@@ -15,7 +15,8 @@ class SystemAdmins:
         ).first()
 
         if user:
-            raise CustomException(message="The Email or Phone number already registered with other user. ", status_code=400)
+            raise CustomException(message="The Email or Phone number already registered with other user. ",
+                                  status_code=400)
 
         role = Role.GetRole(req.role)
 
@@ -32,9 +33,7 @@ class SystemAdmins:
                     residence=req.address,
                     gender=req.gender,
                 )
-                db.session.add(add_user)
-                db.session.commit()
-                db.session.refresh(add_user)
+                add_user.save(refresh=True)
 
         except Exception:
             db.session.rollback()
@@ -45,7 +44,7 @@ class SystemAdmins:
         return ''.join(random.choices(string.digits, k=4))
 
     @classmethod
-    def ResetPassword(cls, user_id):
+    def reset_password(cls, user_id):
         user: User = User.query.filter_by(id=user_id).first()
 
         if not user:
@@ -53,45 +52,66 @@ class SystemAdmins:
 
         otp_code = cls.generate_token()
         expiration_time = datetime.datetime.now() + datetime.timedelta(minutes=2)
-        add_to_confirmation = ConfirmationCode(email=user.email, user_id=user.id, code=otp_code, expiration=expiration_time)
+        add_to_confirmation = ConfirmationCode(email=user.email, user_id=user.id, code=otp_code,
+                                               expiration=expiration_time)
         add_to_confirmation.save(refresh=True)
         # TODO :: Send OTP to users email or phone_number
         return f"OTP code has been sent to {user.email}"
 
     @classmethod
-    def GetAllAdmin(cls, page, per_page):
+    def get_all_admin(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _admin = Admin.query.paginate(page=page, per_page=per_page, error_out=False)
+        _admin = User.query.filter_by(role_id=1).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _admin.total
-        results = [item.to_dict() for item in _admin.items]
+        results = [item.admins.to_dict() | item.to_dict() for item in _admin.items]
         total_pages = (total_items - 1) // per_page + 1
+
+        for item in results:
+            item.pop("password", None)
+            item.pop("id", None)
+
         pagination_data = {
             "page": page,
             "size": per_page,
             "total_pages": total_pages,
             "total_items": total_items,
-            "results": json.loads(json.dumps(results, default=enum_serializer))
+            "results": results
         }
         return PaginationSchema(**pagination_data).model_dump()
 
     @classmethod
-    def UpdateAdmin(cls):
-        pass
+    def update_admin(cls, user_id, data):
+        _user: User = User.GetUser(user_id)
+        _user.admins.update_table(data)
+        return _user.admins.to_dict()
 
     @classmethod
-    def DeleteAdmin(cls):
-        pass
+    def deactivate_user(cls, user_id, reason):
+        _user: User = User.GetUser(user_id)
+
+        if _user.isDeactivated:
+            raise CustomException(message="Admin account has already been deactivated", status_code=400)
+
+        _user.isDeactivated = True
+        _user.deactivate_reason = reason
+        db.session.commit()
+        return f"{_user.email} account has been deactivated"
 
     @classmethod
-    def SearchAdmin(cls, name=None, email=None):
-        query = None
-        if name:
-            query = Admin.query.filter(Admin.first_name.ilike(f'%{name}%'))
-        if email:
-            query = User.query.filter(User.email.ilike(f'%{email}%'))
+    def search_admin(cls, args):
 
-        return query.all()
+        query = Admin.query.join(User).filter(
+            (Admin.first_name.ilike(f'%{args}%') | Admin.last_name.ilike(f'%{args}%'))
+            | User.email.ilike(f'%{args}%')
+        )
+        result = [x.to_dict() | x.user.to_dict() for x in query.all()]
+
+        for item in result:
+            item.pop("password", None)
+            item.pop("id", None)
+
+        return result or []
 
 
 class SchoolAdmins:

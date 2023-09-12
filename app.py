@@ -1,4 +1,5 @@
 import os
+
 from application import app, jwt
 from application.api import *
 from application.models import User
@@ -9,12 +10,12 @@ EXEC_ENV = os.environ.get('EXEC_ENV')
 app.register_blueprint(auth_blueprint, url_prefix='/auth')
 app.register_blueprint(admin_blueprint, url_prefix='/admin')
 app.register_blueprint(roles_permission_blueprint, url_prefix='/role-permission')
+app.register_blueprint(school_blueprint, url_prefix='/school')
 
 
 # @jwt.user_identity_loader
 # def _user_identity_lookup(user):
 #     return user.id
-
 
 @jwt.user_lookup_loader
 def _user_lookup_callback(_jwt_header, jwt_data):
@@ -25,4 +26,4 @@ def _user_lookup_callback(_jwt_header, jwt_data):
 
 
 if __name__ == '__main__':
-    app.run(port=3000, debug=True)
+    app.run(port=5000, debug=True)

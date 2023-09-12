@@ -7,6 +7,7 @@ out.yaml
 # C extensions
 *.so
 ../.idea
+.fleet/
 .idea/
 .aws-sam/
 # Distribution / packaging
