@@ -22,3 +22,8 @@ def login():
     password = req.get('password')
     return authenticate.Login(email, password)
 
+
+@auth_blueprint.route('/ping')
+def ping():
+    return return_json(OutputObj(message="pong!"))
+
