@@ -13,6 +13,37 @@ from application.utils.output import OutputObj
 from application.utils.output import return_json
 from config.DBConfig import DB_SETUP
 from exceptions.custom_exception import CustomException
+from logging.config import dictConfig
+
+dictConfig({
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+        },
+        'cloudwatch_style': {
+            'format': '%(message)s'
+        },
+    },
+    'handlers': {
+        'file_handler': {
+            'level': 'INFO',
+            'formatter': 'cloudwatch_style',  # Use the CloudWatch formatter
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': '/home/ubuntu/logs',
+            'maxBytes': 1024 * 1024,
+            'backupCount': 1,
+        },
+    },
+    'loggers': {
+        'root': {
+            'handlers': ['file_handler'],
+            'level': 'INFO',
+            'propagate': False
+        },
+    }
+})
 
 load_dotenv()
 app = FlaskLambda(__name__)
