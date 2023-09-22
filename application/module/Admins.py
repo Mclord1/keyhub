@@ -15,8 +15,10 @@ class SystemAdmins:
         ).first()
 
         if user:
-            raise CustomException(message="The Email or Phone number already registered with other user. ",
-                                  status_code=400)
+            raise CustomException(
+                message="The Email or Phone number already registered with other user.",
+                status_code=400
+            )
 
         role = Role.GetRole(req.role)
 
@@ -34,6 +36,7 @@ class SystemAdmins:
                     gender=req.gender,
                 )
                 add_user.save(refresh=True)
+                return add_user
 
         except Exception:
             db.session.rollback()
@@ -62,7 +65,8 @@ class SystemAdmins:
     def get_all_admin(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _admin = User.query.filter_by(role_id=1).paginate(page=page, per_page=per_page, error_out=False)
+        role = Role.GetRoleByName('system_admin')
+        _admin = User.query.filter_by(role_id=role.id).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _admin.total
         results = [item.admins.to_dict() | item.to_dict() for item in _admin.items]
         total_pages = (total_items - 1) // per_page + 1

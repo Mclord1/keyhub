@@ -11,6 +11,13 @@ class RolePermission:
         return [x.to_dict() for x in _role]
 
     @classmethod
+    def GetAllPermissions(cls):
+        _permissions = Permission.query.all()
+        if not _permissions:
+            return []
+        return [x.to_dict() for x in _permissions]
+
+    @classmethod
     def GetRoleDetails(cls, role_id: int) -> dict:
         _role: Role = Role.GetRole(role_id)
 

@@ -1,19 +1,26 @@
 from flask import Blueprint, request
+
 from application.module.RolePermission import RolePermission
-from . import *
 from application.utils.output import return_json, OutputObj
+from . import *
 
 roles_permission_blueprint = Blueprint('role-permission', __name__)
 
 
 @roles_permission_blueprint.route('/roles', methods=['GET'])
-@authenticate(PermissionEnum.ACCESS_ROLES)
+@authenticate(PermissionEnum.VIEW_ROLES)
 def get_all_roles():
     return return_json(OutputObj(code=200, message="Roles has been fetched", data=RolePermission.GetAllRoles()))
 
 
+@roles_permission_blueprint.route('/permissions', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_PERMISSIONS)
+def get_all_permissions():
+    return return_json(OutputObj(code=200, message="Roles has been fetched", data=RolePermission.GetAllPermissions()))
+
+
 @roles_permission_blueprint.route('/role/<int:id>', methods=['GET'])
-@authenticate(PermissionEnum.ACCESS_ROLES)
+@authenticate(PermissionEnum.VIEW_ROLES)
 def get_role_detail(id):
     return return_json(OutputObj(code=200, message="Roles has been fetched", data=RolePermission.GetRoleDetails(id)))
 
@@ -27,7 +34,7 @@ def set_role_status(id):
 
 
 @roles_permission_blueprint.route('/role', methods=['POST'])
-@authenticate(PermissionEnum.MODIFY_ROLE)
+@authenticate(PermissionEnum.ADD_ROLES)
 def add_role():
     args = request.json
     name = args.get('name')
@@ -45,7 +52,7 @@ def update_role(id):
 
 
 @roles_permission_blueprint.route('/role/<int:id>', methods=['DELETE'])
-@authenticate(PermissionEnum.MODIFY_ROLE)
+@authenticate(PermissionEnum.DEACTIVATE_ROLE)
 def delete_role(id):
     return return_json(OutputObj(code=200, message="Role has been successfully deleted", data=RolePermission.DeleteRole(id)))
 

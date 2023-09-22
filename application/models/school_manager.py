@@ -9,7 +9,16 @@ class SchoolManager(db.Model, GenericMixin):
     user = db.relationship("User", back_populates='managers')
     name = db.Column(db.String(250), nullable=True)
     residence = db.Column(db.String(250), nullable=True)
-    gender = db.Column(db.String(250), nullable=True)
+    _gender = db.Column(db.String(250), nullable=True)
     designation = db.Column(db.String(250), nullable=True)
-
     schools = db.relationship("School", back_populates='managers')
+
+    @property
+    def gender(self):
+        return self._gender
+
+    @gender.setter
+    def gender(self, value):
+        # Ensure that the value is capitalized before assigning it
+        self._gender = value.capitalize() if value else None
+

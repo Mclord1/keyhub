@@ -1,6 +1,6 @@
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
-from exceptions.custom_exception import CustomException, ExceptionCode
+from exceptions.custom_exception import CustomException
 
 
 class Role(db.Model, GenericMixin):
@@ -15,6 +15,13 @@ class Role(db.Model, GenericMixin):
     @staticmethod
     def GetRole(id):
         role = Role.query.filter_by(id=id).first()
+        if not role:
+            raise CustomException(message="The provided role does not exist")
+        return role
+
+    @staticmethod
+    def GetRoleByName(name):
+        role = Role.query.filter_by(name=name).first()
         if not role:
             raise CustomException(message="The provided role does not exist")
         return role

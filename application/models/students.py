@@ -4,14 +4,28 @@ from application.Mixins.GenericMixins import GenericMixin
 
 class Student(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(350), nullable=True)
+    first_name = db.Column(db.String(350), nullable=True)
+    last_name = db.Column(db.String(350), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship("User", back_populates='students')
     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=True)
     school_id = db.Column(db.Integer, db.ForeignKey('school.id'), nullable=True)
+    _gender = db.Column(db.String(250), nullable=True)
+    age = db.Column(db.String(250), nullable=True)
+    dob = db.Column(db.String(250), nullable=True)
+    country = db.Column(db.String(350), nullable=True)
+    state = db.Column(db.String(350), nullable=True)
     address = db.Column(db.String(350), nullable=True)
-    residential_address = db.Column(db.String(350), nullable=True)
     projects = db.relationship("Project", back_populates='students')
     parents = db.relationship("Parent", back_populates='students')
-    schools = db.relationship("School",  back_populates='students')
+    schools = db.relationship("School", back_populates='students')
     teachers = db.relationship("Teacher", secondary='teacher_student', back_populates='students')
+
+    @property
+    def gender(self):
+        return self._gender
+
+    @gender.setter
+    def gender(self, value):
+        # Ensure that the value is capitalized before assigning it
+        self._gender = value.capitalize() if value else None

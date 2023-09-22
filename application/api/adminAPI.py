@@ -8,7 +8,7 @@ admin_blueprint = Blueprint('admin', __name__)
 
 
 @admin_blueprint.route('/add-admin', methods=['POST'])
-@authenticate(PermissionEnum.CREATE_SYSTEM_ADMIN)
+@authenticate(PermissionEnum.ADD_SYSTEM_ADMIN)
 def add_admin():
     req = request.json
     SystemAdmins.create_admin(req)
@@ -16,14 +16,14 @@ def add_admin():
 
 
 @admin_blueprint.route('/reset-password', methods=['POST'])
-@authenticate(PermissionEnum.RESET_PASSWORD)
+@authenticate(PermissionEnum.RESET_SYSTEM_ADMIN_PASSWORD)
 def reset_password():
     req = request.json
     return return_json(OutputObj(code=200, message=SystemAdmins.reset_password(req['user_id'])))
 
 
 @admin_blueprint.route('/list-admin', methods=['GET'])
-@authenticate(PermissionEnum.VIEW_ADMIN)
+@authenticate(PermissionEnum.VIEW_SYSTEM_ADMIN)
 def list_admins():
     page = request.args.get('page', 1)
     per_page = request.args.get('per_page', 10)
@@ -31,7 +31,7 @@ def list_admins():
 
 
 @admin_blueprint.route('/update-admin', methods=['PUT'])
-@authenticate(PermissionEnum.UPDATE_ADMIN)
+@authenticate(PermissionEnum.MODIFY_SYSTEM_ADMIN)
 def update_admin():
     user_id = request.args.get('user_id', None)
     if not user_id:
@@ -41,7 +41,7 @@ def update_admin():
 
 
 @admin_blueprint.route('/delete-admin', methods=['DELETE'])
-@authenticate(PermissionEnum.DEACTIVATE_ADMIN)
+@authenticate(PermissionEnum.DEACTIVATE_SYSTEM_ADMIN)
 def delete_admin():
     args = request.json
     admin_id = args['admin_id']
@@ -50,7 +50,7 @@ def delete_admin():
 
 
 @admin_blueprint.route('/search-admin', methods=['GET'])
-@authenticate(PermissionEnum.SEARCH_ADMIN)
+@authenticate(PermissionEnum.VIEW_SYSTEM_ADMIN)
 def search_admin():
     query = request.args.get('query')
     return return_json(OutputObj(code=200, message="Admin results", data=SystemAdmins.search_admin(query)))

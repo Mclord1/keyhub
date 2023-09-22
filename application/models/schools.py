@@ -26,7 +26,7 @@ class School(db.Model, GenericMixin):
     country = db.Column(db.String(350), nullable=True)
     state = db.Column(db.String(350), nullable=True)
     logo = db.Column(db.String(350), nullable=True)
-    isDeactivated = db.Column(db.Boolean, default=True)
+    isDeactivated = db.Column(db.Boolean, default=False)
     deactivate_reason = db.Column(db.String(450), nullable=True)
     managers = db.relationship("SchoolManager", back_populates='schools')
     subscriptions = db.relationship("Subscription", back_populates='schools')
