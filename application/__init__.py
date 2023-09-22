@@ -18,7 +18,7 @@ from exceptions.custom_exception import CustomException
 
 app = FlaskLambda(__name__)
 app.app_context().push()
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = "38572e0970dfb29b94fdd7aae59441cd"
 app.config['SECRET_KEY'] = SECRET_KEY
 app.config["ENVIRONMENT"] = os.environ.get("environment", "development")
 environment = str(app.config["ENVIRONMENT"]).lower()
