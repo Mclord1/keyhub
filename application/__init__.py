@@ -1,9 +1,10 @@
+from dotenv import load_dotenv
+load_dotenv()
 import os
 import traceback
 from logging.config import dictConfig
 
 from botocore.exceptions import ClientError
-from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
 from flask_lambda import FlaskLambda
 from flask_sqlalchemy import SQLAlchemy
@@ -15,15 +16,14 @@ from application.utils.output import return_json
 from config.DBConfig import DB_SETUP
 from exceptions.custom_exception import CustomException
 
-load_dotenv()
 app = FlaskLambda(__name__)
 app.app_context().push()
 SECRET_KEY = os.environ.get('SECRET_KEY')
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config["ENVIRONMENT"] = os.environ.get("environment", "stage")
+app.config["ENVIRONMENT"] = os.environ.get("environment", "development")
 environment = str(app.config["ENVIRONMENT"]).lower()
 
-if environment != "development":
+if environment != "local":
     dictConfig({
         'version': 1,
         'disable_existing_loggers': False,

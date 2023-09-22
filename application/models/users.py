@@ -54,3 +54,5 @@ class User(db.Model, GenericMixin):
     def UpdateMsisdn(self, msisdn):
         self.msisdn = msisdn
         db.session.commit()
+
+
