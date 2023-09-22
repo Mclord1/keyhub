@@ -25,5 +25,5 @@ def login():
 
 @auth_blueprint.route('/ping')
 def ping():
-    return return_json(OutputObj(message="pong!"))
+    return return_json(OutputObj(message="pong!!"))
 
