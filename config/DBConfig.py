@@ -12,7 +12,8 @@ DB_SETUP = {
         "host": 'localhost',
         "port": 5431,
         'database': 'keyhub'
-    }, "production": {
+    },
+    "production": {
         "username": 'keyhub123',
         "password": 'keyhub123',
         "host": 'localhost',

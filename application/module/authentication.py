@@ -8,7 +8,7 @@ class Authentication:
     def Login(email, password):
         user = User.query.filter_by(email=email).first()
 
-        if user.isDeactivated:
+        if user and user.isDeactivated:
             raise CustomException(ExceptionCode.ACCOUNT_ALREADY_DEACTIVATED)
 
         if user and user.password and bcrypt.checkpw(str(password).encode(), user.password.encode()):
