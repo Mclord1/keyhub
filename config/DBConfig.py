@@ -2,7 +2,7 @@ DB_SETUP = {
     "local": {
         "username": 'keyhub',
         "password": 'keyhub',
-        "host": '3.145.101.11',
+        "host": 'localhost',
         "port": 5431,
         'database': 'keyhub'
     },
@@ -16,7 +16,7 @@ DB_SETUP = {
     "stage": {
         "username": 'keyhub123',
         "password": 'keyhub123',
-        "host": '3.145.101.11',
+        "host": 'localhost',
         "port": 5431,
         'database': 'keyhub'
     },

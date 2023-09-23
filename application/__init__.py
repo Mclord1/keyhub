@@ -15,8 +15,10 @@ from application.utils.output import OutputObj
 from application.utils.output import return_json
 from config.DBConfig import DB_SETUP
 from exceptions.custom_exception import CustomException
+from flask_cors import CORS, cross_origin
 
 app = FlaskLambda(__name__)
+CORS(app)
 app.app_context().push()
 SECRET_KEY = os.environ.get('SECRET_KEY')
 app.config['SECRET_KEY'] = SECRET_KEY
