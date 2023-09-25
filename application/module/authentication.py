@@ -6,7 +6,7 @@ from . import *
 class Authentication:
     @staticmethod
     def Login(email, password):
-        user = User.query.filter_by(email=email).first()
+        user: User = User.query.filter_by(email=email).first()
 
         if user and user.isDeactivated:
             raise CustomException(ExceptionCode.ACCOUNT_ALREADY_DEACTIVATED)
@@ -15,7 +15,12 @@ class Authentication:
             # Generate an access token
             access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(minutes=60))
             refresh_token = create_refresh_token(identity=user.id)
-            return return_json(OutputObj(message="Login successful", data={"access_token": access_token, "refresh_token": refresh_token}, code=200))
+            role = user.roles[0]
+            user_details = {**user.to_dict(), 'role_name': role.name}
+
+            user_details.pop('password')
+            return return_json(
+                OutputObj(message="Login successful", data={"access_token": access_token, "refresh_token": refresh_token, 'expiration_in_minutes': 60, **user_details}, code=200))
 
         else:
             raise CustomException(ExceptionCode.INVALID_CREDENTIALS)

@@ -37,5 +37,16 @@ class Teacher:
         pass
 
     @classmethod
-    def search_teachers(cls):
-        pass
+    def search_teachers(cls, args):
+
+        query = Teacher.query.join(User).filter(
+            (Teacher.first_name.ilike(f'%{args}%') | Teacher.last_name.ilike(f'%{args}%'))
+            | User.email.ilike(f'%{args}%')
+        )
+        result = [x.to_dict() | x.user.to_dict() for x in query.all()]
+
+        for item in result:
+            item.pop("password", None)
+            item.pop("id", None)
+
+        return result or []

@@ -118,6 +118,3 @@ class SystemAdmins:
         return result or []
 
 
-class SchoolAdmins:
-    def __init__(self):
-        pass
