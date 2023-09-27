@@ -16,7 +16,7 @@ class Authentication:
             access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(minutes=60))
             refresh_token = create_refresh_token(identity=user.id)
             role = user.roles[0]
-            user_details = {**user.to_dict(), 'role_name': role.name}
+            user_details = {**user.to_dict(), 'role_name': ' '.join(str(role.name).split('_')) if role.name else None}
 
             user_details.pop('password')
             return return_json(
