@@ -12,6 +12,8 @@ app.register_blueprint(admin_blueprint, url_prefix='/admin')
 app.register_blueprint(roles_permission_blueprint, url_prefix='/role-permission')
 app.register_blueprint(school_blueprint, url_prefix='/school')
 app.register_blueprint(teacher_blueprint, url_prefix='/teacher')
+app.register_blueprint(student_blueprint, url_prefix='/student')
+app.register_blueprint(parent_blueprint, url_prefix='/parent')
 
 
 # @jwt.user_identity_loader

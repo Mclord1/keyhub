@@ -1,5 +1,6 @@
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
+from exceptions.custom_exception import CustomException
 
 
 class Admin(db.Model, GenericMixin):
@@ -13,3 +14,10 @@ class Admin(db.Model, GenericMixin):
     residence = db.Column(db.String(250), nullable=True)
     gender = db.Column(db.String(150), nullable=True)
     audits = db.relationship("Audit", back_populates='admins')
+
+    @classmethod
+    def GetAdmin(cls, user_id):
+        admin = Admin.query.filter_by(id=user_id).first()
+        if not admin:
+            raise CustomException(message="Admin does not exist", status_code=404)
+        return admin

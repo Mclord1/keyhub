@@ -1,7 +1,6 @@
-from typing import Optional, Union
+from typing import Optional
 
-from pydantic import BaseModel, EmailStr, constr, field_validator
-from exceptions.custom_exception import CustomException
+from pydantic import BaseModel
 
 
 class UserExistSchema(BaseModel):
@@ -22,6 +21,52 @@ class SystemAdminSchema(BaseModel):
     img: Optional[str] = None
 
 
+class TeacherSchema(BaseModel):
+    school_id: int
+    first_name: str
+    last_name: str
+    gender: str
+    msisdn: str
+    email: str
+    country: str
+    state: str
+    address: str
+
+
+class StudentSchema(BaseModel):
+    school_id: int
+    first_name: str
+    last_name: str
+    gender: str
+    date_of_birth: str
+    age: str
+    msisdn: str
+    email: str
+    country: str
+    state: str
+    address: str
+    parent: Optional[int] = None
+    img: Optional[str] = None
+
+
+class ParentSchema(BaseModel):
+    first_name: str
+    last_name: str
+    gender: str
+    age: str
+    msisdn: str
+    email: str
+    country: str
+    state: str
+    address: str
+    work_email: str
+    work_msisdn: str
+    work_country: str
+    work_state: str
+    work_address: str
+    student: Optional[int] = None
+
+
 class LoginSchema(BaseModel):
     phone_number: str
     password: str
@@ -32,42 +77,6 @@ class PhysicalAddressSchema(BaseModel):
     city: str
     state: str
     address: str
-
-
-class DocumentSchema(BaseModel):
-    document_uri: str
-
-
-class IdentityProofSchema(DocumentSchema):
-    document_type: str
-
-
-class CompleteOnboardingSchema(BaseModel):
-    gender: constr(strip_whitespace=True, min_length=1)
-    last_name: str
-    first_name: str
-    date_of_birth: str
-    profile_type: str
-    country: str
-    country_code: str
-    is_active: bool
-    pin: str
-    image_uri: Optional[str] = None
-
-    @field_validator('gender')
-    def validate_gender(cls, v):
-        # Ensure the gender is capitalized
-        if v[0].isupper():
-            return v
-        raise CustomException(message='Gender must be capitalized.')
-
-
-class SignupCallSchema(BaseModel):
-    email: EmailStr
-    phone_number: str
-    password: Union[str, int]
-    user_type: Optional[str] = '3kle-app-user'
-    referral_code: Optional[str] = None
 
 
 class UserResponse(BaseModel):

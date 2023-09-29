@@ -34,7 +34,7 @@ class ExceptionCode(Enum):
     CARD_EXPIRED = {'response_code': 1979, 'message': 'Card expired', 'status_code': 400}
     INVALID_TRANSACTION = {'response_code': 1978, 'message': 'Invalid transaction', 'status_code': 400}
     TRANSACTION_FAILED = {'response_code': 1977, 'message': 'Transaction failed', 'status_code': 400}
-    ACCOUNT_NOT_FOUND = {'response_code': 1976, 'message': 'Account not found', 'status_code': 400}
+    ACCOUNT_NOT_FOUND = {'response_code': 1976, 'message': 'Account not found', 'status_code': 404}
     INSUFFICIENT_FUNDS = {'response_code': 1975, 'message': 'Insufficient funds', 'status_code': 400}
     AUTHENTICATION_FAILED = {'response_code': 1974, 'message': 'You must be log in first to execute this request.',
                              'status_code': 401}

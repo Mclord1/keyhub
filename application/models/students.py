@@ -1,5 +1,6 @@
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
+from exceptions.custom_exception import CustomException
 
 
 class Student(db.Model, GenericMixin):
@@ -29,3 +30,10 @@ class Student(db.Model, GenericMixin):
     def gender(self, value):
         # Ensure that the value is capitalized before assigning it
         self._gender = value.capitalize() if value else None
+
+    @classmethod
+    def GetStudent(cls, user_id):
+        student = Student.query.filter_by(id=user_id).first()
+        if not student:
+            raise CustomException(message="Student does not exist", status_code=404)
+        return student

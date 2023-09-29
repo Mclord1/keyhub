@@ -34,7 +34,7 @@ class User(db.Model, GenericMixin):
     def GetUser(cls, user_id):
         user = User.query.filter_by(id=user_id).first()
         if not user:
-            raise CustomException(message="User does not exist")
+            raise CustomException(message="User does not exist", status_code=404)
         return user
 
     @classmethod

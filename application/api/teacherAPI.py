@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 
-from application.module.Teachers import Teacher
+from application.module.Teachers import TeacherModel as Teacher
 from application.utils.output import return_json, OutputObj
 from . import *
 
@@ -15,12 +15,43 @@ def list_teachers():
     return return_json(OutputObj(code=200, message="Teachers results", data=Teacher.get_all_teachers(page, per_page)))
 
 
-@admin_blueprint.route('/update-teacher', methods=['PUT'])
+@teacher_blueprint.route('/update-teacher', methods=['PUT'])
 @authenticate(PermissionEnum.MODIFY_TEACHER)
 def update_teacher():
     user_id = request.args.get('user_id', None)
     if not user_id:
         raise CustomException(message="You need to pass user id as query parameter", status_code=400)
     args = request.json
-    return return_json(OutputObj(code=200, message="Admin information", data=Teacher.update_information(user_id, args)))
+    return return_json(OutputObj(code=200, message="Teacher information", data=Teacher.update_information(user_id, args)))
+
+
+@teacher_blueprint.route('/add-teacher', methods=['POST'])
+@authenticate(PermissionEnum.ADD_TEACHER)
+def add_teacher():
+    req = request.json
+    Teacher.add_teacher(req)
+    return return_json(OutputObj(code=200, message="Teacher has been added successfully"))
+
+
+@teacher_blueprint.route('/search-teacher', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_TEACHERS)
+def search_teacher():
+    query = request.args.get('query')
+    return return_json(OutputObj(code=200, message="Teacher results", data=Teacher.search_teachers(query)))
+
+
+@teacher_blueprint.route('/reset-password', methods=['POST'])
+@authenticate(PermissionEnum.RESET_TEACHER_PASSWORD)
+def reset_password():
+    req = request.json
+    return return_json(OutputObj(code=200, message=Teacher.reset_password(req['user_id'])))
+
+
+@teacher_blueprint.route('/delete-teacher', methods=['DELETE'])
+@authenticate(PermissionEnum.DEACTIVATE_TEACHER)
+def delete_teacher():
+    args = request.json
+    teacher_id = args['teacher_id']
+    reason = args['reason']
+    return return_json(OutputObj(code=200, message="Teacher information", data=Teacher.deactivate_user(teacher_id, reason)))
 

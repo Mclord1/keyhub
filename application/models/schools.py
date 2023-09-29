@@ -40,5 +40,5 @@ class School(db.Model, GenericMixin):
     def GetSchool(cls, school_id):
         user = School.query.filter_by(id=school_id).first()
         if not user:
-            raise CustomException(message="School does not exist")
+            raise CustomException(message="School does not exist", status_code=404)
         return user

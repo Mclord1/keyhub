@@ -1,5 +1,6 @@
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
+from exceptions.custom_exception import CustomException
 
 
 class Parent(db.Model, GenericMixin):
@@ -27,3 +28,10 @@ class Parent(db.Model, GenericMixin):
     def gender(self, value):
         # Ensure that the value is capitalized before assigning it
         self._gender = value.capitalize() if value else None
+
+    @classmethod
+    def GetParent(cls, user_id):
+        parent = Parent.query.filter_by(id=user_id).first()
+        if not parent:
+            raise CustomException(message="Parent does not exist", status_code=404)
+        return parent
