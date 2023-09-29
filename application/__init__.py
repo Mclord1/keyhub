@@ -24,7 +24,7 @@ CORS(app)
 app.app_context().push()
 SECRET_KEY = os.environ.get('SECRET_KEY')
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config["ENVIRONMENT"] = os.environ.get("environment", "local")
+app.config["ENVIRONMENT"] = os.environ.get("environment", "development")
 environment = str(app.config["ENVIRONMENT"]).lower()
 
 if environment != "local":
