@@ -1,6 +1,6 @@
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
 
 
 class UserExistSchema(BaseModel):
@@ -31,6 +31,7 @@ class TeacherSchema(BaseModel):
     country: str
     state: str
     address: str
+
 
 
 class StudentSchema(BaseModel):

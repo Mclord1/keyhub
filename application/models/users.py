@@ -1,5 +1,3 @@
-import enum
-
 import bcrypt
 
 from application import db
@@ -9,7 +7,8 @@ from exceptions.custom_exception import CustomException
 
 class UserRole(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=True)  # Role name (e.g., 'parent', 'teacher', 'admin', etc.)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id'),
+                        nullable=True)  # Role name (e.g., 'parent', 'teacher', 'admin', etc.)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     active = db.Column(db.Boolean, default=True)
 
@@ -29,6 +28,17 @@ class User(db.Model, GenericMixin):
     teachers = db.relationship("Teacher", back_populates='user', uselist=False)
     roles = db.relationship('Role', back_populates='user', uselist=True)
     confirmation_codes = db.relationship('ConfirmationCode', back_populates='user')
+
+    def as_dict(self, include_sensitive_info=False):
+        """
+        Convert the User object to a dictionary representation,
+        excluding sensitive information like password and id.
+        """
+        return {
+            key: getattr(self, key)
+            for key in ['email', 'msisdn', 'role_id', 'isDeactivated', 'deactivate_reason']
+            if include_sensitive_info or key not in {'password', 'id'}
+        }
 
     @classmethod
     def GetUser(cls, user_id):
@@ -54,5 +64,3 @@ class User(db.Model, GenericMixin):
     def UpdateMsisdn(self, msisdn):
         self.msisdn = msisdn
         db.session.commit()
-
-

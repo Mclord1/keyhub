@@ -7,28 +7,38 @@ class ParentModel:
     def get_all_parents(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        role = Role.GetRoleByName(BasicRoles.PARENT)
+        role = Role.GetRoleByName(BasicRoles.PARENT.value)
         _parents = User.query.filter_by(role_id=role.id).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _parents.total
-        results = [item.parents.to_dict() | item.to_dict() for item in _parents.items]
+        results = [item for item in _parents.items]
         total_pages = (total_items - 1) // per_page + 1
-
-        for item in results:
-            item.pop("password", None)
-            item.pop("id", None)
 
         pagination_data = {
             "page": page,
             "size": per_page,
             "total_pages": total_pages,
             "total_items": total_items,
-            "results": results
+            "results": {
+                "num_of_deactivated_parents": len([x for x in results if x.isDeactivated]),
+                "num_of_active_parents": len([x for x in results if not x.isDeactivated]),
+                "num_of_parents": len(results),
+                "parents": [{
+                    **res.parents.to_dict(),
+                    **res.as_dict(),
+                    "num_of_children": len(res.parents.students),
+                    "num_of_active_children": len([x for x in res.parents.students if not x.user.isDeactivated]),
+                    "num_of_deactivated_children": len([x for x in res.parents.students if x.user.isDeactivated]),
+                } for res in results]
+            }
         }
         return PaginationSchema(**pagination_data).model_dump()
 
     @classmethod
     def update_information(cls, user_id, data):
         _parents: Parent = Parent.GetParent(user_id)
+        gender = data.get('gender')
+        if gender:
+            _parents.gender = gender
         _parents.update_table(data)
         return _parents.to_dict()
 
@@ -38,12 +48,17 @@ class ParentModel:
 
         Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
 
-        role = Role.GetRoleByName(BasicRoles.PARENT)
+        role = Role.GetRoleByName(BasicRoles.PARENT.value)
 
-        _student = Student.GetStudent(req.student)
+        _student = None
+        if req.student:
+            _student = Student.GetStudent(req.student)
 
-        if not _student:
-            raise CustomException(message="Student not found", status_code=404)
+            if _student.parents:
+                raise CustomException(message="A Parent has already been assigned to this parent", status_code=400)
+
+            if not _student:
+                raise CustomException(message="Student not found", status_code=404)
 
         try:
             new_parent = User.CreateUser(req.email, req.msisdn, role)
@@ -60,7 +75,7 @@ class ParentModel:
                     work_email=req.work_email,
                     work_address=req.work_address,
                     work_msisdn=req.work_msisdn,
-                    students=_student
+                    students=[_student]
                 )
                 add_user.save(refresh=True)
                 return add_user

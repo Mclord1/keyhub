@@ -14,7 +14,6 @@ class Teacher(db.Model, GenericMixin):
     first_name = db.Column(db.String(350), nullable=True)
     last_name = db.Column(db.String(350), nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    school_id = db.Column(db.Integer, db.ForeignKey('school.id'), nullable=True)
     user = db.relationship("User", back_populates='teachers')
     _gender = db.Column(db.String(250), nullable=True)
     country = db.Column(db.String(350), nullable=True)

@@ -7,28 +7,37 @@ class TeacherModel:
     def get_all_teachers(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        role = Role.GetRoleByName(BasicRoles.TEACHER)
-        _teachers = User.query.filter_by(role_id=role.id).paginate(page=page, per_page=per_page, error_out=False)
+        role = Role.GetRoleByName(BasicRoles.TEACHER.value)
+        _teachers = User.query.filter_by(role_id=role.id).paginate(page=page, per_page=per_page)
         total_items = _teachers.total
-        results = [item.teachers.to_dict() | item.to_dict() for item in _teachers.items]
+        results = [item for item in _teachers.items]
         total_pages = (total_items - 1) // per_page + 1
-
-        for item in results:
-            item.pop("password", None)
-            item.pop("id", None)
-
         pagination_data = {
             "page": page,
             "size": per_page,
             "total_pages": total_pages,
             "total_items": total_items,
-            "results": results
+            "results": {
+                "total_deactivated_teachers": len([x for x in results if x.isDeactivated]),
+                "total_active_teachers": len([x for x in results if not x.isDeactivated]),
+                "num_of_teachers": len(results),
+                "teachers": [{
+                    **res.teachers.to_dict(),
+                    **res.as_dict(),
+                    "total_projects" : len(res.teachers.projects),
+                    "total_students" : len(res.teachers.students),
+                } for res in results]
+
+            }
         }
         return PaginationSchema(**pagination_data).model_dump()
 
     @classmethod
     def update_information(cls, user_id, data):
         _teacher: Teacher = Teacher.GetTeacher(user_id)
+        gender = data.get('gender')
+        if gender:
+            _teacher.gender = gender
         _teacher.update_table(data)
         return _teacher.to_dict()
 
@@ -36,20 +45,11 @@ class TeacherModel:
     def add_teacher(cls, data):
         req: TeacherSchema = validator.validate_data(TeacherSchema, data)
 
-        user: User = db.session.query(User).filter(
-            (User.email == req.email) or (User.msisdn == req.msisdn)
-        ).first()
+        Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
 
-        if user:
-            raise CustomException(
-                message="The Email or Phone number already registered with other user.",
-                status_code=400
-            )
-
-        role = Role.GetRoleByName(BasicRoles.TEACHER)
+        role = Role.GetRoleByName(BasicRoles.TEACHER.value)
 
         school = School.GetSchool(req.school_id)
-
         try:
             new_teacher = User.CreateUser(req.email, req.msisdn, role)
 
@@ -62,12 +62,13 @@ class TeacherModel:
                     user_id=new_teacher.id,
                     address=req.address,
                     gender=req.gender,
-                    schools=school
+                    schools=[school]
                 )
                 add_user.save(refresh=True)
                 return add_user
 
-        except Exception:
+        except Exception as e:
+            print(e)
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
 

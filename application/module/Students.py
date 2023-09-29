@@ -7,28 +7,36 @@ class StudentModel:
     def get_all_students(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        role = Role.GetRoleByName(BasicRoles.STUDENT)
+        role = Role.GetRoleByName(BasicRoles.STUDENT.value)
         _students = User.query.filter_by(role_id=role.id).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _students.total
-        results = [item.students.to_dict() | item.to_dict() for item in _students.items]
+        results = [item for item in _students.items]
         total_pages = (total_items - 1) // per_page + 1
-
-        for item in results:
-            item.pop("password", None)
-            item.pop("id", None)
 
         pagination_data = {
             "page": page,
             "size": per_page,
             "total_pages": total_pages,
             "total_items": total_items,
-            "results": results
+            "results": {
+                "num_of_deactivated_students": len([x for x in results if x.isDeactivated]),
+                "num_of_active_students": len([x for x in results if not x.isDeactivated]),
+                "num_of_students": len(results),
+                "students": [{
+                    **res.students.to_dict(),
+                    **res.as_dict(),
+                    "project": res.students.projects,
+                } for res in results]
+            }
         }
         return PaginationSchema(**pagination_data).model_dump()
 
     @classmethod
     def update_information(cls, user_id, data):
         _student: Student = Student.GetStudent(user_id)
+        gender = data.get('gender')
+        if gender:
+            _student.gender = gender
         _student.update_table(data)
         return _student.to_dict()
 
@@ -38,14 +46,15 @@ class StudentModel:
 
         Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
 
-        role = Role.GetRoleByName(BasicRoles.STUDENT)
+        role = Role.GetRoleByName(BasicRoles.STUDENT.value)
 
         school = School.GetSchool(req.school_id)
+        _parent = None
+        if req.parent:
+            _parent = Parent.GetParent(req.parent)
 
-        _parent = Parent.GetParent(req.parent)
-
-        if not _parent:
-            raise CustomException(message="Parent not found", status_code=404)
+            if not _parent:
+                raise CustomException(message="Parent not found", status_code=404)
 
         try:
             new_student = User.CreateUser(req.email, req.msisdn, role)

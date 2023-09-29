@@ -36,7 +36,7 @@ class SystemAdmins:
     def get_all_admin(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        role = Role.GetRoleByName(BasicRoles.SYSTEM_ADMIN)
+        role = Role.GetRoleByName(BasicRoles.SYSTEM_ADMIN.value)
         _admin = User.query.filter_by(role_id=role.id).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _admin.total
         results = [item.admins.to_dict() | item.to_dict() for item in _admin.items]
@@ -58,6 +58,9 @@ class SystemAdmins:
     @classmethod
     def update_admin(cls, user_id, data):
         _admin: Admin = Admin.GetAdmin(user_id)
+        gender = data.get('gender')
+        if gender:
+            _admin.gender = gender
         _admin.update_table(data)
         return _admin.to_dict()
 

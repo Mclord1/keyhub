@@ -1,4 +1,7 @@
 from dotenv import load_dotenv
+# from flask import Flask
+from flask_lambda import FlaskLambda
+
 load_dotenv()
 import os
 import traceback
@@ -6,7 +9,6 @@ from logging.config import dictConfig
 
 from botocore.exceptions import ClientError
 from flask_jwt_extended import JWTManager
-from flask_lambda import FlaskLambda
 from flask_sqlalchemy import SQLAlchemy
 from pydantic import ValidationError
 from werkzeug.exceptions import NotFound, MethodNotAllowed

@@ -1,3 +1,5 @@
+from typing import Union
+
 from pydantic import BaseModel
 
 
@@ -6,4 +8,4 @@ class PaginationSchema(BaseModel):
     size: int = 0
     total_pages: int = 0
     total_items: int = 0
-    results: list
+    results: Union[list,dict]

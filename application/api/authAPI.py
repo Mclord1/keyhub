@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from flask_jwt_extended import create_access_token, current_user, jwt_required
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity,current_user
 from application.module.authentication import Authentication
 
 from application.utils.output import return_json, OutputObj
@@ -8,10 +8,11 @@ auth_blueprint = Blueprint('auth', __name__)
 authenticate = Authentication()
 
 
-@auth_blueprint.route('/refresh', methods=['POST'])
+@auth_blueprint.route('/refresh-token', methods=['GET'])
 @jwt_required(refresh=True)
 def refresh_token():
-    access_token = create_access_token(identity=current_user)
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
     return return_json(OutputObj(message="Token has been refreshed", data={"access_token": access_token}, code=200))
 
 

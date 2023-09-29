@@ -16,10 +16,6 @@ app.register_blueprint(student_blueprint, url_prefix='/student')
 app.register_blueprint(parent_blueprint, url_prefix='/parent')
 
 
-# @jwt.user_identity_loader
-# def _user_identity_lookup(user):
-#     return user.id
-
 @jwt.user_lookup_loader
 def _user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data['sub']
