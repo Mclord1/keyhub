@@ -13,17 +13,17 @@ class GenericMixin(object):
     def __init__(cls, **kwargs):
         super(GenericMixin, cls).__init__(**kwargs)
 
-
     @declared_attr
     def created_at(cls):
         return db.Column(BigInteger, default=func.extract('epoch', func.current_timestamp()))
 
     @declared_attr
     def last_updated(cls):
-        return db.Column(BigInteger, default=func.extract('epoch', func.current_timestamp()), onupdate=func.extract('epoch', func.current_timestamp()))
+        return db.Column(BigInteger, default=func.extract('epoch', func.current_timestamp()),
+                         onupdate=func.extract('epoch', func.current_timestamp()))
 
     def to_dict(cls):
-        return {column.name: getattr(cls, column.name) for column in cls.__table__.columns}
+        return {'user_id' if column.name == 'id' else column.name: getattr(cls, column.name) for column in cls.__table__.columns if column.name != 'user_id'}
 
     def update_table(cls, updates: dict):
         valid_attributes = [column.key for column in cls.__table__.columns]

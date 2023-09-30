@@ -22,3 +22,9 @@ class SchoolManager(db.Model, GenericMixin):
         # Ensure that the value is capitalized before assigning it
         self._gender = value.capitalize() if value else None
 
+    @gender.getter
+    def gender(self):
+        # Ensure that the value is capitalized before assigning it
+        return self._gender
+
+

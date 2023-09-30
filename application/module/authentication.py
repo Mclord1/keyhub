@@ -16,11 +16,36 @@ class Authentication:
             access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(minutes=120))
             refresh_token = create_refresh_token(identity=user.id)
             role = user.roles[0]
-            user_details = {**user.to_dict(), 'role_name': ' '.join(str(role.name).split('_')) if role.name else None}
+            # Initialize an empty user_details dictionary
+            user_details = {
+                'role_name': ' '.join(str(role.name).split('_')) if role.name else None,
+                'role_id': user.role_id
+            }
 
-            user_details.pop('password')
+            # Check and add user-related attributes if they are not None
+            if user.parents:
+                user_details.update(user.parents.to_dict())
+
+            if user.teachers:
+                user_details.update(user.teachers.to_dict())
+
+            if user.students:
+                user_details.update(user.students.to_dict())
+
+            if user.admins:
+                user_details.update(user.admins.to_dict())
+
+            if user.managers:
+                user_details.update(user.managers.to_dict())
+
             return return_json(
-                OutputObj(message="Login successful", data={"access_token": access_token, "refresh_token": refresh_token, 'expiration_in_minutes': 120, **user_details}, code=200))
+                OutputObj(message="Login successful",
+                          data={"access_token": access_token,
+                                "refresh_token": refresh_token,
+                                'expiration_in_minutes': 120,
+                                **user_details},
+                          code=200)
+            )
 
         else:
             raise CustomException(ExceptionCode.INVALID_CREDENTIALS)

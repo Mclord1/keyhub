@@ -35,7 +35,8 @@ def toggle_status(id):
 def list_school():
     page = request.args.get('page', 1)
     per_page = request.args.get('per_page', 10)
-    return return_json(OutputObj(code=200, message="school information", data=SchoolModel.list_all_schools(page, per_page)))
+    return return_json(
+        OutputObj(code=200, message="school information", data=SchoolModel.list_all_schools(page, per_page)))
 
 
 @school_blueprint.route('/<int:id>', methods=['GET'])
@@ -44,10 +45,11 @@ def view_school_info(id):
     return return_json(OutputObj(code=200, message="school results", data=SchoolModel.view_school_info(id)))
 
 
-@school_blueprint.route('/<int:id>/school-admins', methods=['GET'])
+@school_blueprint.route('/<int:school_id>/school-admins', methods=['GET'])
 @authenticate(PermissionEnum.VIEW_SCHOOL_MANAGERS)
-def school_managers_list(id):
-    return return_json(OutputObj(code=200, message="school Admins results", data=SchoolModel.get_account_admins(id)))
+@has_school_privilege
+def school_managers_list(school_id):
+    return return_json(OutputObj(code=200, message="school Admins results", data=SchoolModel.get_account_admins(school_id)))
 
 
 @school_blueprint.route('/<int:id>/parents', methods=['GET'])

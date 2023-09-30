@@ -1,8 +1,10 @@
 from functools import wraps
 
 import jwt
+from flask import request
 from flask_jwt_extended import verify_jwt_in_request, get_current_user
 
+from application.Enums.Enums import BasicRoles
 from exceptions.custom_exception import CustomException, ExceptionCode
 
 
@@ -19,7 +21,8 @@ def authenticate(permission_name=None):
 
                 # Check if the user's role has the required permission if permission is provided
                 if permission_name:
-                    if permission_name.value in [permission.name for role in user.roles for permission in role.permissions if permission.active]:
+                    if permission_name.value in [permission.name for role in user.roles for permission in
+                                                 role.permissions if permission.active]:
                         return f(*args, **kwargs)
                     else:
                         raise CustomException(ExceptionCode.PERMISSION_DENIED)
@@ -33,3 +36,18 @@ def authenticate(permission_name=None):
 
     return decorator
 
+
+def has_school_privilege(f):
+    @wraps(f)
+    def decorated_func(*args, **kwargs):
+        verify_jwt_in_request()
+        user = get_current_user()
+        school_id = int(request.view_args.get('school_id'))
+        if not school_id:
+            raise CustomException(message="School Id param must be passed in the URL", status_code=400)
+        if BasicRoles.SYSTEM_ADMIN not in [x.name for x in user.roles]:
+            if user.managers and user.managers.schools.id != school_id:
+                raise CustomException(message="You don't have access to this school", status_code=401)
+        return f(*args, **kwargs)
+
+    return decorated_func

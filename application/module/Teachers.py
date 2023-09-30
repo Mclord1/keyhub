@@ -24,10 +24,9 @@ class TeacherModel:
                 "teachers": [{
                     **res.teachers.to_dict(),
                     **res.as_dict(),
-                    "total_projects" : len(res.teachers.projects),
-                    "total_students" : len(res.teachers.students),
+                    "total_projects": len(res.teachers.projects),
+                    "total_students": len(res.teachers.students),
                 } for res in results]
-
             }
         }
         return PaginationSchema(**pagination_data).model_dump()

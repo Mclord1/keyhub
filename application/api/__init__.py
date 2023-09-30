@@ -1,4 +1,4 @@
-from application.utils.authenticator import authenticate
+from application.utils.authenticator import authenticate,has_school_privilege
 from application.Enums.Permission import PermissionEnum
 from exceptions.codes import ExceptionCode
 from exceptions.custom_exception import CustomException

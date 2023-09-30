@@ -20,7 +20,6 @@ class SchoolModel:
         total_items = _school.total
         results = [item for item in _school.items]
         total_pages = (total_items - 1) // per_page + 1
-
         pagination_data = {
             "page": page,
             "size": per_page,
@@ -52,21 +51,25 @@ class SchoolModel:
             "student_by_gender": {
                 "male": {
                     "count": len([x for x in _school.students if x.gender == "Male"]),
-                    "percentage": (len([x for x in _school.students if x.gender == "Male"]) * 100) / len(_school.students) if _school.students else 0
+                    "percentage": (len([x for x in _school.students if x.gender == "Male"]) * 100) / len(
+                        _school.students) if _school.students else 0
                 },
                 "female": {
                     "count": len([x for x in _school.students if x.gender == "Female"]),
-                    "percentage": (len([x for x in _school.students if x.gender == "Female"]) * 100) / len(_school.students) if _school.students else 0
+                    "percentage": (len([x for x in _school.students if x.gender == "Female"]) * 100) / len(
+                        _school.students) if _school.students else 0
                 }
             },
             "teachers_by_gender": {
                 "male": {
                     "count": len([x for x in _school.teachers if x.gender == "Male"]),
-                    "percentage": (len([x for x in _school.teachers if x.gender == "Male"]) * 100) / len(_school.teachers) if _school.teachers else 0
+                    "percentage": (len([x for x in _school.teachers if x.gender == "Male"]) * 100) / len(
+                        _school.teachers) if _school.teachers else 0
                 },
                 "female": {
                     "count": len([x for x in _school.teachers if x.gender == "Female"]),
-                    "percentage": (len([x for x in _school.teachers if x.gender == "Female"]) * 100) / len(_school.teachers) if _school.teachers else 0
+                    "percentage": (len([x for x in _school.teachers if x.gender == "Female"]) * 100) / len(
+                        _school.teachers) if _school.teachers else 0
                 }
             },
             **_school.to_dict()
@@ -100,7 +103,8 @@ class SchoolModel:
             if _school.reg_number == req_school.reg_number:
                 existing_values.append("reg_number")
 
-            raise CustomException(message=f"School attributes already exist: {', '.join(existing_values)}", status_code=403)
+            raise CustomException(message=f"School attributes already exist: {', '.join(existing_values)}",
+                                  status_code=403)
 
         school.update_table(data)
         db.session.commit()
@@ -138,25 +142,19 @@ class SchoolModel:
             if _school.reg_number == req_schema.reg_number:
                 existing_values.append("reg_number")
 
-            raise CustomException(message=f"School attributes already exist: {', '.join(existing_values)}", status_code=403)
+            raise CustomException(message=f"School attributes already exist: {', '.join(existing_values)}",
+                                  status_code=403)
 
         try:
 
             # Add school details to school model
-            add_school = School(name=name, email=email, msisdn=msisdn, reg_number=reg_number, country=country, state=state, address=address)
+            add_school = School(name=name, email=email, msisdn=msisdn, reg_number=reg_number, country=country,
+                                state=state, address=address)
             add_school.save(refresh=True)
 
-            user: User = db.session.query(User).filter(
-                (User.email == primary_contact.email) or (User.msisdn == primary_contact.msisdn)
-            ).first()
+            Helper.User_Email_OR_Msisdn_Exist(primary_contact.email, primary_contact.msisdn)
 
-            if user:
-                raise CustomException(
-                    message="The Email or Phone number already registered with other user.",
-                    status_code=400
-                )
-
-            role = Role.GetRoleByName("school_admin")
+            role = Role.GetRoleByName(BasicRoles.SCHOOL_ADMIN)
 
             # create the user account on User model
             user = User.CreateUser(primary_contact.email, primary_contact.msisdn, role)
@@ -223,8 +221,10 @@ class SchoolModel:
                 "isDeactivated": parent.user.isDeactivated,
                 "msisdn": parent.user.msisdn,
                 "num_of_children": len([x for x in parent.students if x.school_id == school_id]),
-                "num_of_active_children": len([student for student in parent.students if student.school_id == school_id and not student.user.isDeactivated]),
-                "num_of_deactivated_children": len([student for student in parent.students if student.school_id == school_id and student.user.isDeactivated]),
+                "num_of_active_children": len([student for student in parent.students if
+                                               student.school_id == school_id and not student.user.isDeactivated]),
+                "num_of_deactivated_children": len([student for student in parent.students if
+                                                    student.school_id == school_id and student.user.isDeactivated]),
                 **parent.to_dict()
             } for parent in _school.parents]
         }
