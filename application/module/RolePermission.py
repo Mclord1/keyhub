@@ -22,7 +22,7 @@ class RolePermission:
                 {
                     **res.to_dict(),
                     "created_by": created_by(res.admin_id).email if res.admin_id else None,
-                    "creator_name":  f'{created_by(res.admin_id).admins.first_name} {created_by(res.admin_id).admins.last_name}' if res.admin_id else None}
+                    "creator_name": f'{created_by(res.admin_id).admins.first_name} {created_by(res.admin_id).admins.last_name}' if res.admin_id else None}
                 for res in results
             ]
         }
@@ -33,7 +33,27 @@ class RolePermission:
         _permissions = Permission.query.all()
         if not _permissions:
             return []
-        return [x.to_dict() for x in _permissions]
+
+        permission_groups = {
+            "students": [],
+            "projects": [],
+            "subscription": [],
+            "transactions": [],
+            "parents": [],
+            "teacher": [],
+            "school_manager": [],
+            "school": [],
+            "system_admin": [],
+            "roles": [],
+            "permissions": []
+        }
+
+        for _permission in _permissions:
+            for category in permission_groups.keys():
+                if category in _permission.name:
+                    permission_groups[category].append(_permission.to_dict())
+
+        return permission_groups
 
     @classmethod
     def GetRoleDetails(cls, role_id: int) -> dict:
