@@ -4,11 +4,29 @@ from . import *
 class RolePermission:
 
     @classmethod
-    def GetAllRoles(cls):
-        _role = Role.query.all()
-        if not _role:
-            return []
-        return [x.to_dict() for x in _role]
+    def GetAllRoles(cls, page, per_page):
+        page = int(page)
+        per_page = int(per_page)
+        _role = Role.query.paginate(page=page, per_page=per_page, error_out=False)
+        total_items = _role.total
+        results = [item for item in _role.items]
+        total_pages = (total_items - 1) // per_page + 1
+        created_by = lambda x: User.query.filter_by(id=x).first()
+
+        pagination_data = {
+            "page": page,
+            "size": per_page,
+            "total_pages": total_pages,
+            "total_items": total_items,
+            "results": [
+                {
+                    **res.to_dict(),
+                    "created_by": created_by(res.admin_id).email if res.admin_id else None,
+                    "creator_name":  f'{created_by(res.admin_id).admins.first_name} {created_by(res.admin_id).admins.last_name}' if res.admin_id else None}
+                for res in results
+            ]
+        }
+        return PaginationSchema(**pagination_data).model_dump()
 
     @classmethod
     def GetAllPermissions(cls):
@@ -28,6 +46,7 @@ class RolePermission:
             'role_name': _role.name,
             'created_on': _role.created_at,
             'created_by': created_by.email if created_by else None,
+            'creator_name': f'{created_by.admins.first_name} {created_by.admins.last_name}' if created_by else None,
             'country': created_by.admins.country if created_by else None,
             'users_assigned': len(user_list),
             'description': _role.description,
