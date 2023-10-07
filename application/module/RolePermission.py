@@ -20,9 +20,10 @@ class RolePermission:
             "total_items": total_items,
             "results": [
                 {
-                    **res.to_dict(),
+                    **res.to_dict(add_filter=False),
                     "created_by": created_by(res.admin_id).email if res.admin_id else None,
-                    "creator_name": f'{created_by(res.admin_id).admins.first_name} {created_by(res.admin_id).admins.last_name}' if res.admin_id else None}
+                    "creator_name": f'{created_by(res.admin_id).admins.first_name} {created_by(res.admin_id).admins.last_name}' if res.admin_id else None
+                }
                 for res in results
             ]
         }

@@ -22,8 +22,9 @@ class GenericMixin(object):
         return db.Column(BigInteger, default=func.extract('epoch', func.current_timestamp()),
                          onupdate=func.extract('epoch', func.current_timestamp()))
 
-    def to_dict(cls):
-        return {'user_id' if column.name == 'id' else column.name: getattr(cls, column.name) for column in cls.__table__.columns if column.name != 'user_id'}
+    def to_dict(cls, add_filter=True):
+        return {'user_id' if column.name == 'id' and add_filter else column.name: getattr(cls, column.name) for
+                column in cls.__table__.columns if column.name != 'user_id'}
 
     def update_table(cls, updates: dict):
         valid_attributes = [column.key for column in cls.__table__.columns]
