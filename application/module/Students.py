@@ -33,7 +33,7 @@ class StudentModel:
 
     @classmethod
     def update_information(cls, user_id, data):
-        _student: Student = Student.GetStudent(user_id)
+        _student: Student = Helper.get_user(Student, user_id)
         gender = data.get('gender')
         if gender:
             _student.gender = gender
@@ -82,7 +82,7 @@ class StudentModel:
 
     @classmethod
     def reset_password(cls, user_id):
-        _student: Student = Student.GetStudent(user_id)
+        _student: Student = Helper.get_user(Student, user_id)
 
         if not _student:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
@@ -93,7 +93,7 @@ class StudentModel:
 
     @classmethod
     def deactivate_user(cls, user_id, reason):
-        _student: Student = Student.GetStudent(user_id)
+        _student: Student = Helper.get_user(Student, user_id)
 
         if not _student:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)

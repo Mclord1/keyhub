@@ -1,6 +1,8 @@
 import decimal
 import json
 
+from flask import jsonify
+
 
 class DecimalEncoder(json.JSONEncoder):
     def default(self, o):
@@ -16,8 +18,8 @@ def return_json(output):
             del_keys.append(k)
     for k in del_keys:
         del output.__dict__[k]
-    jsonStr = json.dumps(output.__dict__, cls=DecimalEncoder)
-    return jsonStr, output.code
+    # jsonStr = json.dumps(output.__dict__, cls=DecimalEncoder)
+    return jsonify(output.__dict__)
 
 
 class OutputObj:

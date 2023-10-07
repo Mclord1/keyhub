@@ -1,11 +1,13 @@
 from flask import Blueprint, request
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity,current_user
-from application.module.authentication import Authentication
+from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
+from application.Enums.Permission import PermissionEnum
+from application.module.authentication import Authentication
+from application.utils.authenticator import authenticate
 from application.utils.output import return_json, OutputObj
 
 auth_blueprint = Blueprint('auth', __name__)
-authenticate = Authentication()
+authenticationModel = Authentication()
 
 
 @auth_blueprint.route('/refresh-token', methods=['GET'])
@@ -21,10 +23,18 @@ def login():
     req = request.json
     email = req.get('email')
     password = req.get('password')
-    return authenticate.Login(email, password)
+    return authenticationModel.Login(email, password)
+
+
+@auth_blueprint.route('/update-password', methods=['POST'])
+@jwt_required()
+def update_password():
+    req = request.json
+    code = req.get('otp')
+    password = req.get('password')
+    return authenticationModel.update_password(code, password)
 
 
 @auth_blueprint.route('/ping')
 def ping():
     return return_json(OutputObj(message="pong!!"))
-

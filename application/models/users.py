@@ -60,7 +60,9 @@ class User(db.Model, GenericMixin):
         hash_value = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
         self.password = hash_value.decode()
         db.session.commit()
+        return True
 
     def UpdateMsisdn(self, msisdn):
         self.msisdn = msisdn
         db.session.commit()
+        return True

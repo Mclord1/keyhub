@@ -33,7 +33,7 @@ class TeacherModel:
 
     @classmethod
     def update_information(cls, user_id, data):
-        _teacher: Teacher = Teacher.GetTeacher(user_id)
+        _teacher: Teacher = Helper.get_user(Teacher, user_id)
         gender = data.get('gender')
         if gender:
             _teacher.gender = gender
@@ -73,8 +73,7 @@ class TeacherModel:
 
     @classmethod
     def reset_password(cls, user_id):
-        _teacher: Teacher = Teacher.GetTeacher(user_id)
-
+        _teacher: Teacher = Helper.get_user(Teacher, user_id)
         if not _teacher:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
 
@@ -84,7 +83,7 @@ class TeacherModel:
 
     @classmethod
     def deactivate_user(cls, user_id, reason):
-        _teacher: Teacher = Teacher.GetTeacher(user_id)
+        _teacher: Teacher = Helper.get_user(Teacher, user_id)
 
         if not _teacher:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)

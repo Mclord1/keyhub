@@ -16,6 +16,7 @@ class Authentication:
             access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(minutes=120))
             refresh_token = create_refresh_token(identity=user.id)
             role = user.roles[0]
+
             # Initialize an empty user_details dictionary
             user_details = {
                 'role_name': ' '.join(str(role.name).split('_')) if role.name else None,
@@ -50,5 +51,19 @@ class Authentication:
         else:
             raise CustomException(ExceptionCode.INVALID_CREDENTIALS)
 
-    def changePassword(self):
-        pass
+    @staticmethod
+    def update_password(code: str, password):
+        _user: User = User.GetUser(current_user.id)
+        confirm_code: ConfirmationCode = ConfirmationCode.query.filter(ConfirmationCode.code == code,
+                                                                       ConfirmationCode.user_id == current_user.id).first()
+        current_time = datetime.datetime.now()
+
+        if not confirm_code:
+            raise CustomException(message="Invalid confirmation code", status_code=400)
+
+        if current_time > confirm_code.expiration:
+            raise CustomException(message="OTP code has already expired", status_code=400)
+
+        _user.UpdatePassword(password)
+
+        return return_json(OutputObj(message="Password has been set successfully. Please login again.", code=200))

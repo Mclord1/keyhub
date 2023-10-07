@@ -35,12 +35,12 @@ class ParentModel:
 
     @classmethod
     def update_information(cls, user_id, data):
-        _parents: Parent = Parent.GetParent(user_id)
+        _parent: Parent = Helper.get_user(Parent, user_id)
         gender = data.get('gender')
         if gender:
-            _parents.gender = gender
-        _parents.update_table(data)
-        return _parents.to_dict()
+            _parent.gender = gender
+        _parent.update_table(data)
+        return _parent.to_dict()
 
     @classmethod
     def add_parent(cls, data):
@@ -86,7 +86,7 @@ class ParentModel:
 
     @classmethod
     def reset_password(cls, user_id):
-        _parent: Parent = Parent.query.filter_by(id=user_id).first()
+        _parent: Parent = Helper.get_user(Parent, user_id)
 
         if not _parent:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
@@ -97,7 +97,7 @@ class ParentModel:
 
     @classmethod
     def deactivate_user(cls, user_id, reason):
-        _parent: Parent = Parent.query.filter_by(id=user_id).first()
+        _parent: Parent = Helper.get_user(Parent, user_id)
 
         if not _parent:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)

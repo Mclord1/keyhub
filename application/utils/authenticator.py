@@ -8,7 +8,7 @@ from application.Enums.Enums import BasicRoles
 from exceptions.custom_exception import CustomException, ExceptionCode
 
 
-def authenticate(permission_name=None):
+def authenticate(permission_name='Not-Set'):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
@@ -20,7 +20,7 @@ def authenticate(permission_name=None):
                     raise CustomException(message="Your account has been deactivated", status_code=400)
 
                 # Check if the user's role has the required permission if permission is provided
-                if permission_name:
+                if permission_name != 'Not-Set':
                     if permission_name.value in [permission.name for role in user.roles for permission in
                                                  role.permissions if permission.active]:
                         return f(*args, **kwargs)
@@ -46,8 +46,14 @@ def has_school_privilege(f):
         if not school_id:
             raise CustomException(message="School Id param must be passed in the URL", status_code=400)
         if BasicRoles.SYSTEM_ADMIN not in [x.name for x in user.roles]:
+
+            if not user.managers:
+                raise CustomException(message="only Admin or school manager has privilege.", status_code=401)
+
             if user.managers and user.managers.schools.id != school_id:
                 raise CustomException(message="You don't have access to this school", status_code=401)
         return f(*args, **kwargs)
 
     return decorated_func
+
+

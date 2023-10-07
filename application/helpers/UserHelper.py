@@ -4,6 +4,7 @@ import string
 
 from application import db
 from application.models import ConfirmationCode, User
+from application.module import current_user
 from exceptions.custom_exception import CustomException
 
 
@@ -15,7 +16,8 @@ class Helper:
 
     @classmethod
     def send_otp(cls, user):
-        otp_code = cls.generate_token()
+        # otp_code = cls.generate_token()
+        otp_code = '1111'
         expiration_time = datetime.datetime.now() + datetime.timedelta(minutes=2)
         add_to_confirmation = ConfirmationCode(email=user.email, user_id=user.id, code=otp_code,
                                                expiration=expiration_time)
@@ -25,10 +27,18 @@ class Helper:
 
     @classmethod
     def look_up_account(cls, Model, User, args):
+
+        if not current_user.admins and not current_user.managers:
+            raise CustomException("Only school manager or admin has the privilege")
+
         query = Model.query.join(User).filter(
             (Model.first_name.ilike(f'%{args}%') | Model.last_name.ilike(f'%{args}%'))
             | User.email.ilike(f'%{args}%')
         )
+
+        if not current_user.admins and current_user.managers:
+            query.filter(Model.school_id == current_user.managers.school_id)
+
         result = [x.to_dict() | x.user.to_dict() for x in query.all()]
 
         for item in result:
@@ -60,3 +70,21 @@ class Helper:
             )
 
         return True
+
+    @classmethod
+    def get_user(cls, Model, user_id):
+
+        if not current_user.admins and not current_user.managers:
+            raise CustomException("Only school manager or admin has the privilege")
+
+        _user = Model.query.filter_by(id=user_id).first()
+
+        if not _user:
+            raise CustomException(message=f"{str(Model)} does not exist", status_code=404)
+
+        if not current_user.admins and current_user.managers.school_id != _user.school_id:
+            raise CustomException("You do not have privilege to access this user")
+
+        return _user
+
+
