@@ -9,7 +9,7 @@ DB_SETUP = {
     "development": {
         "username": 'keyhub',
         "password": 'keyhub',
-        "host": 'localhost',
+        "host": '3.145.101.11',
         "port": 5431,
         'database': 'keyhub'
     },
