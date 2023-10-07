@@ -14,6 +14,7 @@ app.register_blueprint(school_blueprint, url_prefix='/school')
 app.register_blueprint(teacher_blueprint, url_prefix='/teacher')
 app.register_blueprint(student_blueprint, url_prefix='/student')
 app.register_blueprint(parent_blueprint, url_prefix='/parent')
+app.register_blueprint(helper_blueprint, url_prefix='/helper')
 
 
 @jwt.user_lookup_loader

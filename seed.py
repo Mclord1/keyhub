@@ -6,7 +6,7 @@ from application.Enums.Permission import PermissionEnum
 sys.path.append(dirname(abspath(__file__)))
 
 from sqlalchemy.exc import IntegrityError
-
+from config.countries import countries_data
 from application import db, app
 from application.models import *
 
@@ -39,6 +39,7 @@ class Seed:
 
             except IntegrityError:
                 db.session.rollback()
+                continue
         print("Permission has been added successfully")
 
     @staticmethod
@@ -79,6 +80,36 @@ class Seed:
 
             print("Admin has been created successfully")
 
+    @staticmethod
+    def populate_country():
+        country_data = countries_data['data']
+
+        for x in country_data:
+            try:
+                add_country = Country(country_name=x['name'], country_code=x['iso3'])
+                add_country.save()
+            except IntegrityError:
+                db.session.rollback()
+                continue
+
+        print("Country DB has been populated")
+
+    @staticmethod
+    def populate_states():
+        country_data = countries_data['data']
+
+        for x in country_data:
+            fetch_country = Country.query.filter_by(country_name=x['name']).first()
+            for y in x['states']:
+                try:
+                    add_state = State(state_name=y['name'], country=fetch_country)
+                    add_state.save(refresh=True)
+                except IntegrityError:
+                    db.session.rollback()
+                    continue
+
+        print("States DB has been populated")
+
     def RunSeed(self):
         """
              Implementation scripts to automate the creation of the database and seeding with initial data.
@@ -87,6 +118,8 @@ class Seed:
         self.AddRole()
         self.AddPermission()
         self.AddAdmin()
+        self.populate_country()
+        self.populate_states()
 
 
 with app.app_context():

@@ -9,3 +9,4 @@ from application.api.schoolAPI import school_blueprint
 from application.api.teacherAPI import teacher_blueprint
 from application.api.parentsAPI import parent_blueprint
 from application.api.studentAPI import student_blueprint
+from application.api.helperAPI import helper_blueprint

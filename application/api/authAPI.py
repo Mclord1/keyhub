@@ -1,9 +1,7 @@
 from flask import Blueprint, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 
-from application.Enums.Permission import PermissionEnum
 from application.module.authentication import Authentication
-from application.utils.authenticator import authenticate
 from application.utils.output import return_json, OutputObj
 
 auth_blueprint = Blueprint('auth', __name__)
