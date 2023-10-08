@@ -37,7 +37,7 @@ def update_admin():
     if not user_id:
         raise CustomException(message="You need to pass user id as query parameter", status_code=400)
     args = request.json
-    return return_json(OutputObj(code=200, message="Admin information", data=SystemAdmins.update_admin(user_id, args)))
+    return return_json(OutputObj(code=200, message="User information has been updated successfully", data=SystemAdmins.update_admin(user_id, args)))
 
 
 @admin_blueprint.route('/delete-admin', methods=['DELETE'])
