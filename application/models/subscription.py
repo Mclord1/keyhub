@@ -9,21 +9,22 @@ class SubscriptionStatusEnum(enum.Enum):
     PROCESSING = "processing"
     FAILED = "failed"
     DECLINED = "declined"
+    PAUSED = "paused"
     ACTIVE = "active"
     EXPIRED = "expired"
 
 
-class SubscriptionPlanEnum(enum.Enum):
-    STARTER = "starter"
-    GOLD = "gold"
-    SILVER = "silver"
-
-
 class SubcriptionPlan(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250), nullable=True)
+    name = db.Column(db.String(350), nullable=True, unique=True)
+    bill_cycle = db.Column(db.String(350), nullable=True)
+    description = db.Column(db.String(350), nullable=True)
+    features = db.Column(db.JSON, nullable=True)
+    amount = db.Column(db.String(250), nullable=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     isActive = db.Column(db.Boolean, default=True)
     subscriptions = db.relationship("Subscription", back_populates='subscription_plan')
+    user = db.relationship("User", back_populates='subscription_plan')
 
 
 class Subscription(db.Model, GenericMixin):
@@ -37,7 +38,8 @@ class Subscription(db.Model, GenericMixin):
     end_date = db.Column(db.DateTime, nullable=True)
     payment_type = db.Column(db.String(250), nullable=True)
     action = db.Column(db.JSON, nullable=True)
-    status = db.Column(db.Enum(SubscriptionStatusEnum, nullable=True, values_callable=lambda x: [str(member.value) for member in SubscriptionStatusEnum]),
+    status = db.Column(db.Enum(SubscriptionStatusEnum, nullable=True,
+                               values_callable=lambda x: [str(member.value) for member in SubscriptionStatusEnum]),
                        default=SubscriptionStatusEnum.ACTIVE.value)
     schools = db.relationship("School", back_populates='subscriptions')
     subscription_plan = db.relationship("SubcriptionPlan", back_populates='subscriptions')

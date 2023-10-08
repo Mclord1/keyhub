@@ -28,6 +28,7 @@ class User(db.Model, GenericMixin):
     teachers = db.relationship("Teacher", back_populates='user', uselist=False)
     roles = db.relationship('Role', back_populates='user', uselist=True)
     confirmation_codes = db.relationship('ConfirmationCode', back_populates='user')
+    subscription_plan = db.relationship("SubcriptionPlan", back_populates='user')
 
     def as_dict(self, include_sensitive_info=False):
         """

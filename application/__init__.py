@@ -26,8 +26,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 app.config['SECRET_KEY'] = SECRET_KEY
 app.config["ENVIRONMENT"] = os.environ.get("environment", "development")
 environment = str(app.config["ENVIRONMENT"]).lower()
-
-if environment != "development":
+if environment != "local":
     dictConfig({
         'version': 1,
         'disable_existing_loggers': False,

@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Optional, List
 
-from pydantic import BaseModel, constr
+from pydantic import BaseModel
 
 
 class UserExistSchema(BaseModel):
@@ -31,7 +31,6 @@ class TeacherSchema(BaseModel):
     country: str
     state: str
     address: str
-
 
 
 class StudentSchema(BaseModel):
@@ -68,32 +67,9 @@ class ParentSchema(BaseModel):
     student: Optional[int] = None
 
 
-class LoginSchema(BaseModel):
-    phone_number: str
-    password: str
-
-
-class PhysicalAddressSchema(BaseModel):
-    lga: str
-    city: str
-    state: str
-    address: str
-
-
-class UserResponse(BaseModel):
-    id: int
-    email: str
-    phone_number: str
-    panic_balance: dict
-    currency: str
-    country: Optional[str] = None
-    base_currency: str
-    status: str
-    user_subscription_plan: str
-    notification_settings: dict
-    created_at: int
-    last_updated: int
-    is_phone_verified: bool
-    is_email_verified: bool
-    phone_verification_failed_attempts: int
-    email_verification_failed_attempts: int
+class SubscriptionSchema(BaseModel):
+    name: str
+    description: str
+    billing_cycle: str
+    amount: str
+    features: List[str]

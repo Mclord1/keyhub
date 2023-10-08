@@ -37,9 +37,11 @@ class SystemAdmins:
         page = int(page)
         per_page = int(per_page)
         role = Role.GetRoleByName(BasicRoles.SYSTEM_ADMIN.value)
-        _admin = User.query.filter_by(role_id=role.id).paginate(page=page, per_page=per_page, error_out=False)
+        _admin = Admin.query.paginate(page=page, per_page=per_page, error_out=False)
         total_items = _admin.total
         results = [item for item in _admin.items]
+
+        print(results)
 
         total_pages = (total_items - 1) // per_page + 1
 
@@ -49,13 +51,13 @@ class SystemAdmins:
             "total_pages": total_pages,
             "total_items": total_items,
             "results": {
-                "num_of_deactivated_admins": len([x for x in results if x.isDeactivated]),
-                "num_of_active_admins": len([x for x in results if not x.isDeactivated]),
+                "num_of_deactivated_admins": len([x for x in results if x.user.isDeactivated]),
+                "num_of_active_admins": len([x for x in results if not x.user.isDeactivated]),
                 "num_of_admins": len(results),
                 "admins": [{
-                    **res.admins.to_dict(),
-                    **res.as_dict(),
-                    "role_name": [x.name for x in res.roles]
+                    **res.to_dict(),
+                    **res.user.as_dict(),
+                    "role_name": [x.name for x in res.user.roles]
                 } for res in results]
             }
         }

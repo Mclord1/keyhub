@@ -14,6 +14,6 @@ from application.models.students import Student
 from application.models.subscription import Subscription, SubcriptionPlan
 from application.models.teachers import Teacher, TeacherStudent
 from application.models.users import User, UserRole
-
+from application.models.subscription import Subscription, SubcriptionPlan
 
 
