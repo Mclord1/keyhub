@@ -36,12 +36,9 @@ class SystemAdmins:
     def get_all_admin(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        role = Role.GetRoleByName(BasicRoles.SYSTEM_ADMIN.value)
         _admin = Admin.query.paginate(page=page, per_page=per_page, error_out=False)
         total_items = _admin.total
         results = [item for item in _admin.items]
-
-        print(results)
 
         total_pages = (total_items - 1) // per_page + 1
 

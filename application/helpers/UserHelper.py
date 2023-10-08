@@ -52,10 +52,10 @@ class Helper:
         if user.isDeactivated:
             raise CustomException(message="User account has already been deactivated", status_code=400)
 
-        user.isDeactivated = True
+        user.isDeactivated = not user.isDeactivated
         user.deactivate_reason = reason
         db.session.commit()
-        return f"{user.email} account has been deactivated"
+        return f"{user.email} account has active status has been set to {user.isDeactivated}"
 
     @classmethod
     def User_Email_OR_Msisdn_Exist(cls, email, msisdn):
