@@ -49,13 +49,10 @@ class Helper:
 
     @classmethod
     def disable_account(cls, user, reason):
-        if user.isDeactivated:
-            raise CustomException(message="User account has already been deactivated", status_code=400)
-
         user.isDeactivated = not user.isDeactivated
         user.deactivate_reason = reason
         db.session.commit()
-        return f"{user.email} account has active status has been set to {user.isDeactivated}"
+        return f"{user.email} account status has been set to {user.isDeactivated}"
 
     @classmethod
     def User_Email_OR_Msisdn_Exist(cls, email, msisdn):
@@ -86,5 +83,3 @@ class Helper:
             raise CustomException("You do not have privilege to access this user")
 
         return _user
-
-
