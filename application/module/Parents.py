@@ -37,6 +37,9 @@ class ParentModel:
     def update_information(cls, user_id, data):
         _parent: Parent = Helper.get_user(Parent, user_id)
         gender = data.get('gender')
+        role = data.get('role')
+        if role:
+            _parent.user.role_id = role
         if gender:
             _parent.gender = gender
         _parent.update_table(data)

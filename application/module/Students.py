@@ -35,6 +35,9 @@ class StudentModel:
     def update_information(cls, user_id, data):
         _student: Student = Helper.get_user(Student, user_id)
         gender = data.get('gender')
+        role = data.get('role')
+        if role:
+            _student.user.role_id = role
         if gender:
             _student.gender = gender
         _student.update_table(data)

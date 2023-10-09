@@ -64,6 +64,9 @@ class SystemAdmins:
     def update_admin(cls, user_id, data):
         _admin: Admin = Admin.GetAdmin(user_id)
         gender = data.get('gender')
+        role = data.get('role')
+        if role:
+            _admin.user.role_id = role
         if gender:
             _admin.gender = gender
         _admin.update_table(data)

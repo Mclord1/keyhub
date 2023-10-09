@@ -35,6 +35,9 @@ class TeacherModel:
     def update_information(cls, user_id, data):
         _teacher: Teacher = Helper.get_user(Teacher, user_id)
         gender = data.get('gender')
+        role = data.get('role')
+        if role:
+            _teacher.user.role_id = role
         if gender:
             _teacher.gender = gender
         _teacher.update_table(data)
