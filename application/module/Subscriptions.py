@@ -1,5 +1,7 @@
 from collections import Counter
 
+from sqlalchemy import func
+
 from . import *
 from ..models.subscription import SubscriptionStatusEnum
 
@@ -56,22 +58,52 @@ class SubscriptionModel:
         return f'Plan status has been set to {plan.isActive}'
 
     @classmethod
-    def get_subscriptions(cls):
+    def get_subscriptions(cls, page, per_page):
+        page = int(page)
+        per_page = int(per_page)
+        subscriptions = Subscription.query.paginate(page=page, per_page=per_page, error_out=False)
+        total_items = subscriptions.total
+        results = [item for item in subscriptions.items]
+        total_pages = (total_items - 1) // per_page + 1
+
+        pagination_data = {
+            "page": page,
+            "size": per_page,
+            "total_pages": total_pages,
+            "total_items": total_items,
+            "results": {
+                "subscriptions": [{
+                    **res.to_dict(add_filter=False),
+                } for res in results]
+            }
+        }
+        return PaginationSchema(**pagination_data).model_dump()
+
+    @classmethod
+    def get_subscription_page_info(cls):
         query_plans = SubcriptionPlan.query.all()
         subscriptions = Subscription.query.all()
         status_counter = Counter([x.status.value for x in subscriptions])
-        plan_name = Counter(
+        plan_distribution = Counter(
             [x.subscription_plan.name for x in subscriptions if x.status.value == SubscriptionStatusEnum.ACTIVE.value])
+
+        convert_to_date = lambda x: datetime.datetime.fromtimestamp(x)  # noqa
+
+        # subscription_monthly_stat = db.session.query(
+        #     func.DATE_TRUNC('month', convert_to_date(1696841797)).label('year_month'),
+        #     SubcriptionPlan.created_at,
+        #     func.count().label('subscription_count')
+        # ).group_by(SubcriptionPlan.id).all()
 
         return {
             "plans": [x.to_dict(add_filter=False) for x in query_plans],
-            "subscriptions": [x.to_dict(add_filter=False) for x in subscriptions],
             "active_plans": status_counter[SubscriptionStatusEnum.ACTIVE.value],
             "paused_plans": status_counter[SubscriptionStatusEnum.PAUSED.value],
             "expired_plans": status_counter[SubscriptionStatusEnum.EXPIRED.value],
             "cancelled_plans": status_counter[SubscriptionStatusEnum.CANCELLED.value],
             "subcription_distribution": {
                 "total_schools": status_counter[SubscriptionStatusEnum.ACTIVE.value],
+                "plan_distribution": plan_distribution
             },
-            "subcription_statistics": [],
+            "subcription_statistics": []
         }
