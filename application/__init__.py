@@ -24,7 +24,7 @@ CORS(app)
 app.app_context().push()
 SECRET_KEY = os.environ.get('SECRET_KEY')
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config["ENVIRONMENT"] = os.environ.get("environment", "development")
+app.config["ENVIRONMENT"] = os.environ.get("environment", "local")
 environment = str(app.config["ENVIRONMENT"]).lower()
 if environment != "local":
     dictConfig({
@@ -45,7 +45,7 @@ if environment != "local":
                 'class': 'logging.handlers.RotatingFileHandler',
                 'filename': '/home/ubuntu/logs',
                 'maxBytes': 1024 * 1024,
-                'backupCount': 1,
+                'backupCount': 10,
             },
         },
         'loggers': {
