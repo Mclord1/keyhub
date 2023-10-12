@@ -30,12 +30,14 @@ class Seed:
 
         add_permissions = [x.value for x in PermissionEnum.__members__.values()]
 
-        admin_role = Role.query.filter_by(id=1).first()
+        admin_role = Role.query.filter_by(id=49).first()
         for permissions in add_permissions:
             try:
-                new_permission = Permission(name=permissions)
-                new_permission.roles.append(admin_role)
-                new_permission.save(refresh=True)
+                new_permi = Permission.query.all()
+                for new_permission in new_permi:
+                    new_permission.roles.append(admin_role)
+                    db.session.commit()
+                    # new_permission.save(refresh=True)
 
             except IntegrityError:
                 db.session.rollback()
@@ -118,8 +120,8 @@ class Seed:
         self.AddRole()
         self.AddPermission()
         self.AddAdmin()
-        self.populate_country()
-        self.populate_states()
+        # self.populate_country()
+        # self.populate_states()
 
 
 with app.app_context():

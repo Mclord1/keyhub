@@ -15,13 +15,18 @@ class Authentication:
             # Generate an access token
             access_token = create_access_token(identity=user.id, expires_delta=datetime.timedelta(minutes=120))
             refresh_token = create_refresh_token(identity=user.id)
-            role = user.roles[0]
-
-            # Initialize an empty user_details dictionary
             user_details = {
-                'role_name': ' '.join(str(role.name).split('_')) if role.name else None,
-                'role_id': user.role_id
+                'role_name': None,
+                'role_id': None
             }
+            if user.roles:
+                role = user.roles[0]
+
+                # Initialize an empty user_details dictionary
+                user_details.update({
+                    'role_name': ' '.join(str(role.name).split('_')) if role.name else None,
+                    'role_id': user.role_id
+                })
 
             # Check and add user-related attributes if they are not None
             if user.parents:

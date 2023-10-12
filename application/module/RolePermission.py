@@ -107,7 +107,6 @@ class RolePermission:
         for user in users_to_update:
             user.role_id = None
         db.session.commit()
-
         db.session.delete(_role)
         db.session.commit()
         return "The role has been deleted"
