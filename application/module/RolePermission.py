@@ -1,3 +1,5 @@
+from sqlalchemy import desc
+
 from . import *
 
 
@@ -7,7 +9,7 @@ class RolePermission:
     def GetAllRoles(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _role = Role.query.paginate(page=page, per_page=per_page, error_out=False)
+        _role = Role.query.order_by(desc(Role.created_at)).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _role.total
         results = [item for item in _role.items]
         total_pages = (total_items - 1) // per_page + 1

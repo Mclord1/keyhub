@@ -1,3 +1,5 @@
+from sqlalchemy import desc
+
 from . import *
 
 
@@ -8,7 +10,7 @@ class ParentModel:
         page = int(page)
         per_page = int(per_page)
         role = Role.GetRoleByName(BasicRoles.PARENT.value)
-        _parents = User.query.filter_by(role_id=role.id).paginate(page=page, per_page=per_page, error_out=False)
+        _parents = User.query.filter_by(role_id=role.id).order_by(desc(Parent.created_at)).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _parents.total
         results = [item for item in _parents.items]
         total_pages = (total_items - 1) // per_page + 1

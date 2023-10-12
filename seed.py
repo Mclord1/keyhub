@@ -1,14 +1,14 @@
 import sys
 from os.path import dirname, abspath
 
-from application.Enums.Permission import PermissionEnum
-
 sys.path.append(dirname(abspath(__file__)))
 
 from sqlalchemy.exc import IntegrityError
 from config.countries import countries_data
 from application import db, app
 from application.models import *
+from application.Enums.Enums import BasicRoles
+from application.Enums.Permission import PermissionEnum
 
 
 class Seed:
@@ -30,7 +30,7 @@ class Seed:
 
         add_permissions = [x.value for x in PermissionEnum.__members__.values()]
 
-        admin_role = Role.query.filter_by(id=49).first()
+        admin_role = Role.query.filter_by(name=BasicRoles.STUDENT.value).first()
         for permissions in add_permissions:
             try:
                 new_permi = Permission.query.all()

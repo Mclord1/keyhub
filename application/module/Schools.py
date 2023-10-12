@@ -1,3 +1,5 @@
+from sqlalchemy import desc
+
 from . import *
 from ..Schema.school import UpdateSchoolSchema, SchoolSchema
 
@@ -16,7 +18,7 @@ class SchoolModel:
     def list_all_schools(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _school: School = School.query.paginate(page=page, per_page=per_page, error_out=False)
+        _school: School = School.query.order_by(desc(School.created_at)).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _school.total
         results = [item for item in _school.items]
         total_pages = (total_items - 1) // per_page + 1

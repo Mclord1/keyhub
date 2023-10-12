@@ -1,3 +1,5 @@
+from sqlalchemy import desc
+
 from . import *
 
 
@@ -36,7 +38,7 @@ class SystemAdmins:
     def get_all_admin(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _admin = Admin.query.paginate(page=page, per_page=per_page, error_out=False)
+        _admin = Admin.query.order_by(desc(Admin.created_at)).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _admin.total
         results = [item for item in _admin.items]
 
