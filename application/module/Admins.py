@@ -53,7 +53,7 @@ class SystemAdmins:
                 "num_of_admins": len(results),
                 "admins": [{
                     **res.to_dict(),
-                    **res.user.as_dict(),
+                    **(res.user.as_dict() if res.user else {}),
                     "role_name": [x.name for x in res.user.roles]
                 } for res in results]
             }

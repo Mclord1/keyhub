@@ -83,8 +83,7 @@ def error_handling(error):
     code = 500
     response_code = 1000
     if isinstance(error, ClientError):
-        message = error.response.get('Error', {}).get(
-            'Code') + " : " + error.response.get('Error', {}).get('Message')
+        message = error.response.get('Error', {}).get('Code') + " : " + error.response.get('Error', {}).get('Message')
         code = 400
 
     elif isinstance(error, CustomException):

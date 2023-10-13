@@ -25,9 +25,9 @@ class StudentModel:
                 "num_of_active_students": len([x for x in results if not x.isDeactivated]),
                 "num_of_students": len(results),
                 "students": [{
-                    **res.students.to_dict(),
+                    **(res.students.to_dict() if res.students else {}),
                     **res.as_dict(),
-                    "project": res.students.projects,
+                    "project": res.students.projects if res.students and res.students.projects else [],
                 } for res in results]
             }
         }

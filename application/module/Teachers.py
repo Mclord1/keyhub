@@ -8,8 +8,8 @@ class TeacherModel:
         page = int(page)
         per_page = int(per_page)
         role = Role.GetRoleByName(BasicRoles.TEACHER.value)
-        _teachers = User.query.filter_by(role_id=role.id).order_by(desc(Teacher.created_at)).paginate(page=page,
-                                                                                                      per_page=per_page)
+        print(role)
+        _teachers = User.query.filter(User.role_id == role.id).order_by(desc(User.created_at)).paginate(page=page, per_page=per_page)
         total_items = _teachers.total
         results = [item for item in _teachers.items]
         total_pages = (total_items - 1) // per_page + 1
@@ -23,10 +23,10 @@ class TeacherModel:
                 "total_active_teachers": len([x for x in results if not x.isDeactivated]),
                 "num_of_teachers": len(results),
                 "teachers": [{
-                    **res.teachers.to_dict(),
+                    **(res.teachers.to_dict() if res.teachers else {}),
                     **res.as_dict(),
-                    "total_projects": len(res.teachers.projects),
-                    "total_students": len(res.teachers.students),
+                    "total_projects": len(res.teachers.projects) if res.teachers else 0,
+                    "total_students": len(res.teachers.students) if res.teachers else 0,
                 } for res in results]
             }
         }

@@ -24,9 +24,9 @@ class ParentModel:
                 "num_of_active_parents": len([x for x in results if not x.isDeactivated]),
                 "num_of_parents": len(results),
                 "parents": [{
-                    **res.parents.to_dict(),
+                    **(res.parents.to_dict() if res.parents else {}),
                     **res.as_dict(),
-                    "num_of_children": len(res.parents.students),
+                    "num_of_children": len(res.parents.students) if res.parents and res.parents.students else 0,
                     "num_of_active_children": len([x for x in res.parents.students if not x.user.isDeactivated]),
                     "num_of_deactivated_children": len([x for x in res.parents.students if x.user.isDeactivated]),
                 } for res in results]
