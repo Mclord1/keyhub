@@ -1,13 +1,11 @@
-from sqlalchemy import JSON
-
 from application import db
-from application.Enums import Enums
 from application.Mixins.GenericMixins import GenericMixin
+from exceptions.custom_exception import CustomException
 
 
 class Project(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(350), nullable=True)
+    name = db.Column(db.String(350), nullable=True, unique=True)
     teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable=True)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=True)
@@ -21,4 +19,11 @@ class Project(db.Model, GenericMixin):
     teachers = db.relationship("Teacher", back_populates='projects')
     students = db.relationship("Student", back_populates='projects')
     parents = db.relationship("Parent", back_populates='projects')
-    schools = db.relationship("School",  back_populates='projects')
+    schools = db.relationship("School", back_populates='projects')
+
+    @classmethod
+    def GetProject(cls, project_id):
+        project = Project.query.filter_by(id=project_id).first()
+        if not project:
+            raise CustomException(message="Project does not exist", status_code=404)
+        return project

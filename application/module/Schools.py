@@ -1,7 +1,5 @@
-from sqlalchemy import desc
-
 from . import *
-from ..Schema.school import UpdateSchoolSchema, SchoolSchema
+from ..Schema.school import UpdateSchoolSchema, SchoolSchema, ProjectSchema
 
 
 class SchoolModel:
@@ -18,7 +16,8 @@ class SchoolModel:
     def list_all_schools(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _school: School = School.query.order_by(desc(School.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        _school: School = School.query.order_by(desc(School.created_at)).paginate(page=page, per_page=per_page,
+                                                                                  error_out=False)
         total_items = _school.total
         results = [item for item in _school.items]
         total_pages = (total_items - 1) // per_page + 1
@@ -170,7 +169,7 @@ class SchoolModel:
                 user_id=user.id
             )
 
-            add_school_admin.save()
+            add_school_admin.save(refresh=True)
 
             return f"The school {add_school.name} has been added successfully"
         except Exception as e:
@@ -263,6 +262,59 @@ class SchoolModel:
                 **project.to_dict()
             } for project in _school.projects]
         }
+
+    @classmethod
+    def search_projects(cls, args, school_id):
+
+        query = Project.query.filter(Project.school_id == int(school_id)).filter(
+            (Project.name.ilike(f'%{args}%') | Project.students.name.ilike(f'%{args}%') | Project.teachers.name.ilike(
+                f'%{args}%'))
+        )
+        result = [x.to_dict() for x in query.all()]
+        return result
+
+    @classmethod
+    def add_project(cls, data):
+        req: ProjectSchema = validator.validate_data(ProjectSchema, data)
+
+        project_exist = Project.query.filter_by(name=req.name).first()
+
+        if project_exist:
+            raise CustomException("Project with same name already exist", status_code=400)
+
+        student = Student.GetStudent(req.student_id)
+        teacher = Teacher.GetTeacher(req.teacher_id)
+        school = School.GetSchool(req.school_id)
+
+        add_project = Project(name=req.name, description=req.description, teachers=teacher, students=student,
+                              schools=school)
+        add_project.save(refresh=True)
+        return f"The school project : {req.name} has been added successfully"
+
+    @classmethod
+    def update_project(cls, project_id, data):
+        project = Project.GetProject(project_id)
+        project.update_table(data)
+        return project.to_dict()
+
+    @classmethod
+    def delete_project(cls, project_id):
+        project = Project.GetProject(project_id)
+        db.session.delete(project)
+        db.session.commit()
+        return "Project has been deleted"
+
+    @classmethod
+    def deactivate_project(cls, project_id, reason):
+        project: Project = Project.GetProject(project_id)
+        project.isDeactivated = True
+        project.deactivate_reason = reason
+        db.session.commit()
+        return "Project has been deactivated"
+
+    @classmethod
+    def view_project_detail(cls, school_id, project_id):
+        pass
 
     @classmethod
     def get_transactions(cls, school_id):

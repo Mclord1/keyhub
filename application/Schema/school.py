@@ -39,3 +39,11 @@ class UpdateSchoolSchema(BaseModel):
     country: Optional[str] = None
     state: Optional[str] = None
     address: Optional[str] = None
+
+
+class ProjectSchema(BaseModel):
+    name: str
+    description: str
+    teacher_id: int
+    student_id: int
+    school_id: int

@@ -1,7 +1,5 @@
 from collections import Counter
 
-from sqlalchemy import func, desc
-
 from . import *
 from ..models.subscription import SubscriptionStatusEnum
 
@@ -61,7 +59,9 @@ class SubscriptionModel:
     def get_subscriptions(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        subscriptions = Subscription.query.order_by(desc(Subscription.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        subscriptions = Subscription.query.order_by(desc(Subscription.created_at)).paginate(page=page,
+                                                                                            per_page=per_page,
+                                                                                            error_out=False)
         total_items = subscriptions.total
         results = [item for item in subscriptions.items]
         total_pages = (total_items - 1) // per_page + 1

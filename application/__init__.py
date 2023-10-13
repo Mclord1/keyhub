@@ -45,7 +45,7 @@ if environment != "local":
                 'class': 'logging.handlers.RotatingFileHandler',
                 'filename': '/home/ubuntu/logs',
                 'maxBytes': 1024 * 1024,
-                'backupCount': 10,
+                'backupCount': 1,
             },
         },
         'loggers': {
