@@ -8,8 +8,7 @@ class ParentModel:
     def get_all_parents(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        role = Role.GetRoleByName(BasicRoles.PARENT.value)
-        _parents = User.query.filter_by(role_id=role.id).order_by(desc(Parent.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        _parents = Parent.query.order_by(desc(Parent.created_at)).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _parents.total
         results = [item for item in _parents.items]
         total_pages = (total_items - 1) // per_page + 1
@@ -20,15 +19,15 @@ class ParentModel:
             "total_pages": total_pages,
             "total_items": total_items,
             "results": {
-                "num_of_deactivated_parents": len([x for x in results if x.isDeactivated]),
-                "num_of_active_parents": len([x for x in results if not x.isDeactivated]),
+                "num_of_deactivated_parents": len([x for x in results if x.user.isDeactivated]),
+                "num_of_active_parents": len([x for x in results if not x.user.isDeactivated]),
                 "num_of_parents": len(results),
                 "parents": [{
-                    **(res.parents.to_dict() if res.parents else {}),
-                    **res.as_dict(),
-                    "num_of_children": len(res.parents.students) if res.parents and res.parents.students else 0,
-                    "num_of_active_children": len([x for x in res.parents.students if not x.user.isDeactivated]),
-                    "num_of_deactivated_children": len([x for x in res.parents.students if x.user.isDeactivated]),
+                    **(res.user.as_dict() if res.user else {}),
+                    **res.to_dict(),
+                    "num_of_children": len(res.students) if res and res.students else 0,
+                    "num_of_active_children": len([x for x in res.students if not x.user.isDeactivated]),
+                    "num_of_deactivated_children": len([x for x in res.students if x.user.isDeactivated]),
                 } for res in results]
             }
         }

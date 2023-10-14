@@ -1,5 +1,3 @@
-from sqlalchemy import desc
-
 from . import *
 
 
@@ -9,8 +7,8 @@ class StudentModel:
     def get_all_students(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        role = Role.GetRoleByName(BasicRoles.STUDENT.value)
-        _students = User.query.filter_by(role_id=role.id).order_by(desc(Student.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        _students = Student.query.order_by(desc(Student.created_at)).paginate(page=page, per_page=per_page,
+                                                                              error_out=False)
         total_items = _students.total
         results = [item for item in _students.items]
         total_pages = (total_items - 1) // per_page + 1
@@ -21,13 +19,13 @@ class StudentModel:
             "total_pages": total_pages,
             "total_items": total_items,
             "results": {
-                "num_of_deactivated_students": len([x for x in results if x.isDeactivated]),
-                "num_of_active_students": len([x for x in results if not x.isDeactivated]),
+                "num_of_deactivated_students": len([x for x in results if x.user.isDeactivated]),
+                "num_of_active_students": len([x for x in results if not x.user.isDeactivated]),
                 "num_of_students": len(results),
                 "students": [{
-                    **(res.students.to_dict() if res.students else {}),
-                    **res.as_dict(),
-                    "project": res.students.projects if res.students and res.students.projects else [],
+                    **(res.user.as_dict() if res.user else {}),
+                    **res.to_dict(),
+                    "project": res.projects if res.projects else [],
                 } for res in results]
             }
         }

@@ -7,9 +7,7 @@ class TeacherModel:
     def get_all_teachers(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        role = Role.GetRoleByName(BasicRoles.TEACHER.value)
-        print(role)
-        _teachers = User.query.filter(User.role_id == role.id).order_by(desc(User.created_at)).paginate(page=page, per_page=per_page)
+        _teachers = Teacher.query.order_by(desc(Teacher.created_at)).paginate(page=page, per_page=per_page)
         total_items = _teachers.total
         results = [item for item in _teachers.items]
         total_pages = (total_items - 1) // per_page + 1
@@ -19,14 +17,14 @@ class TeacherModel:
             "total_pages": total_pages,
             "total_items": total_items,
             "results": {
-                "total_deactivated_teachers": len([x for x in results if x.isDeactivated]),
-                "total_active_teachers": len([x for x in results if not x.isDeactivated]),
+                "total_deactivated_teachers": len([x for x in results if x.user.isDeactivated]),
+                "total_active_teachers": len([x for x in results if not x.user.isDeactivated]),
                 "num_of_teachers": len(results),
                 "teachers": [{
-                    **(res.teachers.to_dict() if res.teachers else {}),
-                    **res.as_dict(),
-                    "total_projects": len(res.teachers.projects) if res.teachers else 0,
-                    "total_students": len(res.teachers.students) if res.teachers else 0,
+                    **(res.user.as_dict() if res.user else {}),
+                    **res.to_dict(),
+                    "total_projects": len(res.projects) if res.projects else 0,
+                    "total_students": len(res.students) if res.students else 0,
                 } for res in results]
             }
         }
