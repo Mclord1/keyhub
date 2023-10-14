@@ -49,8 +49,8 @@ class User(db.Model, GenericMixin):
         return user
 
     @classmethod
-    def CreateUser(cls, email, msisdn, role):
-        user = User(email=email, msisdn=msisdn)
+    def CreateUser(cls, email, msisdn, role, password):
+        user = User(email=email, msisdn=msisdn, password=password)
         user.roles = role
         db.session.add(user)
         db.session.commit()

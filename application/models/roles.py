@@ -10,7 +10,7 @@ class Role(db.Model, GenericMixin):
     active = db.Column(db.Boolean, default=True)
     description = db.Column(db.String(1000), nullable=True)
     user = db.relationship("User", secondary='user_role', back_populates='roles', cascade="all, delete")
-    permissions = db.relationship("Permission", secondary='role_permission', back_populates='roles')
+    permissions = db.relationship("Permission", secondary='role_permission', back_populates='roles', cascade="all, delete")
 
     @staticmethod
     def GetRole(id):

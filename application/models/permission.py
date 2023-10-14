@@ -5,15 +5,15 @@ from exceptions.custom_exception import CustomException
 
 class RolePermission(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    permission_id = db.Column(db.Integer, db.ForeignKey('permission.id'), nullable=True)
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=True)
+    permission_id = db.Column(db.Integer, db.ForeignKey('permission.id', ondelete="CASCADE"), nullable=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id', ondelete="CASCADE"), nullable=True)
 
 
 class Permission(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(250), nullable=True, unique=True)
     active = db.Column(db.Boolean, default=True)
-    roles = db.relationship("Role", secondary='role_permission', back_populates='permissions')
+    roles = db.relationship("Role", secondary='role_permission', back_populates='permissions', passive_deletes=True)
 
     @staticmethod
     def GetPermission(id):

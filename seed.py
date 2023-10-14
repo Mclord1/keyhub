@@ -1,13 +1,16 @@
 import sys
 from os.path import dirname, abspath
 
+import bcrypt
+
+from application.Enums.Enums import BasicRoles
+
 sys.path.append(dirname(abspath(__file__)))
 
 from sqlalchemy.exc import IntegrityError
 from config.countries import countries_data
 from application import db, app
 from application.models import *
-from application.Enums.Enums import BasicRoles
 from application.Enums.Permission import PermissionEnum
 
 
@@ -30,24 +33,21 @@ class Seed:
 
         add_permissions = [x.value for x in PermissionEnum.__members__.values()]
 
-        admin_role = Role.query.filter_by(name=BasicRoles.STUDENT.value).first()
+        admin_role = Role.query.filter_by(name=BasicRoles.SYSTEM_ADMIN.value).first()
         for permissions in add_permissions:
             try:
-                new_permi = Permission.query.all()
-                for new_permission in new_permi:
-                    new_permission.roles.append(admin_role)
-                    db.session.commit()
-                    # new_permission.save(refresh=True)
+                new_permission = Permission(name=permissions)
+                new_permission.roles.append(admin_role)
+                new_permission.save(refresh=True)
 
             except IntegrityError:
                 db.session.rollback()
-                continue
         print("Permission has been added successfully")
 
     @staticmethod
     def AddAdmin():
         create_admin = {
-            "email": "clairclancy@gmail.com",
+            "email": "testadmin@gmail.com",
             "msisdn": "+2348037144591",
             "first_name": "john",
             "last_name": "doe",
@@ -61,10 +61,13 @@ class Seed:
 
         user: User = User.query.filter_by(email=create_admin['email']).first()
 
+        hash_value = bcrypt.hashpw("test12345".encode(), bcrypt.gensalt())
+        password = hash_value.decode()
+
         if not user:
             role = Role.GetRole(create_admin['role'])
             try:
-                new_admin = User.CreateUser(create_admin['email'], create_admin['msisdn'], role)
+                new_admin = User.CreateUser(create_admin['email'], create_admin['msisdn'], role, password)
                 if new_admin:
                     add_user = Admin(
                         first_name=create_admin['first_name'],
@@ -118,8 +121,8 @@ class Seed:
              This ensures that all developers have the same initial data for testing and development.
         """
         # self.AddRole()
-        # self.AddPermission()
-        self.AddAdmin()
+        self.AddPermission()
+        # self.AddAdmin()
         # self.populate_country()
         # self.populate_states()
 
