@@ -117,8 +117,8 @@ class Seed:
              Implementation scripts to automate the creation of the database and seeding with initial data.
              This ensures that all developers have the same initial data for testing and development.
         """
-        self.AddRole()
-        self.AddPermission()
+        # self.AddRole()
+        # self.AddPermission()
         self.AddAdmin()
         # self.populate_country()
         # self.populate_states()

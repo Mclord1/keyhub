@@ -11,7 +11,7 @@ class RolePermission:
         total_items = _role.total
         results = [item for item in _role.items]
         total_pages = (total_items - 1) // per_page + 1
-        created_by = lambda x: User.query.filter_by(id=x).first()
+        created_by = lambda x: User.query.filter_by(id=x).first()  # noqa
 
         pagination_data = {
             "page": page,
@@ -21,8 +21,8 @@ class RolePermission:
             "results": [
                 {
                     **res.to_dict(add_filter=False),
-                    "created_by": created_by(res.admin_id).email if res.admin_id else None,
-                    "creator_name": f'{created_by(res.admin_id).admins.first_name} {created_by(res.admin_id).admins.last_name}' if res.admin_id else None
+                    "created_by": created_by(res.admin_id).email if res.admin_id and created_by(res.admin_id) else None,
+                    "creator_name": f'{created_by(res.admin_id).admins.first_name if created_by(res.admin_id) else None} {created_by(res.admin_id).admins.last_name if created_by(res.admin_id) else None}' if res.admin_id else None
                 }
                 for res in results if res.name not in [x.value for x in BasicRoles.__members__.values()]
             ]
