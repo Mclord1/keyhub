@@ -21,8 +21,7 @@ def authenticate(permission_name='Not-Set'):
 
                 # Check if the user's role has the required permission if permission is provided
                 if permission_name != 'Not-Set':
-                    if permission_name.value in [permission.name for role in user.roles for permission in
-                                                 role.permissions if permission.active]:
+                    if permission_name.value in [permission.name for permission in user.roles.permissions if permission.active]:
                         return f(*args, **kwargs)
                     else:
                         raise CustomException(ExceptionCode.PERMISSION_DENIED)
@@ -45,7 +44,7 @@ def has_school_privilege(f):
         school_id = int(request.view_args.get('school_id'))
         if not school_id:
             raise CustomException(message="School Id param must be passed in the URL", status_code=400)
-        if BasicRoles.SYSTEM_ADMIN not in [x.name for x in user.roles]:
+        if user.roles and BasicRoles.SYSTEM_ADMIN != user.roles.name:
 
             if not user.managers:
                 raise CustomException(message="only Admin or school manager has privilege.", status_code=401)
@@ -55,5 +54,3 @@ def has_school_privilege(f):
         return f(*args, **kwargs)
 
     return decorated_func
-
-

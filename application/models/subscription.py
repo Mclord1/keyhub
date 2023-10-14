@@ -23,14 +23,14 @@ class SubcriptionPlan(db.Model, GenericMixin):
     amount = db.Column(db.String(250), nullable=True)
     created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     isActive = db.Column(db.Boolean, default=True)
-    subscriptions = db.relationship("Subscription", back_populates='subscription_plan')
+    subscriptions = db.relationship("Subscription", back_populates='subscription_plan', cascade="all, delete-orphan")
     user = db.relationship("User", back_populates='subscription_plan')
 
 
 class Subscription(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    school_id = db.Column(db.Integer, db.ForeignKey('school.id'), nullable=False)
-    plan_id = db.Column(db.Integer, db.ForeignKey('subcription_plan.id'), nullable=False)
+    school_id = db.Column(db.Integer, db.ForeignKey('school.id', ondelete="CASCADE"), nullable=False)
+    plan_id = db.Column(db.Integer, db.ForeignKey('subcription_plan.id', ondelete="CASCADE"), nullable=False)
     amount = db.Column(db.Float, nullable=True, default=0)
     recurring = db.Column(db.Boolean, default=False)
     next_billing_date = db.Column(db.DateTime, nullable=True)

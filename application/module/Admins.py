@@ -54,7 +54,7 @@ class SystemAdmins:
                 "admins": [{
                     **res.to_dict(),
                     **(res.user.as_dict() if res.user else {}),
-                    "role_name": [x.name for x in res.user.roles]
+                    "role_name": res.user.roles.name if res.user.roles else None
                 } for res in results]
             }
         }

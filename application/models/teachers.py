@@ -5,15 +5,15 @@ from exceptions.custom_exception import CustomException
 
 class TeacherStudent(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=True)
+    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id', ondelete="CASCADE"), nullable=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete="CASCADE"), nullable=True)
 
 
 class Teacher(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(350), nullable=True)
     last_name = db.Column(db.String(350), nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"))
     user = db.relationship("User", back_populates='teachers')
     _gender = db.Column(db.String(250), nullable=True)
     country = db.Column(db.String(350), nullable=True)
@@ -22,7 +22,7 @@ class Teacher(db.Model, GenericMixin):
     reg_number = db.Column(db.String(350), nullable=True, unique=True)
     projects = db.relationship("Project", back_populates='teachers')
     students = db.relationship("Student", secondary='teacher_student', back_populates='teachers')
-    schools = db.relationship("School", secondary='school_teacher', back_populates='teachers')
+    schools = db.relationship("School", secondary='school_teacher', back_populates='teachers', passive_deletes=True)
 
     @property
     def gender(self):

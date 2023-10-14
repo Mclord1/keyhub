@@ -185,7 +185,7 @@ class SchoolModel:
             "num_of_active_admins": len([x for x in _school.managers if not x.user.isDeactivated]),
             "num_of_deactivated_admins": len([x for x in _school.managers if x.user.isDeactivated]),
             "admins": [{
-                "role": [x.name for x in x.user.roles],
+                "role": x.user.roles.name if x.user.roles else None,
                 "email": x.user.email,
                 "isDeactivated": x.user.isDeactivated,
                 "msisdn": x.user.msisdn,

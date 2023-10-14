@@ -9,7 +9,7 @@ class Admin(db.Model, GenericMixin):
     last_name = db.Column(db.String(250), nullable=True)
     country = db.Column(db.String(250), nullable=True)
     state = db.Column(db.String(250), nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"))
     user = db.relationship("User", back_populates='admins')
     residence = db.Column(db.String(250), nullable=True)
     gender = db.Column(db.String(150), nullable=True)

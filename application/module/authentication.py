@@ -20,7 +20,7 @@ class Authentication:
                 'role_id': None
             }
             if user.roles:
-                role = user.roles[0]
+                role = user.roles
 
                 # Initialize an empty user_details dictionary
                 user_details.update({

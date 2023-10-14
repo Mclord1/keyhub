@@ -9,7 +9,7 @@ class Project(db.Model, GenericMixin):
     teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id'), nullable=True)
     student_id = db.Column(db.Integer, db.ForeignKey('student.id'), nullable=True)
     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'), nullable=True)
-    school_id = db.Column(db.Integer, db.ForeignKey('school.id'), nullable=True)
+    school_id = db.Column(db.Integer, db.ForeignKey('school.id', ondelete="CASCADE"), nullable=True)
     description = db.Column(db.String(350), nullable=True)
     requirements = db.Column(db.JSON(none_as_null=True), nullable=True)
     documents = db.Column(db.JSON(none_as_null=True), nullable=True)

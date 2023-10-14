@@ -9,7 +9,7 @@ class Role(db.Model, GenericMixin):
     admin_id = db.Column(db.Integer, nullable=True)
     active = db.Column(db.Boolean, default=True)
     description = db.Column(db.String(1000), nullable=True)
-    user = db.relationship("User", secondary='user_role', back_populates='roles')
+    user = db.relationship("User", secondary='user_role', back_populates='roles', cascade="all, delete")
     permissions = db.relationship("Permission", secondary='role_permission', back_populates='roles')
 
     @staticmethod
