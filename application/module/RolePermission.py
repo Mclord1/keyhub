@@ -104,8 +104,10 @@ class RolePermission:
     def DeleteRole(cls, role_id):
         _role = Role.GetRole(role_id)
         users_to_update = User.query.filter_by(role_id=role_id).all()
-        for user in users_to_update:
-            user.role_id = None
+
+        if users_to_update:
+            raise CustomException(message="There are users associated to this role", status_code=500)
+
         db.session.commit()
         db.session.delete(_role)
         db.session.commit()

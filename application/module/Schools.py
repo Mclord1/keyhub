@@ -155,7 +155,7 @@ class SchoolModel:
 
             Helper.User_Email_OR_Msisdn_Exist(primary_contact.email, primary_contact.msisdn)
 
-            role = Role.GetRoleByName(BasicRoles.SCHOOL_ADMIN)
+            role = Role.GetRoleByName(BasicRoles.SCHOOL_ADMIN.value)
 
             # create the user account on User model
             user = User.CreateUser(primary_contact.email, primary_contact.msisdn, role)

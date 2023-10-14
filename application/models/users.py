@@ -17,7 +17,7 @@ class User(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(250), nullable=False, unique=True)
     msisdn = db.Column(db.String(250), nullable=True, unique=True)
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id', ondelete="CASCADE"), nullable=True)
     password = db.Column(db.String(350), nullable=True)
     isDeactivated = db.Column(db.Boolean, default=False)
     deactivate_reason = db.Column(db.String(450), nullable=True)
@@ -25,7 +25,7 @@ class User(db.Model, GenericMixin):
     parents = db.relationship("Parent", back_populates='user', uselist=False, cascade="all, delete-orphan")
     students = db.relationship("Student", back_populates='user', uselist=False, cascade="all, delete-orphan")
     admins = db.relationship("Admin", back_populates='user', uselist=False, cascade="all, delete-orphan")
-    teachers = db.relationship("Teacher", back_populates='user', uselist=False, cascade="all, delete-orphan")
+    teachers = db.relationship("Teacher", back_populates='user', uselist=False)
     roles = db.relationship('Role', back_populates='user', uselist=False)
     confirmation_codes = db.relationship('ConfirmationCode', back_populates='user', cascade="all, delete-orphan")
     subscription_plan = db.relationship("SubcriptionPlan", back_populates='user')
@@ -49,7 +49,7 @@ class User(db.Model, GenericMixin):
         return user
 
     @classmethod
-    def CreateUser(cls, email, msisdn, role, password):
+    def CreateUser(cls, email, msisdn, role, password=None):
         user = User(email=email, msisdn=msisdn, password=password)
         user.roles = role
         db.session.add(user)
