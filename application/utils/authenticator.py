@@ -21,9 +21,6 @@ def authenticate(permission_name='Not-Set'):
 
                 # Check if the user's role has the required permission if permission is provided
                 if permission_name != 'Not-Set':
-                    print(permission_name.value)
-                    print(user.roles)
-                    print([x.name for x in user.roles.permissions])
                     if permission_name.value in [permission.name for permission in user.roles.permissions if permission.active]:
                         return f(*args, **kwargs)
                     else:
