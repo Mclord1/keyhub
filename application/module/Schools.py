@@ -26,17 +26,20 @@ class SchoolModel:
             "size": per_page,
             "total_pages": total_pages,
             "total_items": total_items,
-            "results": [{
-                "num_of_teachers": len(school.teachers) if school.teachers else 0,
-                "num_of_students": len(school.students) if school.students else 0,
-                "num_of_parents": len(school.parents) if school.parents else 0,
-                "num_of_school_administrators": len(school.managers) if school.managers else 0,
+            "results": {
+
                 "total_schools": len(results),
                 "total_active_schools": len([x for x in results if not x.isDeactivated]),
                 "total_deactivated_schools": len([x for x in results if x.isDeactivated]),
+                "schools": [{
+                    **school.to_dict(),
+                    "num_of_teachers": len(school.teachers) if school.teachers else 0,
+                    "num_of_students": len(school.students) if school.students else 0,
+                    "num_of_parents": len(school.parents) if school.parents else 0,
+                    "num_of_school_administrators": len(school.managers) if school.managers else 0,
+                } for school in results],
 
-                **school.to_dict()
-            } for school in results]
+            }
         }
         return PaginationSchema(**pagination_data).model_dump()
 
