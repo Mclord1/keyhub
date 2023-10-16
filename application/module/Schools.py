@@ -27,7 +27,6 @@ class SchoolModel:
             "total_pages": total_pages,
             "total_items": total_items,
             "results": {
-
                 "total_schools": len(results),
                 "total_active_schools": len([x for x in results if not x.isDeactivated]),
                 "total_deactivated_schools": len([x for x in results if x.isDeactivated]),

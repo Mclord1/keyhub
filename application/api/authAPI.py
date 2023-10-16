@@ -33,6 +33,14 @@ def update_password():
     return authenticationModel.update_password(code, password)
 
 
+@auth_blueprint.route('/set-password', methods=['POST'])
+def set_password():
+    req = request.json
+    email = req.get('email')
+    password = req.get('password')
+    return authenticationModel.set_up_password(email, password)
+
+
 @auth_blueprint.route('/ping')
 def ping():
     return return_json(OutputObj(message="pong!!"))

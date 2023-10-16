@@ -72,3 +72,15 @@ class Authentication:
         _user.UpdatePassword(password)
 
         return return_json(OutputObj(message="Password has been set successfully. Please login again.", code=200))
+
+    @staticmethod
+    def set_up_password(email, password):
+
+        _user: User = User.query.filter_by(email=email).first()
+
+        if not _user:
+            raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
+
+        _user.UpdatePassword(password)
+
+        return return_json(OutputObj(message="Password has been set successfully.", code=200))
