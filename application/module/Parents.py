@@ -55,13 +55,16 @@ class ParentModel:
 
         _student = None
         if req.student:
-            _student = Student.GetStudent(req.student)
 
-            if _student.parents:
-                raise CustomException(message="A Parent has already been assigned to this student", status_code=400)
+            for std in req.student:
 
-            if not _student:
-                raise CustomException(message="Student not found", status_code=404)
+                _student = Student.GetStudent(req.student)
+
+                if _student.parents:
+                    raise CustomException(message="A Parent has already been assigned to this student", status_code=400)
+
+                if not _student:
+                    raise CustomException(message="Student not found", status_code=404)
 
         try:
             new_parent = User.CreateUser(req.email, req.msisdn, role)
