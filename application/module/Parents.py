@@ -58,7 +58,7 @@ class ParentModel:
             _student = Student.GetStudent(req.student)
 
             if _student.parents:
-                raise CustomException(message="A Parent has already been assigned to this parent", status_code=400)
+                raise CustomException(message="A Parent has already been assigned to this student", status_code=400)
 
             if not _student:
                 raise CustomException(message="Student not found", status_code=404)
