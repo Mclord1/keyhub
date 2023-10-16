@@ -1,4 +1,3 @@
-
 from . import *
 
 
@@ -8,7 +7,8 @@ class ParentModel:
     def get_all_parents(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _parents = Parent.query.order_by(desc(Parent.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        _parents = Parent.query.order_by(desc(Parent.created_at)).paginate(page=page, per_page=per_page,
+                                                                           error_out=False)
         total_items = _parents.total
         results = [item for item in _parents.items]
         total_pages = (total_items - 1) // per_page + 1
@@ -58,10 +58,12 @@ class ParentModel:
 
             for std in req.student:
 
-                _student = Student.GetStudent(req.student)
+                _student: Student = Student.GetStudent(std)
 
                 if _student.parents:
-                    raise CustomException(message="A Parent has already been assigned to this student", status_code=400)
+                    raise CustomException(
+                        message=f"A Parent has already been assigned to {_student.first_name} {_student.last_name}",
+                        status_code=400)
 
                 if not _student:
                     raise CustomException(message="Student not found", status_code=404)

@@ -26,7 +26,7 @@ class StudentModel:
                     **(res.user.as_dict() if res.user else {}),
                     **res.to_dict(),
                     "project": res.projects if res.projects else [],
-                    "parent": {**res.parents.to_dict() , **res.parents.user.as_dict()},
+                    "parent": {**(res.parents.to_dict() if res.parents else {}) , **(res.parents.user.as_dict() if res.parents else {})},
                     "school": res.schools.name,
                 } for res in results]
             }

@@ -64,7 +64,7 @@ class ParentSchema(BaseModel):
     work_country: str
     work_state: str
     work_address: str
-    student: Optional[int] = None
+    student: Optional[list] = None
 
 
 class SubscriptionSchema(BaseModel):
