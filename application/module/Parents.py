@@ -49,11 +49,10 @@ class ParentModel:
     def add_parent(cls, data):
         req: ParentSchema = validator.validate_data(ParentSchema, data)
 
-        Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
+        a = Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
 
         role = Role.GetRoleByName(BasicRoles.PARENT.value)
 
-        _student = None
         if req.student:
 
             for std in req.student:
@@ -83,7 +82,7 @@ class ParentModel:
                     work_email=req.work_email,
                     work_address=req.work_address,
                     work_msisdn=req.work_msisdn,
-                    students=[_student]
+                    students=[Student.GetStudent(x) for x in req.student]
                 )
                 add_user.save(refresh=True)
                 return add_user
