@@ -64,9 +64,6 @@ class ParentModel:
                         message=f"A Parent has already been assigned to {_student.first_name} {_student.last_name}",
                         status_code=400)
 
-                if not _student:
-                    raise CustomException(message="Student not found", status_code=404)
-
         try:
             new_parent = User.CreateUser(req.email, req.msisdn, role)
 
