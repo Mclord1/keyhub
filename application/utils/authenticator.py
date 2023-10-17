@@ -3,7 +3,6 @@ from functools import wraps
 import jwt
 from flask import request
 from flask_jwt_extended import verify_jwt_in_request, get_current_user
-
 from application import db
 from application.Enums.Enums import BasicRoles
 from exceptions.custom_exception import CustomException, ExceptionCode
