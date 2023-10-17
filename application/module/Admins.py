@@ -60,8 +60,6 @@ class SystemAdmins:
         }
         return PaginationSchema(**pagination_data).model_dump()
 
-
-
     @classmethod
     def update_admin(cls, user_id, data):
         _admin: Admin = Admin.GetAdmin(user_id)
@@ -103,5 +101,8 @@ class SystemAdmins:
     @classmethod
     def get_user(cls, user_id):
         _user = Helper.get_user(Admin, user_id)
-        return _user.to_dict()
-
+        return {
+            **_user.to_dict(),
+            **_user.user.as_dict(),
+            "role_name": _user.user.roles.name
+        }
