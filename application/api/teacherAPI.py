@@ -19,7 +19,7 @@ def list_teachers():
 @authenticate(PermissionEnum.MODIFY_TEACHER)
 def update_teacher():
     user_id = request.args.get('user_id', None)
-    if not user_id:
+    if not user_id or not user_id.isdigit():
         raise CustomException(message="You need to pass user id as query parameter", status_code=400)
     args = request.json
     return return_json(OutputObj(code=200, message="Teacher information", data=Teacher.update_information(user_id, args)))

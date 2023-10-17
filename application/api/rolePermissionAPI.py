@@ -69,6 +69,8 @@ def delete_role(id):
 def assign_permission_to_role():
     role_id = request.args.get('role_id')
     permission_id = request.args.get('permission_id')
+    if not role_id or not permission_id or not role_id.isdigit() or not permission_id.isdigit():
+        raise CustomException(message="Please pass a correct role id or permission id")
     return return_json(OutputObj(code=200, message="Permission has been successfully assigned to role",
                                  data=RolePermission.AssignPermissionToRole(role_id, permission_id)))
 
@@ -78,5 +80,7 @@ def assign_permission_to_role():
 def remove_permission_from_role():
     role_id = request.args.get('role_id')
     permission_id = request.args.get('permission_id')
+    if not role_id or not permission_id or not role_id.isdigit() or not permission_id.isdigit():
+        raise CustomException(message="Please pass a correct role id or permission id")
     return return_json(OutputObj(code=200, message="Permission has been successfully removed from role",
                                  data=RolePermission.RemovePermissionFromRole(role_id, permission_id)))
