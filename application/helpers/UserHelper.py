@@ -5,7 +5,7 @@ import string
 from application import db
 from application.models import ConfirmationCode, User
 from application.module import current_user
-from exceptions.custom_exception import CustomException
+from exceptions.custom_exception import CustomException, ExceptionCode
 
 
 class Helper:
@@ -49,9 +49,13 @@ class Helper:
 
     @classmethod
     def disable_account(cls, user, reason):
-        user.isDeactivated = not user.isDeactivated
-        user.deactivate_reason = reason
-        db.session.commit()
+        try:
+            user.isDeactivated = not user.isDeactivated
+            user.deactivate_reason = reason
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
         return f"{user.email} account status has been set to {user.isDeactivated}"
 
     @classmethod

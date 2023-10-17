@@ -4,6 +4,8 @@ from sqlalchemy import BigInteger, func
 from sqlalchemy.ext.declarative import declared_attr
 
 from application import db
+from exceptions.codes import ExceptionCode
+from exceptions.custom_exception import CustomException
 
 T = TypeVar('T')
 
@@ -27,15 +29,19 @@ class GenericMixin(object):
                 column in cls.__table__.columns if column.name != 'user_id'}
 
     def update_table(cls, updates: dict):
-        valid_attributes = [column.key for column in cls.__table__.columns]
+        try:
+            valid_attributes = [column.key for column in cls.__table__.columns]
 
-        valid_updates = {key: value for key, value in updates.items() if key in valid_attributes}
+            valid_updates = {key: value for key, value in updates.items() if key in valid_attributes}
 
-        for key, value in valid_updates.items():
-            setattr(cls, key, value)
+            for key, value in valid_updates.items():
+                setattr(cls, key, value)
 
-        db.session.commit()
-        return valid_updates
+            db.session.commit()
+            return valid_updates
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     def save(cls, refresh: bool = False):
         db.session.add(cls)

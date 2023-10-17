@@ -2,6 +2,7 @@ import bcrypt
 
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
+from exceptions.codes import ExceptionCode
 from exceptions.custom_exception import CustomException
 
 
@@ -50,20 +51,32 @@ class User(db.Model, GenericMixin):
 
     @classmethod
     def CreateUser(cls, email, msisdn, role, password=None):
-        user = User(email=email, msisdn=msisdn, password=password)
-        user.roles = role
-        db.session.add(user)
-        db.session.commit()
-        db.session.refresh(user)
-        return user
+        try:
+            user = User(email=email, msisdn=msisdn, password=password)
+            user.roles = role
+            db.session.add(user)
+            db.session.commit()
+            db.session.refresh(user)
+            return user
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     def UpdatePassword(self, password):
-        hash_value = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
-        self.password = hash_value.decode()
-        db.session.commit()
-        return True
+        try:
+            hash_value = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+            self.password = hash_value.decode()
+            db.session.commit()
+            return True
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     def UpdateMsisdn(self, msisdn):
-        self.msisdn = msisdn
-        db.session.commit()
-        return True
+        try:
+            self.msisdn = msisdn
+            db.session.commit()
+            return True
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)

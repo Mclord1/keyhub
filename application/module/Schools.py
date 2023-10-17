@@ -110,7 +110,6 @@ class SchoolModel:
                                   status_code=403)
 
         school.update_table(data)
-        db.session.commit()
         return f"School information has been updated successfully"
 
     @classmethod
@@ -288,9 +287,13 @@ class SchoolModel:
         teacher = Teacher.GetTeacher(req.teacher_id)
         school = School.GetSchool(req.school_id)
 
-        add_project = Project(name=req.name, description=req.description, teachers=teacher, students=student,
-                              schools=school)
-        add_project.save(refresh=True)
+        try:
+            add_project = Project(name=req.name, description=req.description, teachers=teacher, students=student,
+                                  schools=school)
+            add_project.save(refresh=True)
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
         return f"The school project : {req.name} has been added successfully"
 
     @classmethod

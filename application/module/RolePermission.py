@@ -77,10 +77,14 @@ class RolePermission:
 
     @classmethod
     def ToggleRoleActiveStatus(cls, role_id: int, status: bool):
-        _role: Role = Role.GetRole(role_id)
-        _role.active = status
-        db.session.commit()
-        return f"The Role active status has been changed to {status}"
+        try:
+            _role: Role = Role.GetRole(role_id)
+            _role.active = status
+            db.session.commit()
+            return f"The Role active status has been changed to {status}"
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
     def AddRole(cls, role_name, description):
@@ -94,49 +98,65 @@ class RolePermission:
 
     @classmethod
     def UpdateRole(cls, role_id, role_name, description):
-        _role = Role.GetRole(role_id)
-        _role.name = role_name
-        _role.description = description
-        db.session.commit()
-        return _role.to_dict()
+        try:
+            _role = Role.GetRole(role_id)
+            _role.name = role_name
+            _role.description = description
+            db.session.commit()
+            return _role.to_dict()
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
     def DeleteRole(cls, role_id):
-        _role = Role.GetRole(role_id)
-        users_to_update = User.query.filter_by(role_id=role_id).all()
+        try:
+            _role = Role.GetRole(role_id)
+            users_to_update = User.query.filter_by(role_id=role_id).all()
 
-        if users_to_update:
-            raise CustomException(message="There are users associated to this role", status_code=500)
+            if users_to_update:
+                raise CustomException(message="There are users associated to this role", status_code=500)
 
-        db.session.commit()
-        db.session.delete(_role)
-        db.session.commit()
-        return "The role has been deleted"
+            db.session.commit()
+            db.session.delete(_role)
+            db.session.commit()
+            return "The role has been deleted"
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
     def AssignPermissionToRole(cls, role_id, permission_id):
 
-        if role_id is None or permission_id is None:
-            raise CustomException("Both role_id and permission_id are required.", status_code=400)
+        try:
+            if role_id is None or permission_id is None:
+                raise CustomException("Both role_id and permission_id are required.", status_code=400)
 
-        _role = Role.GetRole(role_id)
-        _permission: Permission = Permission.GetPermission(permission_id)
+            _role = Role.GetRole(role_id)
+            _permission: Permission = Permission.GetPermission(permission_id)
 
-        if int(permission_id) in [x.id for x in _role.permissions]:
-            raise CustomException(message="Permission already exist", status_code=400)
+            if int(permission_id) in [x.id for x in _role.permissions]:
+                raise CustomException(message="Permission already exist", status_code=400)
 
-        _permission.roles.append(_role)
-        db.session.commit()
-        return f"The permission {_permission.name} has been assigned to {_role.name} role"
+            _permission.roles.append(_role)
+            db.session.commit()
+            return f"The permission {_permission.name} has been assigned to {_role.name} role"
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
     def RemovePermissionFromRole(cls, role_id, permission_id):
-        _role: Role = Role.GetRole(role_id)
-        _permission: Permission = Permission.GetPermission(permission_id)
+        try:
+            _role: Role = Role.GetRole(role_id)
+            _permission: Permission = Permission.GetPermission(permission_id)
 
-        if _permission not in _role.permissions:
-            raise CustomException(message="This permission doesn't exist on the role", status_code=404)
+            if _permission not in _role.permissions:
+                raise CustomException(message="This permission doesn't exist on the role", status_code=404)
 
-        _role.permissions.remove(_permission)
-        db.session.commit()
-        return {'permissions': [x.to_dict() for x in _role.permissions]}
+            _role.permissions.remove(_permission)
+            db.session.commit()
+            return {'permissions': [x.to_dict() for x in _role.permissions]}
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
