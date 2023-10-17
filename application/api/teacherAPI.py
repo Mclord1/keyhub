@@ -22,7 +22,8 @@ def update_teacher():
     if not user_id or not user_id.isdigit():
         raise CustomException(message="You need to pass user id as query parameter", status_code=400)
     args = request.json
-    return return_json(OutputObj(code=200, message="Teacher information", data=Teacher.update_information(user_id, args)))
+    return return_json(
+        OutputObj(code=200, message="Teacher information", data=Teacher.update_information(user_id, args)))
 
 
 @teacher_blueprint.route('/add-teacher', methods=['POST'])
@@ -53,5 +54,11 @@ def delete_teacher():
     args = request.json
     teacher_id = args['teacher_id']
     reason = args['reason']
-    return return_json(OutputObj(code=200, message="Teacher information", data=Teacher.deactivate_user(teacher_id, reason)))
+    return return_json(
+        OutputObj(code=200, message="Teacher information", data=Teacher.deactivate_user(teacher_id, reason)))
 
+
+@teacher_blueprint.route('/get-teacher/<int:id>', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_TEACHERS)
+def get_teacher(id):
+    return return_json(OutputObj(code=200, message="Student results", data=Teacher.get_user(id)))

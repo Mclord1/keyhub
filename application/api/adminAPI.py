@@ -37,7 +37,8 @@ def update_admin():
     if not user_id or not user_id.isdigit():
         raise CustomException(message="You need to pass user id as query parameter", status_code=400)
     args = request.json
-    return return_json(OutputObj(code=200, message="User information has been updated successfully", data=SystemAdmins.update_admin(user_id, args)))
+    return return_json(OutputObj(code=200, message="User information has been updated successfully",
+                                 data=SystemAdmins.update_admin(user_id, args)))
 
 
 @admin_blueprint.route('/delete-admin', methods=['DELETE'])
@@ -46,7 +47,8 @@ def delete_admin():
     args = request.json
     admin_id = args['admin_id']
     reason = args['reason']
-    return return_json(OutputObj(code=200, message="Admin information", data=SystemAdmins.deactivate_user(admin_id, reason)))
+    return return_json(
+        OutputObj(code=200, message="Admin information", data=SystemAdmins.deactivate_user(admin_id, reason)))
 
 
 @admin_blueprint.route('/search-admin', methods=['GET'])
@@ -54,3 +56,9 @@ def delete_admin():
 def search_admin():
     query = request.args.get('query')
     return return_json(OutputObj(code=200, message="Admin results", data=SystemAdmins.search_admin(query)))
+
+
+@admin_blueprint.route('/get-admin/<int:id>', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_SYSTEM_ADMIN)
+def get_admin(id):
+    return return_json(OutputObj(code=200, message="Admin results", data=SystemAdmins.get_user(id)))

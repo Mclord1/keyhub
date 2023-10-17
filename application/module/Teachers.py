@@ -97,3 +97,8 @@ class TeacherModel:
     @classmethod
     def search_teachers(cls, args):
         return Helper.look_up_account(Teacher, User, args)
+
+    @classmethod
+    def get_user(cls, user_id):
+        _user = Helper.get_user(Teacher, user_id)
+        return _user.to_dict()

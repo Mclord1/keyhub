@@ -111,3 +111,8 @@ class StudentModel:
     @classmethod
     def search_students(cls, args):
         return Helper.look_up_account(Student, User, args)
+
+    @classmethod
+    def get_user(cls, user_id):
+        _user = Helper.get_user(Student, user_id)
+        return _user.to_dict()

@@ -59,6 +59,8 @@ class Helper:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
 
+
+
     @classmethod
     def User_Email_OR_Msisdn_Exist(cls, email, msisdn):
         user: User = db.session.query(User).filter(

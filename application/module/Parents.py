@@ -113,3 +113,8 @@ class ParentModel:
     @classmethod
     def search_parents(cls, args):
         return Helper.look_up_account(Parent, User, args)
+
+    @classmethod
+    def get_user(cls, user_id):
+        _user = Helper.get_user(Parent, user_id)
+        return _user.to_dict()

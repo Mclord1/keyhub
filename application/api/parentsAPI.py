@@ -53,5 +53,11 @@ def delete_parent():
     args = request.json
     parent_id = args['parent_id']
     reason = args['reason']
-    return return_json(OutputObj(code=200, message="Parent information", data=Parent.deactivate_user(parent_id, reason)))
+    return return_json(
+        OutputObj(code=200, message="Parent information", data=Parent.deactivate_user(parent_id, reason)))
 
+
+@parent_blueprint.route('/get-parent/<int:id>', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_PARENTS)
+def get_parent(id):
+    return return_json(OutputObj(code=200, message="Parent results", data=Parent.get_user(id)))

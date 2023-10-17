@@ -55,3 +55,8 @@ def delete_student():
     reason = args['reason']
     return return_json(OutputObj(code=200, message="Student information", data=Student.deactivate_user(student_id, reason)))
 
+
+@student_blueprint.route('/get-student/<int:id>', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_STUDENTS)
+def get_student(id):
+    return return_json(OutputObj(code=200, message="Student results", data=Student.get_user(id)))
