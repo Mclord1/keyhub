@@ -53,10 +53,11 @@ class Helper:
             user.isDeactivated = not user.isDeactivated
             user.deactivate_reason = reason
             db.session.commit()
+            return f"{user.email} account status has been set to {user.isDeactivated}"
+
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
-        return f"{user.email} account status has been set to {user.isDeactivated}"
 
     @classmethod
     def User_Email_OR_Msisdn_Exist(cls, email, msisdn):

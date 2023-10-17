@@ -42,18 +42,27 @@ class SubscriptionModel:
         plan: SubcriptionPlan = SubcriptionPlan.query.filter_by(id=plan_id).first()
         if not plan:
             raise CustomException(ExceptionCode.RESOURCE_NOT_FOUND)
-        db.session.delete(plan)
-        db.session.commit()
-        return 'Plan has been deleted successfully'
+
+        try:
+            db.session.delete(plan)
+            db.session.commit()
+            return 'Plan has been deleted successfully'
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
     def disable_plan(cls, plan_id):
         plan: SubcriptionPlan = SubcriptionPlan.query.filter_by(id=plan_id).first()
         if not plan:
             raise CustomException(ExceptionCode.RESOURCE_NOT_FOUND)
-        plan.isActive = not plan.isActive
-        db.session.commit()
-        return f'Plan status has been set to {plan.isActive}'
+        try:
+            plan.isActive = not plan.isActive
+            db.session.commit()
+            return f'Plan status has been set to {plan.isActive}'
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
     def get_subscriptions(cls, page, per_page):
