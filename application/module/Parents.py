@@ -25,6 +25,7 @@ class ParentModel:
                 "parents": [{
                     **(res.user.as_dict() if res.user else {}),
                     **res.to_dict(),
+                    "schools": [{"name" : x.name} for x in res.schools],
                     "num_of_children": len(res.students) if res and res.students else 0,
                     "num_of_active_children": len([x for x in res.students if not x.user.isDeactivated]),
                     "num_of_deactivated_children": len([x for x in res.students if x.user.isDeactivated]),
@@ -49,9 +50,11 @@ class ParentModel:
     def add_parent(cls, data):
         req: ParentSchema = validator.validate_data(ParentSchema, data)
 
-        a = Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
+        Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
 
         role = Role.GetRoleByName(BasicRoles.PARENT.value)
+
+        _school = School.GetSchool(req.school_id)
 
         if req.student:
 
@@ -68,7 +71,7 @@ class ParentModel:
             new_parent = User.CreateUser(req.email, req.msisdn, role)
 
             if new_parent:
-                add_user = Parent(
+                add_parent = Parent(
                     first_name=req.first_name,
                     last_name=req.last_name,
                     country=req.country,
@@ -81,8 +84,9 @@ class ParentModel:
                     work_msisdn=req.work_msisdn,
                     students=[Student.GetStudent(x) for x in req.student]
                 )
-                add_user.save(refresh=True)
-                return add_user
+                add_parent.schools.append(_school)
+                add_parent.save(refresh=True)
+                return add_parent
 
         except Exception:
             db.session.rollback()
@@ -119,5 +123,6 @@ class ParentModel:
         _user = Helper.get_user(Parent, user_id)
         return {
             **_user.to_dict(),
-            "students": [x.to_dict() for x in _user.students]
+            "students": [x.to_dict() for x in _user.students],
+            "schools" : [x.to_dict(add_filter=False) for x in _user.schools]
         }

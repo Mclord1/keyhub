@@ -179,46 +179,75 @@ class SchoolModel:
             raise e
 
     @classmethod
-    def get_account_admins(cls, school_id):
-        _school: School = School.GetSchool(school_id)
-        return {
-            "num_of_admins": len(_school.managers),
-            "num_of_active_admins": len([x for x in _school.managers if not x.user.isDeactivated]),
-            "num_of_deactivated_admins": len([x for x in _school.managers if x.user.isDeactivated]),
-            "admins": [{
-                "role": x.user.roles.name if x.user.roles else None,
-                "email": x.user.email,
-                "isDeactivated": x.user.isDeactivated,
-                "msisdn": x.user.msisdn,
-                **x.to_dict()
-            } for x in _school.managers]
+    def get_account_admins(cls, school_id, page, per_page):
+        page = int(page)
+        per_page = int(per_page)
+        _school_admin: SchoolManager = SchoolManager.query.filter(SchoolManager.school_id == school_id).order_by(
+            desc(SchoolManager.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        total_items = _school_admin.total
+        results = [item for item in _school_admin.items]
+        total_pages = (total_items - 1) // per_page + 1
+        pagination_data = {
+            "page": page,
+            "size": per_page,
+            "total_pages": total_pages,
+            "total_items": total_items,
+            "results": {
+                "num_of_admins": len(results),
+                "num_of_active_admins": len([x for x in results if not x.user.isDeactivated]),
+                "num_of_deactivated_admins": len([x for x in results if x.user.isDeactivated]),
+                "admins": [{
+                    "role": x.user.roles.name if x.user.roles else None,
+                    "email": x.user.email,
+                    "isDeactivated": x.user.isDeactivated,
+                    "msisdn": x.user.msisdn,
+                    **x.to_dict()
+                } for x in results]
+            }
         }
 
+        return PaginationSchema(**pagination_data).model_dump()
+
     @classmethod
-    def get_teachers(cls, school_id):
-        _school: School = School.GetSchool(school_id)
-        return {
-            "num_of_teachers": len(_school.teachers),
-            "num_of_active_teachers": len([x for x in _school.teachers if not x.user.isDeactivated]),
-            "num_of_deactivated_teachers": len([x for x in _school.teachers if x.user.isDeactivated]),
-            "teachers": [{
-                "email": teacher.user.email,
-                "isDeactivated": teacher.user.isDeactivated,
-                "msisdn": teacher.user.msisdn,
-                "num_of_projects": len([x for x in teacher.projects if x.school_id == school_id]),
-                "num_of_students": len([x for x in teacher.students if x.school_id == school_id]),
-                **teacher.to_dict()
-            } for teacher in _school.teachers]
+    def get_teachers(cls, school_id, page, per_page):
+        page = int(page)
+        per_page = int(per_page)
+        _teacher: Teacher = Teacher.query.filter(Teacher.schools.id == school_id).order_by(
+            desc(Teacher.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        total_items = _teacher.total
+        results = [item for item in _teacher.items]
+        total_pages = (total_items - 1) // per_page + 1
+        pagination_data = {
+            "page": page,
+            "size": per_page,
+            "total_pages": total_pages,
+            "total_items": total_items,
+            "results": {
+                "num_of_teachers": len(results),
+                "num_of_active_teachers": len([x for x in results if not x.user.isDeactivated]),
+                "num_of_deactivated_teachers": len([x for x in results if x.user.isDeactivated]),
+                "teachers": [{
+                    "email": teacher.user.email,
+                    "isDeactivated": teacher.user.isDeactivated,
+                    "msisdn": teacher.user.msisdn,
+                    "num_of_projects": len([x for x in teacher.projects if x.school_id == school_id]),
+                    "num_of_students": len([x for x in teacher.students if x.school_id == school_id]),
+                    **teacher.to_dict()
+                } for teacher in results]
+            }
         }
+
+        return PaginationSchema(**pagination_data).model_dump()
 
     @classmethod
     def get_parents(cls, school_id, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _project: Project = Project.query.filter(Project.school_id == school_id).order_by(
-            desc(Project.created_at)).paginate(page=page, per_page=per_page, error_out=False)
-        total_items = _project.total
-        results = [item for item in _project.items]
+        get_school = School.GetSchool(school_id)
+        _parent: Parent = Parent.query.filter(SchoolParent.school_id == school_id).order_by(
+            desc(Parent.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        total_items = _parent.total
+        results = [item for item in _parent.items]
         total_pages = (total_items - 1) // per_page + 1
         pagination_data = {
             "page": page,
@@ -249,10 +278,10 @@ class SchoolModel:
     def get_students(cls, school_id, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _project: Project = Project.query.filter(Project.school_id == school_id).order_by(
-            desc(Project.created_at)).paginate(page=page, per_page=per_page, error_out=False)
-        total_items = _project.total
-        results = [item for item in _project.items]
+        _student: Student = Student.query.filter(Student.school_id == school_id).order_by(
+            desc(Student.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        total_items = _student.total
+        results = [item for item in _student.items]
         total_pages = (total_items - 1) // per_page + 1
         pagination_data = {
             "page": page,

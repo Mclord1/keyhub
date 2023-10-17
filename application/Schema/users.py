@@ -53,7 +53,7 @@ class ParentSchema(BaseModel):
     first_name: str
     last_name: str
     gender: str
-    age: str
+    age: int
     msisdn: str
     email: str
     country: str
@@ -64,6 +64,7 @@ class ParentSchema(BaseModel):
     work_country: str
     work_state: str
     work_address: str
+    school_id: int
     student: Optional[list] = None
 
 
