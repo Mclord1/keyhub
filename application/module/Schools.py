@@ -16,7 +16,8 @@ class SchoolModel:
     def list_all_schools(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _school: School = School.query.order_by(desc(School.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        _school: School = School.query.order_by(desc(School.created_at)).paginate(page=page, per_page=per_page,
+                                                                                  error_out=False)
         total_items = _school.total
         results = [item for item in _school.items]
         total_pages = (total_items - 1) // per_page + 1
@@ -211,57 +212,99 @@ class SchoolModel:
         }
 
     @classmethod
-    def get_parents(cls, school_id):
-        _school: School = School.GetSchool(school_id)
-        return {
-            "num_of_parents": len(_school.parents),
-            "num_of_active_parents": len([x for x in _school.parents if not x.user.isDeactivated]),
-            "num_of_deactivated_parents": len([x for x in _school.parents if x.user.isDeactivated]),
-            "parents": [{
-                "email": parent.user.email,
-                "isDeactivated": parent.user.isDeactivated,
-                "msisdn": parent.user.msisdn,
-                "num_of_children": len([x for x in parent.students if x.school_id == school_id]),
-                "num_of_active_children": len([student for student in parent.students if
-                                               student.school_id == school_id and not student.user.isDeactivated]),
-                "num_of_deactivated_children": len([student for student in parent.students if
-                                                    student.school_id == school_id and student.user.isDeactivated]),
-                **parent.to_dict()
-            } for parent in _school.parents]
+    def get_parents(cls, school_id, page, per_page):
+        page = int(page)
+        per_page = int(per_page)
+        _project: Project = Project.query.filter(Project.school_id == school_id).order_by(
+            desc(Project.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        total_items = _project.total
+        results = [item for item in _project.items]
+        total_pages = (total_items - 1) // per_page + 1
+        pagination_data = {
+            "page": page,
+            "size": per_page,
+            "total_pages": total_pages,
+            "total_items": total_items,
+            "results": {
+                "num_of_parents": len(results),
+                "num_of_active_parents": len([x for x in results if not x.user.isDeactivated]),
+                "num_of_deactivated_parents": len([x for x in results if x.user.isDeactivated]),
+                "parents": [{
+                    "email": parent.user.email,
+                    "isDeactivated": parent.user.isDeactivated,
+                    "msisdn": parent.user.msisdn,
+                    "num_of_children": len([x for x in parent.students if x.school_id == school_id]),
+                    "num_of_active_children": len([student for student in parent.students if
+                                                   student.school_id == school_id and not student.user.isDeactivated]),
+                    "num_of_deactivated_children": len([student for student in parent.students if
+                                                        student.school_id == school_id and student.user.isDeactivated]),
+                    **parent.to_dict()
+                } for parent in results]
+            }
         }
 
-    @classmethod
-    def get_students(cls, school_id):
-        _school: School = School.GetSchool(school_id)
-        return {
-            "num_of_students": len(_school.students),
-            "num_of_active_students": len([x for x in _school.students if not x.user.isDeactivated]),
-            "num_of_deactivated_students": len([x for x in _school.students if x.user.isDeactivated]),
-            "students": [{
-                "project": student.projects,
-                "email": student.user.email,
-                "isDeactivated": student.user.isDeactivated,
-                "msisdn": student.user.msisdn,
-                **student.to_dict()
-            } for student in _school.students]
-        }
+        return PaginationSchema(**pagination_data).model_dump()
 
     @classmethod
-    def get_projects(cls, school_id):
-        _school: School = School.GetSchool(school_id)
-        return {
-            "num_of_projects": len(_school.projects),
-            "num_of_active_projects": len([x for x in _school.projects if not x.isDeactivated]),
-            "num_of_deactivated_projects": len([x for x in _school.projects if x.isDeactivated]),
-            "projects": [{
-                "num_of_students": len([x for x in project.students]),
-                "assigned_teachers": [x.to_dict() for x in project.teachers],
-                "email": project.user.email,
-                "isDeactivated": project.user.isDeactivated,
-                "msisdn": project.user.msisdn,
-                **project.to_dict()
-            } for project in _school.projects]
+    def get_students(cls, school_id, page, per_page):
+        page = int(page)
+        per_page = int(per_page)
+        _project: Project = Project.query.filter(Project.school_id == school_id).order_by(
+            desc(Project.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        total_items = _project.total
+        results = [item for item in _project.items]
+        total_pages = (total_items - 1) // per_page + 1
+        pagination_data = {
+            "page": page,
+            "size": per_page,
+            "total_pages": total_pages,
+            "total_items": total_items,
+            "results": {
+                "num_of_students": len(results),
+                "num_of_active_students": len([x for x in results if not x.user.isDeactivated]),
+                "num_of_deactivated_students": len([x for x in results if x.user.isDeactivated]),
+                "students": [{
+                    "project": student.projects if student.projects else [],
+                    "email": student.user.email,
+                    "isDeactivated": student.user.isDeactivated,
+                    "msisdn": student.user.msisdn,
+                    **student.to_dict()
+                } for student in results]
+            }
+
         }
+        return PaginationSchema(**pagination_data).model_dump()
+
+    @classmethod
+    def get_projects(cls, school_id, page, per_page):
+        page = int(page)
+        per_page = int(per_page)
+        _project: Project = Project.query.filter(Project.school_id == school_id).order_by(
+            desc(Project.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        total_items = _project.total
+        results = [item for item in _project.items]
+        total_pages = (total_items - 1) // per_page + 1
+
+        pagination_data = {
+            "page": page,
+            "size": per_page,
+            "total_pages": total_pages,
+            "total_items": total_items,
+            "results": {
+                "num_of_projects": len(results),
+                "num_of_active_projects": len([x for x in results if not x.isDeactivated]),
+                "num_of_deactivated_projects": len([x for x in results if x.isDeactivated]),
+                "projects": [{
+                    "num_of_students": len(project.students) if project.students else 0,
+                    "assigned_teachers": [x.to_dict() for x in project.teachers],
+                    "email": project.user.email,
+                    "msisdn": project.user.msisdn,
+                    **project.to_dict()
+                } for project in results]
+            }
+        }
+
+        return PaginationSchema(**pagination_data).model_dump()
 
     @classmethod
     def search_projects(cls, args, school_id):
@@ -287,7 +330,8 @@ class SchoolModel:
         school = School.GetSchool(req.school_id)
 
         try:
-            add_project = Project(name=req.name, description=req.description, teachers=teacher, students=student, schools=school)
+            add_project = Project(name=req.name, description=req.description, teachers=teacher, students=student,
+                                  schools=school)
             add_project.save(refresh=True)
         except Exception:
             db.session.rollback()

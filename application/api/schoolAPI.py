@@ -52,33 +52,44 @@ def view_school_info(school_id):
 @authenticate(PermissionEnum.VIEW_SCHOOL_MANAGERS)
 @has_school_privilege
 def school_managers_list(school_id):
+    page = request.args.get('page', 1)
+    per_page = request.args.get('per_page', 10)
     return return_json(
-        OutputObj(code=200, message="school Admins results", data=SchoolModel.get_account_admins(school_id)))
+        OutputObj(code=200, message="school Admins results", data=SchoolModel.get_account_admins(school_id, page,per_page)))
 
 
 @school_blueprint.route('/<int:school_id>/parents', methods=['GET'])
 @authenticate(PermissionEnum.VIEW_PARENTS)
 @has_school_privilege
 def school_parents_list(school_id):
-    return return_json(OutputObj(code=200, message="school parents results", data=SchoolModel.get_parents(school_id )))
+    page = request.args.get('page', 1)
+    per_page = request.args.get('per_page', 10)
+    return return_json(OutputObj(code=200, message="school parents results", data=SchoolModel.get_parents(school_id, page,per_page)))
 
 
 @school_blueprint.route('/<int:school_id>/students', methods=['GET'])
 @authenticate(PermissionEnum.VIEW_STUDENTS)
 @has_school_privilege
 def school_students_list(school_id):
-    return return_json(OutputObj(code=200, message="school students results", data=SchoolModel.get_students(school_id)))
+    page = request.args.get('page', 1)
+    per_page = request.args.get('per_page', 10)
+    return return_json(OutputObj(code=200, message="school students results", data=SchoolModel.get_students(school_id,page,per_page)))
 
 
 @school_blueprint.route('/<int:school_id>/teachers', methods=['GET'])
 @authenticate(PermissionEnum.VIEW_TEACHERS)
 @has_school_privilege
 def school_teachers_list(school_id):
-    return return_json(OutputObj(code=200, message="school teachers results", data=SchoolModel.get_teachers(school_id)))
+    page = request.args.get('page', 1)
+    per_page = request.args.get('per_page', 10)
+    return return_json(OutputObj(code=200, message="school teachers results", data=SchoolModel.get_teachers(school_id, page,per_page)))
 
 
 @school_blueprint.route('/<int:school_id>/projects', methods=['GET'])
 @authenticate(PermissionEnum.VIEW_PROJECTS)
 @has_school_privilege
 def school_projects_list(school_id):
-    return return_json(OutputObj(code=200, message="school projects results", data=SchoolModel.get_projects(school_id)))
+    page = request.args.get('page', 1)
+    per_page = request.args.get('per_page', 10)
+    return return_json(OutputObj(code=200, message="school projects results",
+                                 data=SchoolModel.get_projects(school_id, page, per_page)))
