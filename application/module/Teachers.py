@@ -103,5 +103,5 @@ class TeacherModel:
         _user = Helper.get_user(Teacher, user_id)
         return {
             **_user.to_dict(),
-            "students" : [x.to_dict() for x in _user.students]
+            "students": [x.to_dict() for x in _user.students]
         }

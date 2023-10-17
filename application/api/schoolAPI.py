@@ -19,7 +19,7 @@ def add_school():
 @has_school_privilege
 def update_school_info(school_id):
     req = request.json
-    return return_json(OutputObj(code=200, message=SchoolModel.update_school(id, req)))
+    return return_json(OutputObj(code=200, message=SchoolModel.update_school(school_id, req)))
 
 
 @school_blueprint.route('/<int:school_id>/toggle-status', methods=['PUT'])
@@ -29,7 +29,7 @@ def toggle_status(school_id):
     req = request.json.get('status')
     if not isinstance(req, bool):
         raise CustomException(message="Argument 'status' must be provided and is boolean")
-    return return_json(OutputObj(code=200, message=SchoolModel.toggle_status(id, req)))
+    return return_json(OutputObj(code=200, message=SchoolModel.toggle_status(school_id, req)))
 
 
 @school_blueprint.route('/list', methods=['GET'])
@@ -45,7 +45,7 @@ def list_school():
 @authenticate(PermissionEnum.VIEW_SCHOOL)
 @has_school_privilege
 def view_school_info(school_id):
-    return return_json(OutputObj(code=200, message="school results", data=SchoolModel.view_school_info(id)))
+    return return_json(OutputObj(code=200, message="school results", data=SchoolModel.view_school_info(school_id)))
 
 
 @school_blueprint.route('/<int:school_id>/school-admins', methods=['GET'])
@@ -60,25 +60,25 @@ def school_managers_list(school_id):
 @authenticate(PermissionEnum.VIEW_PARENTS)
 @has_school_privilege
 def school_parents_list(school_id):
-    return return_json(OutputObj(code=200, message="school parents results", data=SchoolModel.get_parents(id)))
+    return return_json(OutputObj(code=200, message="school parents results", data=SchoolModel.get_parents(school_id )))
 
 
 @school_blueprint.route('/<int:school_id>/students', methods=['GET'])
 @authenticate(PermissionEnum.VIEW_STUDENTS)
 @has_school_privilege
 def school_students_list(school_id):
-    return return_json(OutputObj(code=200, message="school students results", data=SchoolModel.get_students(id)))
+    return return_json(OutputObj(code=200, message="school students results", data=SchoolModel.get_students(school_id)))
 
 
 @school_blueprint.route('/<int:school_id>/teachers', methods=['GET'])
 @authenticate(PermissionEnum.VIEW_TEACHERS)
 @has_school_privilege
 def school_teachers_list(school_id):
-    return return_json(OutputObj(code=200, message="school teachers results", data=SchoolModel.get_teachers(id)))
+    return return_json(OutputObj(code=200, message="school teachers results", data=SchoolModel.get_teachers(school_id)))
 
 
 @school_blueprint.route('/<int:school_id>/projects', methods=['GET'])
 @authenticate(PermissionEnum.VIEW_PROJECTS)
 @has_school_privilege
 def school_projects_list(school_id):
-    return return_json(OutputObj(code=200, message="school projects results", data=SchoolModel.get_projects(id)))
+    return return_json(OutputObj(code=200, message="school projects results", data=SchoolModel.get_projects(school_id)))

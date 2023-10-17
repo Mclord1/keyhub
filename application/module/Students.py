@@ -117,5 +117,6 @@ class StudentModel:
         _user = Helper.get_user(Student, user_id)
         return {
             **_user.to_dict(),
-            "parent" : _user.parents.to_dict() if _user.parents else {}
+            "parent" : _user.parents.to_dict() if _user.parents else {},
+            "project" : [x.to_dict() for x in _user.projects]
         }
