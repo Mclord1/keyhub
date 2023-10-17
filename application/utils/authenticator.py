@@ -4,6 +4,7 @@ import jwt
 from flask import request
 from flask_jwt_extended import verify_jwt_in_request, get_current_user
 
+from application import db
 from application.Enums.Enums import BasicRoles
 from exceptions.custom_exception import CustomException, ExceptionCode
 
@@ -22,7 +23,9 @@ def authenticate(permission_name='Not-Set'):
                 # Check if the user's role has the required permission if permission is provided
                 if permission_name != 'Not-Set':
                     if permission_name.value in [permission.name for permission in user.roles.permissions if permission.active]:
-                        return f(*args, **kwargs)
+                        func_response = f(*args, **kwargs)
+                        db.session.close()
+                        return func_response
                     else:
                         raise CustomException(ExceptionCode.PERMISSION_DENIED)
 
