@@ -119,5 +119,5 @@ class ParentModel:
         _user = Helper.get_user(Parent, user_id)
         return {
             **_user.to_dict(),
-            "students" : [x.to_dict() for x in _user.students]
+            "students": [x.to_dict() for x in _user.students]
         }

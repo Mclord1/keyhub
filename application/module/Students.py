@@ -115,4 +115,7 @@ class StudentModel:
     @classmethod
     def get_user(cls, user_id):
         _user = Helper.get_user(Student, user_id)
-        return _user.to_dict()
+        return {
+            **_user.to_dict(),
+            "parent" : _user.parents.to_dict() if _user.parents else {}
+        }
