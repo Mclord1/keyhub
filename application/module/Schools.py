@@ -308,8 +308,7 @@ class SchoolModel:
     def get_projects(cls, school_id, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _project: Project = Project.query.filter(Project.school_id == school_id).order_by(
-            desc(Project.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        _project: Project = Project.query.filter(Project.school_id == school_id).order_by(desc(Project.created_at)).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _project.total
         results = [item for item in _project.items]
         total_pages = (total_items - 1) // per_page + 1

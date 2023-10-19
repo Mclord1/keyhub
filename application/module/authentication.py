@@ -25,7 +25,8 @@ class Authentication:
                 # Initialize an empty user_details dictionary
                 user_details.update({
                     'role_name': ' '.join(str(role.name).split('_')) if role.name else None,
-                    'role_id': user.role_id
+                    'role_id': user.role_id,
+                    **user.as_dict()
                 })
 
             # Check and add user-related attributes if they are not None
