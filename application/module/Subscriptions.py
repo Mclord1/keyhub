@@ -52,6 +52,11 @@ class SubscriptionModel:
             raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
+    def list_plans(cls):
+        plans = SubcriptionPlan.query.all()
+        return [{**x.to_dict(), "created_by": x.user.email} for x in plans]
+
+    @classmethod
     def disable_plan(cls, plan_id):
         plan: SubcriptionPlan = SubcriptionPlan.query.filter_by(id=plan_id).first()
         if not plan:

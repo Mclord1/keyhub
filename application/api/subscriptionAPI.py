@@ -23,6 +23,13 @@ def subscriptions_page_info():
                                  data=SubscriptionModel.get_subscription_page_info()))
 
 
+@subcription_blueprint.route('/list-plans', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_SUBSCRIPTION)
+def list_subcription_plans():
+    return return_json(OutputObj(code=200, message="subcription plans",
+                                 data=SubscriptionModel.list_plans()))
+
+
 @subcription_blueprint.route('/toggle-plan-status/<int:id>', methods=['PUT'])
 @authenticate(PermissionEnum.DEACTIVATE_SUBSCRIPTION)
 def toggle_plan_status(id):

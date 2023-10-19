@@ -26,10 +26,7 @@ def update_school_info(school_id):
 @authenticate(PermissionEnum.DEACTIVATE_SCHOOL)
 @has_school_privilege
 def toggle_status(school_id):
-    req = request.json.get('status')
-    if not isinstance(req, bool):
-        raise CustomException(message="Argument 'status' must be provided and is boolean")
-    return return_json(OutputObj(code=200, message=SchoolModel.toggle_status(school_id, req)))
+    return return_json(OutputObj(code=200, message=SchoolModel.toggle_status(school_id)))
 
 
 @school_blueprint.route('/list', methods=['GET'])

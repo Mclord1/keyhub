@@ -5,12 +5,12 @@ from ..Schema.school import UpdateSchoolSchema, SchoolSchema, ProjectSchema
 class SchoolModel:
 
     @classmethod
-    def toggle_status(cls, school_id, status):
+    def toggle_status(cls, school_id):
         _school: School = School.GetSchool(school_id)
 
-        _school.isDeactivated = status
+        _school.isDeactivated = not _school.isDeactivated
         db.session.commit()
-        return f"{_school.name} active status has been set to {status}"
+        return "School has been deactivated" if _school.isDeactivated else "School has been activated"
 
     @classmethod
     def list_all_schools(cls, page, per_page):
@@ -212,7 +212,7 @@ class SchoolModel:
     def get_teachers(cls, school_id, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _teacher: Teacher = Teacher.query.filter(Teacher.schools.id == school_id).order_by(
+        _teacher: Teacher = Teacher.query.join(School.teachers).filter(School.id == school_id).order_by(
             desc(Teacher.created_at)).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _teacher.total
         results = [item for item in _teacher.items]
@@ -243,8 +243,7 @@ class SchoolModel:
     def get_parents(cls, school_id, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        get_school = School.GetSchool(school_id)
-        _parent: Parent = Parent.query.filter(SchoolParent.school_id == school_id).order_by(
+        _parent: Parent = Parent.query.join(School.parents).filter(School.id == school_id).order_by(
             desc(Parent.created_at)).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _parent.total
         results = [item for item in _parent.items]
