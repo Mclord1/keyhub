@@ -94,7 +94,7 @@ class SchoolModel:
             (School.reg_number == req_school.reg_number)
         ).first()
 
-        if _school:
+        if _school and _school.id != school_id:
             existing_values = []
 
             if _school.name == req_school.name:
