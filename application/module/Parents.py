@@ -124,6 +124,6 @@ class ParentModel:
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
-            "students": [x.to_dict() for x in _user.students],
+            "students": [{**x.to_dict(), "school" : x.schools.name} for x in _user.students],
             "schools" : [x.to_dict(add_filter=False) for x in _user.schools]
         }
