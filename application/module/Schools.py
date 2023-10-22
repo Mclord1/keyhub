@@ -296,6 +296,7 @@ class SchoolModel:
                     "email": student.user.email,
                     "isDeactivated": student.user.isDeactivated,
                     "msisdn": student.user.msisdn,
+                    "school" : student.schools.name,
                     **student.to_dict()
                 } for student in results]
             }
