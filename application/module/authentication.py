@@ -31,19 +31,19 @@ class Authentication:
 
             # Check and add user-related attributes if they are not None
             if user.parents:
-                user_details.update(user.parents.to_dict())
+                user_details.update({**user.parents.to_dict(), "school_id": [x.id for x in user.parents.schools]})
 
             if user.teachers:
-                user_details.update(user.teachers.to_dict())
+                user_details.update({**user.teachers.to_dict(), "school_id": [x.id for x in user.teachers.schools]})
 
             if user.students:
-                user_details.update(user.students.to_dict())
+                user_details.update({**user.students.to_dict(), "school_id": user.students.school_id})
 
             if user.admins:
                 user_details.update(user.admins.to_dict())
 
             if user.managers:
-                user_details.update(user.managers.to_dict())
+                user_details.update({**user.managers.to_dict(), "school_id": user.managers.school_id})
 
             return return_json(
                 OutputObj(message="Login successful",

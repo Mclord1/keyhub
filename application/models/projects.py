@@ -22,8 +22,8 @@ class Project(db.Model, GenericMixin):
     schools = db.relationship("School", back_populates='projects')
 
     @classmethod
-    def GetProject(cls, project_id):
-        project = Project.query.filter_by(id=project_id).first()
+    def GetProject(cls, school_id, project_id):
+        project = Project.query.filter_by(id=project_id, school_id=school_id).first()
         if not project:
             raise CustomException(message="Project does not exist", status_code=404)
         return project

@@ -46,4 +46,3 @@ class ProjectSchema(BaseModel):
     description: str
     teacher_id: int
     student_id: int
-    school_id: int

@@ -52,7 +52,8 @@ def school_managers_list(school_id):
     page = request.args.get('page', 1)
     per_page = request.args.get('per_page', 10)
     return return_json(
-        OutputObj(code=200, message="school Admins results", data=SchoolModel.get_account_admins(school_id, page,per_page)))
+        OutputObj(code=200, message="school Admins results",
+                  data=SchoolModel.get_account_admins(school_id, page, per_page)))
 
 
 @school_blueprint.route('/<int:school_id>/parents', methods=['GET'])
@@ -61,7 +62,8 @@ def school_managers_list(school_id):
 def school_parents_list(school_id):
     page = request.args.get('page', 1)
     per_page = request.args.get('per_page', 10)
-    return return_json(OutputObj(code=200, message="school parents results", data=SchoolModel.get_parents(school_id, page,per_page)))
+    return return_json(
+        OutputObj(code=200, message="school parents results", data=SchoolModel.get_parents(school_id, page, per_page)))
 
 
 @school_blueprint.route('/<int:school_id>/students', methods=['GET'])
@@ -70,7 +72,8 @@ def school_parents_list(school_id):
 def school_students_list(school_id):
     page = request.args.get('page', 1)
     per_page = request.args.get('per_page', 10)
-    return return_json(OutputObj(code=200, message="school students results", data=SchoolModel.get_students(school_id,page,per_page)))
+    return return_json(OutputObj(code=200, message="school students results",
+                                 data=SchoolModel.get_students(school_id, page, per_page)))
 
 
 @school_blueprint.route('/<int:school_id>/teachers', methods=['GET'])
@@ -79,7 +82,8 @@ def school_students_list(school_id):
 def school_teachers_list(school_id):
     page = request.args.get('page', 1)
     per_page = request.args.get('per_page', 10)
-    return return_json(OutputObj(code=200, message="school teachers results", data=SchoolModel.get_teachers(school_id, page,per_page)))
+    return return_json(OutputObj(code=200, message="school teachers results",
+                                 data=SchoolModel.get_teachers(school_id, page, per_page)))
 
 
 @school_blueprint.route('/<int:school_id>/projects', methods=['GET'])
@@ -90,3 +94,44 @@ def school_projects_list(school_id):
     per_page = request.args.get('per_page', 10)
     return return_json(OutputObj(code=200, message="school projects results",
                                  data=SchoolModel.get_projects(school_id, page, per_page)))
+
+
+@school_blueprint.route('/<int:school_id>/projects/search', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def school_projects_search(school_id):
+    query = request.args.get('query')
+    return return_json(
+        OutputObj(code=200, message="projects results", data=SchoolModel.search_projects(query, school_id)))
+
+
+@school_blueprint.route('/<int:school_id>/projects', methods=['POST'])
+@authenticate(PermissionEnum.ADD_PROJECTS)
+@has_school_privilege
+def add_school_project(school_id):
+    req = request.json
+    return return_json(OutputObj(code=200, message=SchoolModel.add_project(school_id, req)))
+
+
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_PROJECTS)
+@has_school_privilege
+def update_school_project(school_id, project_id):
+    req = request.json
+    return return_json(OutputObj(code=200, message=SchoolModel.update_project(school_id, project_id, req)))
+
+
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>', methods=['DELETE'])
+@authenticate(PermissionEnum.DEACTIVATE_PROJECTS)
+@has_school_privilege
+def delete_school_project(school_id, project_id):
+    return return_json(OutputObj(code=200, message=SchoolModel.delete_project(school_id, project_id)))
+
+
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>/deactivate', methods=['PUT'])
+@authenticate(PermissionEnum.DEACTIVATE_PROJECTS)
+@has_school_privilege
+def deactivate_school_project(school_id, project_id):
+    req = request.json
+    reason = req['reason']
+    return return_json(OutputObj(code=200, message=SchoolModel.deactivate_project(school_id, project_id, reason)))

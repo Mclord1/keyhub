@@ -307,7 +307,8 @@ class SchoolModel:
     def get_projects(cls, school_id, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _project: Project = Project.query.filter(Project.school_id == school_id).order_by(desc(Project.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        _project: Project = Project.query.filter(Project.school_id == school_id).order_by(
+            desc(Project.created_at)).paginate(page=page, per_page=per_page, error_out=False)
         total_items = _project.total
         results = [item for item in _project.items]
         total_pages = (total_items - 1) // per_page + 1
@@ -322,10 +323,12 @@ class SchoolModel:
                 "num_of_active_projects": len([x for x in results if not x.isDeactivated]),
                 "num_of_deactivated_projects": len([x for x in results if x.isDeactivated]),
                 "projects": [{
-                    "num_of_students": len(project.students) if project.students else 0,
-                    "assigned_teachers": [x.to_dict() for x in project.teachers],
-                    "email": project.user.email,
-                    "msisdn": project.user.msisdn,
+                    # "num_of_students": project.students.to_dict() if project.students else 0,
+                    # "assigned_teachers": [x.to_dict() for x in project.teachers],
+                    # "email": project.user.email,
+                    # "msisdn": project.user.msisdn,
+                    "school": project.schools.name,
+                    "teacher": project.teachers.user.email,
                     **project.to_dict()
                 } for project in results]
             }
@@ -344,7 +347,7 @@ class SchoolModel:
         return result
 
     @classmethod
-    def add_project(cls, data):
+    def add_project(cls, school_id, data):
         req: ProjectSchema = validator.validate_data(ProjectSchema, data)
 
         project_exist = Project.query.filter_by(name=req.name).first()
@@ -354,7 +357,7 @@ class SchoolModel:
 
         student = Student.GetStudent(req.student_id)
         teacher = Teacher.GetTeacher(req.teacher_id)
-        school = School.GetSchool(req.school_id)
+        school = School.GetSchool(school_id)
 
         try:
             add_project = Project(name=req.name, description=req.description, teachers=teacher, students=student,
@@ -366,21 +369,21 @@ class SchoolModel:
         return f"The school project : {req.name} has been added successfully"
 
     @classmethod
-    def update_project(cls, project_id, data):
-        project = Project.GetProject(project_id)
+    def update_project(cls, school_id, project_id, data):
+        project = Project.GetProject(school_id=school_id, project_id=project_id)
         project.update_table(data)
         return project.to_dict()
 
     @classmethod
-    def delete_project(cls, project_id):
-        project = Project.GetProject(project_id)
+    def delete_project(cls, school_id, project_id):
+        project = Project.GetProject(school_id=school_id, project_id=project_id)
         db.session.delete(project)
         db.session.commit()
         return "Project has been deleted"
 
     @classmethod
-    def deactivate_project(cls, project_id, reason):
-        project: Project = Project.GetProject(project_id)
+    def deactivate_project(cls, school_id, project_id, reason):
+        project = Project.GetProject(school_id=school_id, project_id=project_id)
         project.isDeactivated = True
         project.deactivate_reason = reason
         db.session.commit()
