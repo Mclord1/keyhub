@@ -21,6 +21,7 @@ class RolePermission:
             "results": [
                 {
                     **res.to_dict(add_filter=False),
+                    "permissions" : [x.to_dict() for x in res.permissions] ,
                     "created_by": created_by(res.admin_id).email if res.admin_id and created_by(res.admin_id) else None,
                     "creator_name": f'{created_by(res.admin_id).admins.first_name if created_by(res.admin_id) else None} {created_by(res.admin_id).admins.last_name if created_by(res.admin_id) else None}' if res.admin_id else None
                 }
