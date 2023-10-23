@@ -16,9 +16,9 @@ class UserRole(db.Model, GenericMixin):
 
 class User(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(250), nullable=False, unique=True)
+    email = db.Column(db.String(250), nullable=True, unique=True)
     msisdn = db.Column(db.String(250), nullable=True, unique=True)
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id', ondelete="CASCADE"), nullable=True)
+    role_id = db.Column(db.Integer, db.ForeignKey('role.id', ondelete="SET NULL"), nullable=True)
     password = db.Column(db.String(350), nullable=True)
     isDeactivated = db.Column(db.Boolean, default=False)
     deactivate_reason = db.Column(db.String(450), nullable=True)
@@ -30,6 +30,8 @@ class User(db.Model, GenericMixin):
     roles = db.relationship('Role', back_populates='user', uselist=False)
     confirmation_codes = db.relationship('ConfirmationCode', back_populates='user', cascade="all, delete-orphan")
     subscription_plan = db.relationship("SubcriptionPlan", back_populates='user')
+    projects = db.relationship("Project", back_populates='user')
+    learning_group = db.relationship("LearningGroup", back_populates='user')
 
     def as_dict(self, include_sensitive_info=False):
         """

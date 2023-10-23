@@ -40,8 +40,8 @@ class StudentSchema(BaseModel):
     gender: str
     date_of_birth: str
     age: str
-    msisdn: str
-    email: str
+    msisdn: Optional[str] = None
+    email: Optional[str] = None
     country: str
     state: str
     address: str

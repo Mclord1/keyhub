@@ -33,7 +33,7 @@ class Seed:
 
         add_permissions = [x.value for x in PermissionEnum.__members__.values()]
 
-        admin_role = Role.query.filter_by(name=BasicRoles.SYSTEM_ADMIN.value).first()
+        admin_role = Role.GetRoleByName(BasicRoles.SYSTEM_ADMIN.value)
         for permissions in add_permissions:
             try:
                 new_permission = Permission(name=permissions)

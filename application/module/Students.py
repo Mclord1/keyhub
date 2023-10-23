@@ -50,7 +50,8 @@ class StudentModel:
     def add_student(cls, data):
         req: StudentSchema = validator.validate_data(StudentSchema, data)
 
-        Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
+        if req.email and req.msisdn:
+            Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
 
         role = Role.GetRoleByName(BasicRoles.STUDENT.value)
 

@@ -15,6 +15,39 @@ class SchoolParent(db.Model, GenericMixin):
     parent_id = db.Column(db.Integer, db.ForeignKey('parent.id', ondelete="CASCADE"), nullable=True)
 
 
+class SchoolRole(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(250), nullable=True, unique=True)
+    admin_id = db.Column(db.Integer, nullable=True)
+    school_id = db.Column(db.ForeignKey('school.id', ondelete='CASCADE'), nullable=True)
+    active = db.Column(db.Boolean, default=True)
+    description = db.Column(db.String(1000), nullable=True)
+    permissions = db.relationship("Permission", secondary='school_role_permission', back_populates='school_roles',
+                                  cascade="all, delete")
+    schools = db.relationship("School", back_populates='school_roles', cascade="all, delete")
+
+    @staticmethod
+    def GetRole(id, school_id):
+        role = SchoolRole.query.filter_by(id=id, school_id=school_id).first()
+        if not role:
+            raise CustomException(message="The provided role does not exist")
+        return role
+
+
+class SchoolUserRole(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    school_role_id = db.Column(db.Integer, db.ForeignKey('school_role.id', ondelete="CASCADE"),
+                               nullable=True)  # Role name (e.g., 'parent', 'teacher', 'admin', etc.)
+    school_id = db.Column(db.Integer, db.ForeignKey('school.id', ondelete="CASCADE"), nullable=True)
+    active = db.Column(db.Boolean, default=True)
+
+
+class SchoolRolePermission(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    permission_id = db.Column(db.Integer, db.ForeignKey('permission.id', ondelete="CASCADE"), nullable=True)
+    school_role_id = db.Column(db.Integer, db.ForeignKey('school_role.id', ondelete="CASCADE"), nullable=True)
+
+
 class School(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(350), nullable=True, unique=True)
@@ -35,6 +68,8 @@ class School(db.Model, GenericMixin):
     parents = db.relationship("Parent", secondary='school_parent', back_populates='schools', cascade="all, delete")
     projects = db.relationship("Project", back_populates='schools', cascade="all, delete-orphan")
     reports = db.relationship("Report", back_populates='schools', cascade="all, delete-orphan")
+    school_roles = db.relationship("SchoolRole", back_populates='schools')
+    learning_group = db.relationship("LearningGroup", back_populates='schools', cascade="all, delete-orphan")
 
     @classmethod
     def GetSchool(cls, school_id):

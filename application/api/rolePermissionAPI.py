@@ -31,10 +31,8 @@ def get_role_detail(id):
 @roles_permission_blueprint.route('/set-status/<int:id>', methods=['PUT'])
 @authenticate(PermissionEnum.MODIFY_ROLE)
 def set_role_status(id):
-    args = request.json
-    is_active = args.get('is_active')
     return return_json(OutputObj(code=200, message="Role status has been changed",
-                                 data=RolePermission.ToggleRoleActiveStatus(id, is_active)))
+                                 data=RolePermission.ToggleRoleActiveStatus(id)))
 
 
 @roles_permission_blueprint.route('/role', methods=['POST'])
@@ -76,7 +74,7 @@ def assign_permission_to_role():
 
 
 @roles_permission_blueprint.route('/permission', methods=['DELETE'])
-@authenticate(PermissionEnum.MODIFY_ROLE)
+@authenticate(PermissionEnum.DEACTIVATE_ROLE)
 def remove_permission_from_role():
     role_id = request.args.get('role_id')
     permission_id = request.args.get('permission_id')

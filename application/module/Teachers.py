@@ -23,6 +23,7 @@ class TeacherModel:
                 "teachers": [{
                     **(res.user.as_dict() if res.user else {}),
                     **res.to_dict(),
+                    "school" : [x.name for x in res.schools],
                     "total_projects": len(res.projects) if res.projects else 0,
                     "total_students": len(res.students) if res.students else 0,
                 } for res in results]

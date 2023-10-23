@@ -15,6 +15,7 @@ class Admin(db.Model, GenericMixin):
     gender = db.Column(db.String(150), nullable=True)
     audits = db.relationship("Audit", back_populates='admins')
 
+
     @classmethod
     def GetAdmin(cls, user_id):
         admin = Admin.query.filter_by(id=user_id).first()

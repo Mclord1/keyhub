@@ -16,6 +16,12 @@ class PermissionEnum(enum.Enum):
     DEACTIVATE_SYSTEM_ADMIN = 'deactivate_system_admin'
     RESET_SYSTEM_ADMIN_PASSWORD = 'reset_system_admin_password'
 
+    # LEARNING GROUPS
+    ADD_LEARNING_GROUPS = 'add_learning_groups'
+    MODIFY_LEARNING_GROUPS = 'update_learning_groups'
+    VIEW_LEARNING_GROUPS = 'view_learning_groups'
+    DEACTIVATE_LEARNING_GROUPS = 'deactivate_learning_groups'
+
     # SCHOOL
     ADD_SCHOOL = 'add_school'
     VIEW_SCHOOL = 'view_school'

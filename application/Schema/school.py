@@ -46,3 +46,9 @@ class ProjectSchema(BaseModel):
     description: str
     teacher_id: int
     student_id: int
+    group_id: int
+
+
+class LearningGroupSchema(BaseModel):
+    name: str
+    description: str
