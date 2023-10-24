@@ -230,8 +230,8 @@ class SchoolModel:
                     "email": teacher.user.email,
                     "isDeactivated": teacher.user.isDeactivated,
                     "msisdn": teacher.user.msisdn,
-                    "num_of_projects": len([x for x in teacher.projects if x.school_id == school_id]),
-                    "num_of_students": len([x for x in teacher.students if x.school_id == school_id]),
+                    "num_of_projects": len([x.projects for x in teacher.learning_group_projects ]),
+                    "num_of_students": len([x.students for x in teacher.learning_group_projects]),
                     **teacher.to_dict()
                 } for teacher in results]
             }
@@ -292,7 +292,7 @@ class SchoolModel:
                 "num_of_active_students": len([x for x in results if not x.user.isDeactivated]),
                 "num_of_deactivated_students": len([x for x in results if x.user.isDeactivated]),
                 "students": [{
-                    "project": student.projects if student.projects else [],
+                    "project": [x.projects.to_dict() for x in student.learning_group_projects],
                     "email": student.user.email,
                     "isDeactivated": student.user.isDeactivated,
                     "msisdn": student.user.msisdn,
