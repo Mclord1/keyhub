@@ -19,8 +19,10 @@ class SchoolLearningGroupsModel:
             "size": per_page,
             "total_pages": total_pages,
             "total_items": total_items,
-            "results": [
-                {
+            "results": {
+                "total_active": len([x for x in results if not x.isDeactivated]),
+                "total_inactive": len([x for x in results if x.isDeactivated]),
+                "groups": [{
                     **res.to_dict(add_filter=False),
                     "created_by": res.user.email if res.user else None,
                     "creator_name": f'{res.user.admins.first_name} {res.user.admins.last_name}' if res.user else None,
@@ -28,8 +30,8 @@ class SchoolLearningGroupsModel:
                     'teachers': [x.teachers.to_dict() for x in res.learning_group_projects],
                     'projects': [x.projects.to_dict() for x in res.learning_group_projects],
                 }
-                for res in results
-            ]
+                    for res in results]
+            }
         }
         return PaginationSchema(**pagination_data).model_dump()
 
@@ -38,16 +40,16 @@ class SchoolLearningGroupsModel:
         _group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, group_id)
 
         return {
-            'role_name': _group.name,
+            'name': _group.name,
             'created_on': _group.created_at,
             'created_by': _group.user.email if _group.user else None,
             'creator_name': f'{_group.user.admins.first_name} {_group.user.admins.last_name}' if _group.user else None,
             'country': _group.user.admins.country if _group.user else None,
             'description': _group.description,
-            'active': _group.isDeactivated,
-            'students': [x.student.to_dict() for x in _group.learning_group_projects],
+            'isDeactivated': _group.isDeactivated,
+            'students': [x.students.to_dict() for x in _group.learning_group_projects],
             'teachers': [x.teachers.to_dict() for x in _group.learning_group_projects],
-            'projects': [x.projects.to_dict() for x in _group.learning_group_projects],
+            'projects': [x.projects.to_dict(add_filter=False) for x in _group.learning_group_projects],
         }
 
     @classmethod
@@ -67,7 +69,7 @@ class SchoolLearningGroupsModel:
         _group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, group_id)
 
         try:
-            _group.active = not _group.isDeactivated
+            _group.isDeactivated = not _group.isDeactivated
             db.session.commit()
             return f"The Group active status has been changed to {_group.isDeactivated}"
         except Exception:

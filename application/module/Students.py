@@ -25,7 +25,7 @@ class StudentModel:
                 "students": [{
                     **(res.user.as_dict() if res.user else {}),
                     **res.to_dict(),
-                    "project": [x.to_dict() for x in res.projects],
+                    "project": [x.projects.to_dict(add_filter=False) for x in res.learning_group_projects],
                     "parent": {**(res.parents.to_dict() if res.parents else {}),
                                **(res.parents.user.as_dict() if res.parents else {})},
                     "school": res.schools.name,
@@ -116,9 +116,10 @@ class StudentModel:
     @classmethod
     def get_user(cls, user_id):
         _user = Helper.get_user(Student, user_id)
+        print()
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
             "parent": _user.parents.to_dict() if _user.parents else {},
-            "project": [x.to_dict() for x in _user.projects]
+            "projects": [x.projects.to_dict(add_filter=False) for x in _user.learning_group_projects]
         }
