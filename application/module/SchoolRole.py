@@ -22,7 +22,7 @@ class SchoolRoleModel:
             "results": [
                 {
                     **res.to_dict(add_filter=False),
-                    "permissions": [x.to_dict() for x in res.permissions],
+                    "permissions": [x.to_dict(add_filter=False) for x in res.school_permissions],
                     "created_by": created_by(res.admin_id).email if res.admin_id and created_by(res.admin_id) else None,
                     "creator_name": f'{created_by(res.admin_id).admins.first_name if created_by(res.admin_id) else None} {created_by(res.admin_id).admins.last_name if created_by(res.admin_id) else None}' if res.admin_id else None
                 }
@@ -35,7 +35,7 @@ class SchoolRoleModel:
     def get_role_details(cls, role_id: int, school_id: int) -> dict:
         _role: SchoolRole = SchoolRole.GetRole(role_id, school_id)
 
-        permissions = _role.permissions
+        permissions = _role.school_permissions
         user_list = _role.schools.managers
         created_by: User = User.query.filter_by(id=_role.admin_id).first()
         return {
@@ -47,7 +47,7 @@ class SchoolRoleModel:
             'users_assigned': len(user_list),
             'description': _role.description,
             'active': _role.active,
-            'permissions': [x.to_dict() for x in permissions]
+            'permissions': [x.to_dict(add_filter=False) for x in permissions]
         }
 
     @classmethod
@@ -57,7 +57,7 @@ class SchoolRoleModel:
         try:
             new_role = SchoolRole(name=role_name, admin_id=current_user.id, description=description, schools=_school)
             new_role.save(refresh=True)
-            return new_role.to_dict()
+            return new_role.to_dict(add_filter=False)
         except IntegrityError:
             db.session.rollback()
             raise CustomException(message="A role with the name already exist")
@@ -69,7 +69,6 @@ class SchoolRoleModel:
         if _role.schools:
             raise CustomException(message="There are schools associated to this school role", status_code=500)
         try:
-
 
             db.session.commit()
             db.session.delete(_role)
@@ -101,7 +100,7 @@ class SchoolRoleModel:
             if description:
                 _role.description = description
             db.session.commit()
-            return _role.to_dict()
+            return _role.to_dict(add_filter=False)
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
@@ -110,19 +109,19 @@ class SchoolRoleModel:
     def assign_permission_to_school_role(cls, school_id, role_id, permission_id):
 
         if role_id is None or permission_id is None:
-            raise CustomException("Both role_id and permission_id are required.", status_code=400)
+            raise CustomException("Both role_id and School permission_id are required.", status_code=400)
 
         _role: SchoolRole = SchoolRole.GetRole(role_id, school_id)
-        _permission: Permission = Permission.GetPermission(permission_id)
+        _permission: SchoolPermission = SchoolPermission.GetPermission(permission_id)
 
-        if int(permission_id) in [x.id for x in _role.permissions]:
-            raise CustomException(message="Permission already exist", status_code=400)
+        if int(permission_id) in [x.id for x in _role.school_permissions]:
+            raise CustomException(message="School Permission already exist", status_code=400)
 
         try:
 
             _permission.school_roles.append(_role)
             db.session.commit()
-            return f"The permission {_permission.name} has been assigned to {_role.name} role"
+            return f"The School permission {_permission.name} has been assigned to {_role.name} role"
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
@@ -130,16 +129,15 @@ class SchoolRoleModel:
     @classmethod
     def remove_permission_from_school_role(cls, school_id, role_id, permission_id):
         _role: SchoolRole = SchoolRole.GetRole(role_id, school_id)
-        _permission: Permission = Permission.GetPermission(permission_id)
+        _permission: SchoolPermission = SchoolPermission.GetPermission(permission_id)
 
-        if _permission not in _role.permissions:
-            raise CustomException(message="This permission doesn't exist on the role", status_code=404)
+        if _permission not in _role.school_permissions:
+            raise CustomException(message="This School permission doesn't exist on the role", status_code=404)
         try:
 
-
-            _role.permissions.remove(_permission)
+            _role.school_permissions.remove(_permission)
             db.session.commit()
-            return {'permissions': [x.to_dict() for x in _role.permissions]}
+            return {'permissions': [x.to_dict(add_filter=False) for x in _role.school_permissions]}
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)

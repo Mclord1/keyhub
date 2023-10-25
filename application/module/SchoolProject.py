@@ -28,8 +28,8 @@ class SchoolProjectModel:
                     "email": project.user.email,
                     "msisdn": project.user.msisdn,
                     "school": project.schools.name,
-                    "assigned_teachers": [x.teachers.to_dict() for x in project.learning_group_projects],
-                    **project.to_dict()
+                    "assigned_teachers": [x.to_dict() for x in project.teachers],
+                    **project.to_dict(add_filter=False)
                 } for project in results]
             }
         }
@@ -42,29 +42,54 @@ class SchoolProjectModel:
         query = Project.query.filter(Project.school_id == int(school_id)).filter(
             (Project.name.ilike(f'%{args}%'))
         )
-        result = [x.to_dict() for x in query.all()]
+        result = [
+            {
+                **x.to_dict(add_filter=False),
+                "learning_group": [groups.id for groups in x.learning_groups],
+                "email": x.user.email,
+                "msisdn": x.user.msisdn,
+                "school": x.schools.name,
+                "assigned_teachers": [_teacher.to_dict() for _teacher in x.teachers],
+            }
+
+            for x in query.all()]
         return result
 
     @classmethod
     def add_project(cls, school_id, data):
         req: ProjectSchema = validator.validate_data(ProjectSchema, data)
 
-        project_exist = Project.query.filter_by(name=req.name).first()
+        _school = School.GetSchool(school_id)
+
+        project_exist = Project.query.filter_by(name=req.name, schools=_school).first()
 
         if project_exist:
             raise CustomException(message="Project with same name already exist", status_code=400)
 
-        student = Student.GetStudent(req.student_id)
-        teacher = Teacher.GetTeacher(req.teacher_id)
         school = School.GetSchool(school_id)
+
         _learning_group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, req.group_id)
+
         try:
-            add_project = Project(name=req.name, description=req.description, schools=school, user=current_user)
+
+            add_project: Project = Project(name=req.name, description=req.description, schools=school, user=current_user)
+
+            _learning_group.projects.append(add_project)
+
+            if req.teacher_id:
+                teacher: Teacher = Teacher.GetTeacher(req.teacher_id)
+                _learning_group.teachers.append(teacher)
+                add_project.teachers.append(teacher)
+
+            if req.student_id:
+                for std in req.student_id:
+                    student: Student = Student.GetStudent(std)
+                    _learning_group.students.append(student)
+                    add_project.students.append(student)
+
             add_project.save(refresh=True)
-            add_group_project = LearningGroupProjects(teachers=teacher, students=student, projects=add_project, learning_group=_learning_group)
-            add_group_project.save(refresh=True)
+
         except Exception as e:
-            print(e)
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
         return f"The school project : {req.name} has been added successfully"
@@ -73,15 +98,11 @@ class SchoolProjectModel:
     def update_project(cls, school_id, project_id, data):
         project = Project.GetProject(school_id=school_id, project_id=project_id)
         project.update_table(data)
-        return project.to_dict()
+        return project.to_dict(add_filter=False)
 
     @classmethod
     def delete_project(cls, school_id, project_id):
-        project : Project = Project.GetProject(school_id=school_id, project_id=project_id)
-
-        if project.learning_group_projects:
-            raise CustomException(message="There are students and teachers linked to this project")
-
+        project: Project = Project.GetProject(school_id=school_id, project_id=project_id)
         db.session.delete(project)
         db.session.commit()
         return "Project has been deleted"
@@ -92,15 +113,16 @@ class SchoolProjectModel:
         project.isDeactivated = not project.isDeactivated
         project.deactivate_reason = reason
         db.session.commit()
-        return "Project has been deactivated"
+        return "Project has been deactivated" if project.isDeactivated else "Project has been activated"
 
     @classmethod
     def view_project_detail(cls, school_id, project_id):
-        _project = Project.GetProject(school_id,project_id)
+        _project: Project = Project.GetProject(school_id, project_id)
         return {
             "email": _project.user.email,
             "msisdn": _project.user.msisdn,
             "school": _project.schools.name,
-            "assigned_teachers": [x.teachers.to_dict() for x in _project.learning_group_projects],
-            **_project.to_dict()
+            "learning_groups": [x.id for x in _project.learning_groups],
+            "assigned_teachers": [x.to_dict() for x in _project.teachers],
+            **_project.to_dict(add_filter=False)
         }

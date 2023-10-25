@@ -23,9 +23,9 @@ class TeacherModel:
                 "teachers": [{
                     **(res.user.as_dict() if res.user else {}),
                     **res.to_dict(),
-                    "school" : [x.name for x in res.schools],
-                    "total_projects": len([x.projects for x in res.learning_group_projects]) if res.learning_group_projects else 0,
-                    "total_students": len([x.students for x in res.learning_group_projects]) if res.learning_group_projects else 0,
+                    "school": [x.name for x in res.schools],
+                    "total_projects": sum([x for x in res.projects]) if res.projects else 0,
+                    "total_students": sum([x for x in res.students]) if res.students else 0,
                 } for res in results]
             }
         }
@@ -105,8 +105,8 @@ class TeacherModel:
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
-            "total_projects" : len([x.projects for x in _user.learning_group_projects]),
-            "projects": [x.projects.to_dict(add_filter=False) for x in _user.learning_group_projects],
-            "total_students" : len([x.students for x in _user.learning_group_projects]),
-            "students": [{**x.students.to_dict()} for x in _user.learning_group_projects]
+            "total_projects": sum([x for x in _user.projects]) if _user.projects else 0,
+            "projects": [x.to_dict(add_filter=False) for x in _user.projects],
+            "total_students": sum([x for x in _user.students]) if _user.students else 0,
+            "students": [x.to_dict() for x in _user.students]
         }

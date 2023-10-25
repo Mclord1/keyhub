@@ -1,3 +1,4 @@
+
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
 from exceptions.custom_exception import CustomException
@@ -17,14 +18,17 @@ class SchoolParent(db.Model, GenericMixin):
 
 class SchoolRole(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(250), nullable=True, unique=True)
+    name = db.Column(db.String(250), nullable=True)
     admin_id = db.Column(db.Integer, nullable=True)
     school_id = db.Column(db.ForeignKey('school.id', ondelete='CASCADE'), nullable=True)
     active = db.Column(db.Boolean, default=True)
     description = db.Column(db.String(1000), nullable=True)
-    permissions = db.relationship("Permission", secondary='school_role_permission', back_populates='school_roles',
-                                  cascade="all, delete")
+    school_permissions = db.relationship("SchoolPermission", secondary='school_role_permission', back_populates='school_roles', cascade="all, delete")
     schools = db.relationship("School", back_populates='school_roles', cascade="all, delete")
+
+    __table_args__ = (
+        db.UniqueConstraint('school_id', 'name', name='uq_school_role_name'),
+    )
 
     @staticmethod
     def GetRole(id, school_id):
@@ -36,15 +40,14 @@ class SchoolRole(db.Model, GenericMixin):
 
 class SchoolUserRole(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    school_role_id = db.Column(db.Integer, db.ForeignKey('school_role.id', ondelete="CASCADE"),
-                               nullable=True)  # Role name (e.g., 'parent', 'teacher', 'admin', etc.)
+    school_role_id = db.Column(db.Integer, db.ForeignKey('school_role.id', ondelete="CASCADE"), nullable=True)
     school_id = db.Column(db.Integer, db.ForeignKey('school.id', ondelete="CASCADE"), nullable=True)
     active = db.Column(db.Boolean, default=True)
 
 
 class SchoolRolePermission(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    permission_id = db.Column(db.Integer, db.ForeignKey('permission.id', ondelete="CASCADE"), nullable=True)
+    school_permission_id = db.Column(db.Integer, db.ForeignKey('school_permission.id', ondelete="CASCADE"), nullable=True)
     school_role_id = db.Column(db.Integer, db.ForeignKey('school_role.id', ondelete="CASCADE"), nullable=True)
 
 
@@ -69,7 +72,7 @@ class School(db.Model, GenericMixin):
     projects = db.relationship("Project", back_populates='schools', cascade="all, delete-orphan")
     reports = db.relationship("Report", back_populates='schools', cascade="all, delete-orphan")
     school_roles = db.relationship("SchoolRole", back_populates='schools')
-    learning_group = db.relationship("LearningGroup", back_populates='schools', cascade="all, delete-orphan")
+    learning_groups = db.relationship("LearningGroup", back_populates='schools', cascade="all, delete-orphan")
 
     @classmethod
     def GetSchool(cls, school_id):

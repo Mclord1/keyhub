@@ -31,7 +31,7 @@ class User(db.Model, GenericMixin):
     confirmation_codes = db.relationship('ConfirmationCode', back_populates='user', cascade="all, delete-orphan")
     subscription_plan = db.relationship("SubcriptionPlan", back_populates='user')
     projects = db.relationship("Project", back_populates='user')
-    learning_group = db.relationship("LearningGroup", back_populates='user')
+    learning_groups = db.relationship("LearningGroup", back_populates='user')
 
     def as_dict(self, include_sensitive_info=False):
         """

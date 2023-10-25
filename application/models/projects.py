@@ -1,8 +1,18 @@
-from sqlalchemy import UniqueConstraint
-
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
 from exceptions.custom_exception import CustomException
+
+
+class StudentProject(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete='CASCADE'))
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'))
+
+
+class TeacherProject(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id', ondelete='CASCADE'))
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'))
 
 
 class Project(db.Model, GenericMixin):
@@ -18,9 +28,12 @@ class Project(db.Model, GenericMixin):
     deactivate_reason = db.Column(db.String(450), nullable=True)
     schools = db.relationship("School", back_populates='projects')
     user = db.relationship("User", back_populates='projects')
-    learning_group_projects = db.relationship("LearningGroupProjects", back_populates='projects', cascade='all, delete')
+    students = db.relationship("Student", secondary='student_project', back_populates="projects")
+    teachers = db.relationship("Teacher", secondary='teacher_project', back_populates="projects")
+    learning_groups = db.relationship("LearningGroup", secondary='learning_group_projects', back_populates="projects")
+
     __table_args__ = (
-        UniqueConstraint('school_id', 'name', name='uq_school_project_name'),
+        db.UniqueConstraint('school_id', 'name', name='uq_school_project_name'),
     )
 
     @classmethod

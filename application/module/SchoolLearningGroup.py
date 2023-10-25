@@ -26,9 +26,9 @@ class SchoolLearningGroupsModel:
                     **res.to_dict(add_filter=False),
                     "created_by": res.user.email if res.user else None,
                     "creator_name": f'{res.user.admins.first_name} {res.user.admins.last_name}' if res.user else None,
-                    'students': [x.students.to_dict() for x in res.learning_group_projects],
-                    'teachers': [x.teachers.to_dict() for x in res.learning_group_projects],
-                    'projects': [x.projects.to_dict() for x in res.learning_group_projects],
+                    'students': [x.to_dict() for x in res.students],
+                    'teachers': [x.to_dict() for x in res.teachers],
+                    'projects': [x.to_dict(add_filter=False) for x in res.projects],
                 }
                     for res in results]
             }
@@ -47,19 +47,20 @@ class SchoolLearningGroupsModel:
             'country': _group.user.admins.country if _group.user else None,
             'description': _group.description,
             'isDeactivated': _group.isDeactivated,
-            'students': [x.students.to_dict() for x in _group.learning_group_projects],
-            'teachers': [x.teachers.to_dict() for x in _group.learning_group_projects],
-            'projects': [x.projects.to_dict(add_filter=False) for x in _group.learning_group_projects],
+            'students': [x.to_dict() for x in _group.students],
+            'teachers': [x.to_dict() for x in _group.teachers],
+            'projects': [x.to_dict(add_filter=False) for x in _group.projects],
         }
 
     @classmethod
     def create_learning_group(cls, data, school_id):
+        _school = School.GetSchool(school_id)
+        req: LearningGroupSchema = validator.validate_data(LearningGroupSchema, data)
+
         try:
-            _school = School.GetSchool(school_id)
-            req: LearningGroupSchema = validator.validate_data(LearningGroupSchema, data)
             new_group = LearningGroup(name=req.name, created_by=current_user.id, description=req.description, schools=_school)
             new_group.save(refresh=True)
-            return new_group.to_dict()
+            return new_group.to_dict(add_filter=False)
         except IntegrityError:
             db.session.rollback()
             raise CustomException(message="A Learning group with the name already exist")
@@ -80,7 +81,7 @@ class SchoolLearningGroupsModel:
     def delete_group(cls, school_id, group_id):
         _group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, group_id)
 
-        if _group.learning_group_projects:
+        if _group.students or _group.teachers or _group.projects:
             raise CustomException(message="There are users associated to this school group", status_code=500)
 
         try:
@@ -102,7 +103,7 @@ class SchoolLearningGroupsModel:
             if description:
                 _group.description = description
             db.session.commit()
-            return _group.to_dict()
+            return _group.to_dict(add_filter=False)
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)

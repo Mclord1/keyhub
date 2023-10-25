@@ -19,7 +19,8 @@ class Student(db.Model, GenericMixin):
     address = db.Column(db.String(350), nullable=True)
     parents = db.relationship("Parent", back_populates='students')
     schools = db.relationship("School", back_populates='students')
-    learning_group_projects = db.relationship("LearningGroupProjects", back_populates='students')
+    projects = db.relationship("Project", secondary='student_project', back_populates="students")
+    learning_groups = db.relationship("LearningGroup", secondary='learning_group_students', back_populates="students")
 
     @property
     def gender(self):

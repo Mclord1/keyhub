@@ -1,5 +1,5 @@
 from . import *
-from ..Schema.school import UpdateSchoolSchema, SchoolSchema, ProjectSchema
+from ..Schema.school import UpdateSchoolSchema, SchoolSchema
 
 
 class SchoolModel:
@@ -30,7 +30,7 @@ class SchoolModel:
                 "total_active_schools": len([x for x in results if not x.isDeactivated]),
                 "total_deactivated_schools": len([x for x in results if x.isDeactivated]),
                 "schools": [{
-                    **school.to_dict(),
+                    **school.to_dict(add_filter=False),
                     "num_of_teachers": len(school.teachers) if school.teachers else 0,
                     "num_of_students": len(school.students) if school.students else 0,
                     "num_of_parents": len(school.parents) if school.parents else 0,
@@ -74,7 +74,7 @@ class SchoolModel:
                         _school.teachers) if _school.teachers else 0
                 }
             },
-            **_school.to_dict()
+            **_school.to_dict(add_filter=False)
         }
 
     @classmethod
@@ -200,7 +200,7 @@ class SchoolModel:
                     "email": x.user.email,
                     "isDeactivated": x.user.isDeactivated,
                     "msisdn": x.user.msisdn,
-                    **x.to_dict()
+                    **x.to_dict(add_filter=False)
                 } for x in results]
             }
         }
@@ -229,8 +229,8 @@ class SchoolModel:
                     "email": teacher.user.email,
                     "isDeactivated": teacher.user.isDeactivated,
                     "msisdn": teacher.user.msisdn,
-                    "num_of_projects": len([x.projects for x in teacher.learning_group_projects ]),
-                    "num_of_students": len([x.students for x in teacher.learning_group_projects]),
+                    "num_of_projects": len([x for x in teacher.projects]),
+                    "num_of_students": len([x for x in teacher.students]),
                     **teacher.to_dict()
                 } for teacher in results]
             }
@@ -291,7 +291,7 @@ class SchoolModel:
                 "num_of_active_students": len([x for x in results if not x.user.isDeactivated]),
                 "num_of_deactivated_students": len([x for x in results if x.user.isDeactivated]),
                 "students": [{
-                    "project": [x.projects.to_dict() for x in student.learning_group_projects],
+                    "project": [x.to_dict(add_filter=False) for x in student.projects],
                     "email": student.user.email,
                     "isDeactivated": student.user.isDeactivated,
                     "msisdn": student.user.msisdn,
@@ -301,7 +301,6 @@ class SchoolModel:
 
         }
         return PaginationSchema(**pagination_data).model_dump()
-
 
     @classmethod
     def get_transactions(cls, school_id):

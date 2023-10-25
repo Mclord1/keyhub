@@ -4,6 +4,7 @@ from os.path import dirname, abspath
 import bcrypt
 
 from application.Enums.Enums import BasicRoles
+from application.models.permission import SchoolPermission
 
 sys.path.append(dirname(abspath(__file__)))
 
@@ -11,7 +12,7 @@ from sqlalchemy.exc import IntegrityError
 from config.countries import countries_data
 from application import db, app
 from application.models import *
-from application.Enums.Permission import PermissionEnum
+from application.Enums.Permission import PermissionEnum, SchoolPermissionEnum
 
 
 class Seed:
@@ -43,6 +44,20 @@ class Seed:
             except IntegrityError:
                 db.session.rollback()
         print("Permission has been added successfully")
+
+    @staticmethod
+    def AddSchoolPermission():
+
+        add_permissions = [x.value for x in SchoolPermissionEnum.__members__.values()]
+
+        for permissions in add_permissions:
+            try:
+                new_permission = SchoolPermission(name=permissions)
+                new_permission.save(refresh=True)
+
+            except IntegrityError:
+                db.session.rollback()
+        print("School Permission has been added successfully")
 
     @staticmethod
     def AddAdmin():
@@ -122,6 +137,7 @@ class Seed:
         """
         self.AddRole()
         self.AddPermission()
+        self.AddSchoolPermission()
         self.AddAdmin()
         # self.populate_country()
         # self.populate_states()

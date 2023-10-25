@@ -15,7 +15,8 @@ class Teacher(db.Model, GenericMixin):
     address = db.Column(db.String(350), nullable=True)
     reg_number = db.Column(db.String(350), nullable=True, unique=True)
     schools = db.relationship("School", secondary='school_teacher', back_populates='teachers', passive_deletes=True)
-    learning_group_projects = db.relationship("LearningGroupProjects", back_populates='teachers')
+    projects = db.relationship("Project", secondary='teacher_project', back_populates="teachers")
+    learning_groups = db.relationship("LearningGroup", secondary='learning_group_teachers', back_populates="teachers")
 
     @property
     def gender(self):

@@ -21,7 +21,7 @@ class RolePermission:
             "results": [
                 {
                     **res.to_dict(add_filter=False),
-                    "permissions": [x.to_dict() for x in res.permissions],
+                    "permissions": [x.to_dict(add_filter=False) for x in res.permissions],
                     "created_by": created_by(res.admin_id).email if res.admin_id and created_by(res.admin_id) else None,
                     "creator_name": f'{created_by(res.admin_id).admins.first_name if created_by(res.admin_id) else None} {created_by(res.admin_id).admins.last_name if created_by(res.admin_id) else None}' if res.admin_id else None
                 }
@@ -73,7 +73,7 @@ class RolePermission:
             'users_assigned': len(user_list),
             'description': _role.description,
             'active': _role.active,
-            'permissions': [x.to_dict() for x in permissions]
+            'permissions': [x.to_dict(add_filter=False) for x in permissions]
         }
 
     @classmethod
@@ -93,7 +93,7 @@ class RolePermission:
         try:
             new_role = Role(name=role_name, admin_id=current_user.id, description=description)
             new_role.save(refresh=True)
-            return new_role.to_dict()
+            return new_role.to_dict(add_filter=False)
         except IntegrityError:
             db.session.rollback()
             raise CustomException(message="A role with the name already exist")
@@ -105,7 +105,7 @@ class RolePermission:
             _role.name = role_name
             _role.description = description
             db.session.commit()
-            return _role.to_dict()
+            return _role.to_dict(add_filter=False)
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
@@ -159,7 +159,7 @@ class RolePermission:
 
             _role.permissions.remove(_permission)
             db.session.commit()
-            return {'permissions': [x.to_dict() for x in _role.permissions]}
+            return {'permissions': [x.to_dict(add_filter=False) for x in _role.permissions]}
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)

@@ -54,7 +54,7 @@ class SubscriptionModel:
     @classmethod
     def list_plans(cls):
         plans = SubcriptionPlan.query.all()
-        return [{**x.to_dict(), "created_by": x.user.email} for x in plans]
+        return [{**x.to_dict(add_filter=False), "created_by": x.user.email} for x in plans]
 
     @classmethod
     def disable_plan(cls, plan_id):

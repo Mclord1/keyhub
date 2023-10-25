@@ -2,10 +2,11 @@ from application.models.admin import Admin
 from application.models.audit import Audit
 from application.models.confirmation_code import ConfirmationCode
 from application.models.country import Country
-from application.models.learning_group import LearningGroupProjects, LearningGroup
+from application.models.learning_group import LearningGroupTeachers, LearningGroupStudents, LearningGroupProjects, LearningGroup
 from application.models.parents import Parent
 from application.models.permission import RolePermission, Permission
-from application.models.projects import Project
+from application.models.permission import RolePermission, Permission, SchoolPermission
+from application.models.projects import Project, TeacherProject, StudentProject
 from application.models.reports import Report
 from application.models.roles import Role
 from application.models.school_manager import SchoolManager
