@@ -1,3 +1,5 @@
+from sqlalchemy import UniqueConstraint
+
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
 from exceptions.custom_exception import CustomException
@@ -7,8 +9,8 @@ class LearningGroupProjects(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     learning_group_id = db.Column(db.Integer, db.ForeignKey('learning_group.id', ondelete='CASCADE'), nullable=False)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'), nullable=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete='CASCADE'), nullable=False)
-    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id', ondelete='CASCADE'), nullable=False)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete='CASCADE'), nullable=True)
+    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id', ondelete='CASCADE'), nullable=True)
     teachers = db.relationship("Teacher", back_populates='learning_group_projects')
     students = db.relationship("Student", back_populates='learning_group_projects')
     projects = db.relationship("Project", back_populates='learning_group_projects')
@@ -17,7 +19,7 @@ class LearningGroupProjects(db.Model, GenericMixin):
 
 class LearningGroup(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(350), nullable=True, unique=True)
+    name = db.Column(db.String(350), nullable=True)
     description = db.Column(db.String(350), nullable=True)
     isDeactivated = db.Column(db.Boolean, default=False)
     created_by = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
@@ -26,6 +28,10 @@ class LearningGroup(db.Model, GenericMixin):
     schools = db.relationship("School", back_populates='learning_group')
     user = db.relationship("User", back_populates='learning_group')
     learning_group_projects = db.relationship("LearningGroupProjects", back_populates='learning_group')
+
+    __table_args__ = (
+        UniqueConstraint('school_id', 'name', name='uq_school_learning_group_name'),
+    )
 
     @classmethod
     def GetLearningGroupName(cls, school_id, name):

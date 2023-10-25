@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, field_validator
 
@@ -44,8 +44,8 @@ class UpdateSchoolSchema(BaseModel):
 class ProjectSchema(BaseModel):
     name: str
     description: str
-    teacher_id: int
-    student_id: int
+    teacher_id: Optional[int] = None
+    student_id: Optional[List[int]] = None
     group_id: int
 
 
