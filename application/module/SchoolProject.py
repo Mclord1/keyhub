@@ -1,5 +1,5 @@
 from . import *
-from ..Schema.school import ProjectSchema
+from ..Schema.school import ProjectSchema, UpdateProjectSchema
 
 
 class SchoolProjectModel:
@@ -24,7 +24,7 @@ class SchoolProjectModel:
                 "num_of_active_projects": len([x for x in results if not x.isDeactivated]),
                 "num_of_deactivated_projects": len([x for x in results if x.isDeactivated]),
                 "projects": [{
-                    # "num_of_students": sum([ x.s for x in project.learning_group_projects]),
+                    # "num_of_students": len([ x.s for x in project.learning_group_projects]),
                     "email": project.user.email,
                     "msisdn": project.user.msisdn,
                     "school": project.schools.name,
@@ -76,17 +76,6 @@ class SchoolProjectModel:
 
             _learning_group.projects.append(add_project)
 
-            if req.teacher_id:
-                teacher: Teacher = Teacher.GetTeacher(req.teacher_id)
-                _learning_group.teachers.append(teacher)
-                add_project.teachers.append(teacher)
-
-            if req.student_id:
-                for std in req.student_id:
-                    student: Student = Student.GetStudent(std)
-                    _learning_group.students.append(student)
-                    add_project.students.append(student)
-
             add_project.save(refresh=True)
 
         except Exception as e:
@@ -126,3 +115,100 @@ class SchoolProjectModel:
             "assigned_teachers": [x.to_dict() for x in _project.teachers],
             **_project.to_dict(add_filter=False)
         }
+
+    @classmethod
+    def assign_user_to_project(cls, school_id, project_id, data, model):
+
+        req: UpdateProjectSchema = validator.validate_data(UpdateProjectSchema, data)
+
+        project_id = int(project_id)
+        model = model.lower()
+
+        _project: Project = Project.GetProject(school_id=school_id, project_id=project_id)
+
+        _learning_group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, req.group_id)
+
+        try:
+            if model == "teacher":
+                for _user in req.users:
+
+                    _teacher: Teacher = Teacher.GetTeacher(_user)
+
+                    if _learning_group.school_id not in [x.id for x in _teacher.schools]:
+                        raise CustomException(message="The teacher doesn't belong to learning group school", status_code=400)
+
+                    if _project.students:
+                        # append students to teacher if project students exist
+                        _teacher.students.extend(_project.students)
+
+                    if _teacher not in _learning_group.teachers:
+                        _learning_group.teachers.append(_teacher)
+
+                    _project.teachers.append(_teacher)
+
+            if model == "student":
+
+                for _user in req.users:
+                    _student: Student = Student.GetStudent(_user)
+
+                    if _learning_group.school_id != _student.school_id:
+                        raise CustomException(message="The student doesn't belong to the learning group school", status_code=400)
+
+                    if _project.teachers:
+                        # append teachers to student if project teachers exist
+                        _student.teachers.extend(_project.teachers)
+
+                    if _student not in _learning_group.students:
+                        _learning_group.students.append(_student)
+
+                    _project.students.append(_student)
+
+            db.session.commit()
+            return "User has been added to the project"
+        except Exception as e:
+            db.session.rollback()
+            raise e
+
+    @classmethod
+    def remove_user_from_project(cls, school_id, project_id, data, model):
+
+        req: UpdateProjectSchema = validator.validate_data(UpdateProjectSchema, data)
+
+        project_id = int(project_id)
+        model = model.lower()
+
+        project: Project = Project.GetProject(school_id=school_id, project_id=project_id)
+        _learning_group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, req.group_id)
+
+        try:
+            if model == "teacher":
+                for _user in req.users:
+
+                    _teacher: Teacher = Teacher.GetTeacher(_user)
+
+                    if len(_teacher.projects) == 1:
+                        _learning_group.teachers.append(_teacher)
+
+                    if _teacher not in project.teachers:
+                        raise CustomException(message="Teacher doesn't exist in this group", status_code=404)
+
+                    project.teachers.remove(_teacher)
+
+            if model == "student":
+                for _user in req.users:
+
+                    _student: Student = Student.GetStudent(_user)
+
+                    if len(_student.projects) == 1:
+                        _learning_group.students.remove(_student)
+
+                    if _student not in project.students:
+                        raise CustomException(message="Student doesn't exist in this group", status_code=404)
+
+                    project.students.remove(_student)
+
+            db.session.commit()
+            return "User has been removed from the project"
+        except Exception as e:
+            db.session.rollback()
+            raise e

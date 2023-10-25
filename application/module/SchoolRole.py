@@ -51,6 +51,33 @@ class SchoolRoleModel:
         }
 
     @classmethod
+    def GetAllPermissions(cls):
+        _permissions = SchoolPermission.query.all()
+        if not _permissions:
+            return []
+
+        permission_groups = {
+            "students": [],
+            "projects": [],
+            "subscription": [],
+            "transactions": [],
+            "parents": [],
+            "teacher": [],
+            "school_manager": [],
+            "school": [],
+            "roles": [],
+            "permissions": [],
+            "learning_groups": []
+        }
+
+        for _permission in _permissions:
+            for category in permission_groups.keys():
+                if category in _permission.name:
+                    permission_groups[category].append(_permission.to_dict(add_filter=False))
+
+        return permission_groups
+
+    @classmethod
     def create_school_role(cls, role_name, description, school_id):
         _school = School.GetSchool(school_id)
 

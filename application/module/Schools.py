@@ -27,10 +27,13 @@ class SchoolModel:
             "total_items": total_items,
             "results": {
                 "total_schools": len(results),
+
                 "total_active_schools": len([x for x in results if not x.isDeactivated]),
                 "total_deactivated_schools": len([x for x in results if x.isDeactivated]),
                 "schools": [{
                     **school.to_dict(add_filter=False),
+                    "total_learning_groups": len(school.learning_groups),
+                    "learning_groups": [x.id for x in school.learning_groups],
                     "num_of_teachers": len(school.teachers) if school.teachers else 0,
                     "num_of_students": len(school.students) if school.students else 0,
                     "num_of_parents": len(school.parents) if school.parents else 0,
@@ -50,6 +53,7 @@ class SchoolModel:
             "num_of_students": len(_school.students),
             "num_of_parents": len(_school.parents),
             "num_of_school_administrators": len(_school.managers),
+            "learning_groups": [x.id for x in _school.learning_groups],
             "student_by_gender": {
                 "male": {
                     "count": len([x for x in _school.students if x.gender == "Male"]),

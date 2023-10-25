@@ -14,5 +14,5 @@ from application.models.schools import School, SchoolTeacher, SchoolParent, Scho
 from application.models.state import State
 from application.models.students import Student
 from application.models.subscription import Subscription, SubcriptionPlan
-from application.models.teachers import Teacher
+from application.models.teachers import Teacher, TeacherStudent
 from application.models.users import User, UserRole

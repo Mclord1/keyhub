@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from pydantic import BaseModel, field_validator
 
@@ -44,8 +44,11 @@ class UpdateSchoolSchema(BaseModel):
 class ProjectSchema(BaseModel):
     name: str
     description: str
-    teacher_id: Optional[int] = None
-    student_id: Optional[List[int]] = None
+    group_id: int
+
+
+class UpdateProjectSchema(BaseModel):
+    users: Optional[Union[List[int], int]] = None
     group_id: int
 
 

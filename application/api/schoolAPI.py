@@ -150,6 +150,35 @@ def deactivate_school_project(school_id, project_id):
         OutputObj(code=200, message=SchoolProjectModel.deactivate_project(school_id, project_id, reason)))
 
 
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>/assign', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_PROJECTS)
+@has_school_privilege
+def assign_user_to_school_project(school_id, project_id):
+    query = request.args.get('action', None)
+    req = request.json
+
+    if not query or query.lower() not in ('teacher', 'student'):
+        raise CustomException(message="You need to specify if teacher or student you need to assign to project", status_code=400)
+
+    return return_json(
+        OutputObj(code=200, message=SchoolProjectModel.assign_user_to_project(school_id, project_id, req, query)))
+
+
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>/remove', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_PROJECTS)
+@has_school_privilege
+def remove_user_from_school_project(school_id, project_id):
+    query = request.args.get('action', None)
+    req = request.json
+
+    if not query or query.lower() not in ('teacher', 'student'):
+        raise CustomException(message="You need to specify if teacher or student you need to assign to project", status_code=400)
+
+
+    return return_json(
+        OutputObj(code=200, message=SchoolProjectModel.remove_user_from_project(school_id, project_id, req, query)))
+
+
 # ===================================== SCHOOL ROLE =====================================
 
 @school_blueprint.route('/<int:school_id>/roles', methods=['GET'])
@@ -160,6 +189,12 @@ def list_school_roles(school_id):
     per_page = request.args.get('per_page', 10)
     return return_json(OutputObj(code=200, message="school roles results",
                                  data=SchoolRoleModel.get_school_roles(school_id, page, per_page)))
+
+
+@school_blueprint.route('/permissions', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_PERMISSIONS)
+def list_school_permissions():
+    return return_json(OutputObj(code=200, message="school permissions results", data=SchoolRoleModel.GetAllPermissions()))
 
 
 @school_blueprint.route('/<int:school_id>/roles/<int:role_id>', methods=['GET'])
@@ -239,8 +274,7 @@ def remove_school_permission_from_role(school_id):
 def fetch_all_school_groups(school_id):
     page = request.args.get('page', 1)
     per_page = request.args.get('per_page', 10)
-    return return_json(OutputObj(code=200, message="school learning groups results",
-                                 data=SchoolLearningGroupsModel.list_all_groups(school_id, page, per_page)))
+    return return_json(OutputObj(code=200, message="school learning groups results", data=SchoolLearningGroupsModel.list_all_groups(school_id, page, per_page)))
 
 
 @school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>', methods=['GET'])

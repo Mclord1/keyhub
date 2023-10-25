@@ -3,6 +3,12 @@ from application.Mixins.GenericMixins import GenericMixin
 from exceptions.custom_exception import CustomException
 
 
+class TeacherStudent(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    teacher_id = db.Column(db.Integer, db.ForeignKey('teacher.id', ondelete="CASCADE"), nullable=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete="CASCADE"), nullable=True)
+
+
 class Teacher(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(350), nullable=True)
@@ -14,6 +20,7 @@ class Teacher(db.Model, GenericMixin):
     state = db.Column(db.String(350), nullable=True)
     address = db.Column(db.String(350), nullable=True)
     reg_number = db.Column(db.String(350), nullable=True, unique=True)
+    students = db.relationship("Student", secondary='teacher_student', back_populates='teachers')
     schools = db.relationship("School", secondary='school_teacher', back_populates='teachers', passive_deletes=True)
     projects = db.relationship("Project", secondary='teacher_project', back_populates="teachers")
     learning_groups = db.relationship("LearningGroup", secondary='learning_group_teachers', back_populates="teachers")

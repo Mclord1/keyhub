@@ -117,6 +117,7 @@ class StudentModel:
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
+            "learning_groups": [{'name': x.name, 'id': x.id} for x in _user.learning_groups],
             "parent": _user.parents.to_dict() if _user.parents else {},
-            "projects": [x.to_dict(add_filter=False) for x in _user.projects]
+            "projects": [{'name': x.name, 'id': x.id} for x in _user.projects]
         }
