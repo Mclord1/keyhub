@@ -2,7 +2,7 @@ from flask import Blueprint, request
 
 from application.module.SchoolLearningGroup import SchoolLearningGroupsModel
 from application.module.SchoolProject import SchoolProjectModel
-from application.module.SchoolRole import SchoolRoleModel
+from application.module.SchoolsRole import SchoolRoleModel
 from application.module.Schools import SchoolModel
 from application.utils.output import return_json, OutputObj
 from . import *
@@ -15,6 +15,14 @@ school_blueprint = Blueprint('school', __name__)
 def add_school():
     req = request.json
     return return_json(OutputObj(code=200, message=SchoolModel.add_school(req)))
+
+
+@school_blueprint.route('/<int:school_id>/add-school-admin', methods=['POST'])
+@authenticate(PermissionEnum.ADD_SCHOOL_MANAGERS)
+@has_school_privilege
+def add_school_admin(school_id):
+    req = request.json
+    return return_json(OutputObj(code=200, message=SchoolModel.add_school_admin(school_id, req)))
 
 
 @school_blueprint.route('/<int:school_id>', methods=['PUT'])
@@ -173,7 +181,6 @@ def remove_user_from_school_project(school_id, project_id):
 
     if not query or query.lower() not in ('teacher', 'student'):
         raise CustomException(message="You need to specify if teacher or student you need to assign to project", status_code=400)
-
 
     return return_json(
         OutputObj(code=200, message=SchoolProjectModel.remove_user_from_project(school_id, project_id, req, query)))

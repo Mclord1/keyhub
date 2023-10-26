@@ -53,7 +53,11 @@ class StudentModel:
 
         role = Role.GetRoleByName(BasicRoles.STUDENT.value)
 
-        school = School.GetSchool(req.school_id)
+        school: School = School.GetSchool(req.school_id)
+
+        if not current_user.admins or (current_user.managers and current_user.managers.school_id != school.id):
+            raise CustomException("You do not have privilege to access this school")
+
         _parent = None
         if req.parent:
             _parent = Parent.GetParent(req.parent)

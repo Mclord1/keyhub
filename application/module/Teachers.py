@@ -52,6 +52,10 @@ class TeacherModel:
         role = Role.GetRoleByName(BasicRoles.TEACHER.value)
 
         school = School.GetSchool(req.school_id)
+
+        if not current_user.admins or (current_user.managers and current_user.managers.school_id != school.id):
+            raise CustomException("You do not have privilege to access this school")
+
         try:
             new_teacher = User.CreateUser(req.email, req.msisdn, role)
 

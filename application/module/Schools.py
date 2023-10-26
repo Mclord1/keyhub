@@ -1,5 +1,5 @@
 from . import *
-from ..Schema.school import UpdateSchoolSchema, SchoolSchema
+from ..Schema.school import UpdateSchoolSchema, SchoolSchema, PrimaryContact
 
 
 class SchoolModel:
@@ -180,6 +180,38 @@ class SchoolModel:
             db.session.rollback()
             print(e)
             raise e
+
+    @classmethod
+    def add_school_admin(cls, school_id, data):
+
+        req: PrimaryContact = validator.validate_data(PrimaryContact, data)
+
+        Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
+
+        _school = School.GetSchool(school_id)
+
+        _role: SchoolRole = SchoolRole.GetSchoolRole(req.role, _school.id)
+
+        try:
+            new_admin = User(email=req.email, msisdn=req.msisdn, password=None)
+            db.session.add(new_admin)
+            new_admin.save(refresh=True)
+
+            add_school_admin = SchoolManager(
+                school_id=_school.id,
+                name=req.name,
+                gender=req.gender,
+                residence=req.address,
+                user_id=new_admin.id
+            )
+
+            add_school_admin.school_roles = _role
+            add_school_admin.save(refresh=True)
+            return add_school_admin.to_dict()
+
+        except Exception:
+            db.session.rollback()
+            raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
     def get_account_admins(cls, school_id, page, per_page):

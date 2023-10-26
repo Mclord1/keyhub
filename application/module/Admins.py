@@ -26,7 +26,7 @@ class SystemAdmins:
                     gender=req.gender,
                 )
                 add_user.save(refresh=True)
-                return add_user
+                return add_user.to_dict()
 
         except Exception:
             db.session.rollback()

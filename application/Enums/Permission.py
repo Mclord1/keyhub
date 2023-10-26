@@ -21,6 +21,8 @@ class SchoolPermissionEnum(enum.Enum):
     DEACTIVATE_SCHOOL = 'deactivate_school'
     MODIFY_SCHOOL = 'modify_school'
 
+
+
     # SCHOOL MANAGER
     ADD_SCHOOL_MANAGERS = 'add_school_manager'
     VIEW_SCHOOL_MANAGERS = 'view_school_manager'

@@ -59,8 +59,6 @@ class Helper:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
 
-
-
     @classmethod
     def User_Email_OR_Msisdn_Exist(cls, email, msisdn):
         user: User = db.session.query(User).filter(
@@ -86,7 +84,7 @@ class Helper:
         if not _user:
             raise CustomException(message=f"{Model.__name__} does not exist", status_code=404)
 
-        if not current_user.admins and current_user.managers.school_id != _user.school_id:
+        if not current_user.admins or current_user.managers.school_id != _user.school_id:
             raise CustomException("You do not have privilege to access this user")
 
         return _user

@@ -11,6 +11,7 @@ class PrimaryContact(BaseModel):
     gender: str
     msisdn: str
     address: str
+    role: Optional[int] = None
 
     @field_validator('gender')
     def validate_gender(cls, v):

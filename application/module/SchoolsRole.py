@@ -33,7 +33,7 @@ class SchoolRoleModel:
 
     @classmethod
     def get_role_details(cls, role_id: int, school_id: int) -> dict:
-        _role: SchoolRole = SchoolRole.GetRole(role_id, school_id)
+        _role: SchoolRole = SchoolRole.GetSchoolRole(role_id, school_id)
 
         permissions = _role.school_permissions
         user_list = _role.schools.managers
@@ -91,7 +91,7 @@ class SchoolRoleModel:
 
     @classmethod
     def delete_school_role(cls, role_id, school_id):
-        _role: SchoolRole = SchoolRole.GetRole(role_id, school_id)
+        _role: SchoolRole = SchoolRole.GetSchoolRole(role_id, school_id)
 
         if _role.schools:
             raise CustomException(message="There are schools associated to this school role", status_code=500)
@@ -107,7 +107,8 @@ class SchoolRoleModel:
 
     @classmethod
     def toggle_school_role_status(cls, role_id, school_id):
-        _role: SchoolRole = SchoolRole.GetRole(role_id, school_id)
+        _role: SchoolRole = SchoolRole.GetSchoolRole(role_id, school_id)
+
 
         try:
             _role.active = not _role.active
@@ -119,7 +120,7 @@ class SchoolRoleModel:
 
     @classmethod
     def update_school_role(cls, school_id, role_id, role_name, description):
-        _role: SchoolRole = SchoolRole.GetRole(role_id, school_id)
+        _role: SchoolRole = SchoolRole.GetSchoolRole(role_id, school_id)
 
         try:
             if role_name:
@@ -138,7 +139,7 @@ class SchoolRoleModel:
         if role_id is None or permission_id is None:
             raise CustomException("Both role_id and School permission_id are required.", status_code=400)
 
-        _role: SchoolRole = SchoolRole.GetRole(role_id, school_id)
+        _role: SchoolRole = SchoolRole.GetSchoolRole(role_id, school_id)
         _permission: SchoolPermission = SchoolPermission.GetPermission(permission_id)
 
         if int(permission_id) in [x.id for x in _role.school_permissions]:
@@ -155,7 +156,7 @@ class SchoolRoleModel:
 
     @classmethod
     def remove_permission_from_school_role(cls, school_id, role_id, permission_id):
-        _role: SchoolRole = SchoolRole.GetRole(role_id, school_id)
+        _role: SchoolRole = SchoolRole.GetSchoolRole(role_id, school_id)
         _permission: SchoolPermission = SchoolPermission.GetPermission(permission_id)
 
         if _permission not in _role.school_permissions:

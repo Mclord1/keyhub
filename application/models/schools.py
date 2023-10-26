@@ -1,4 +1,3 @@
-
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
 from exceptions.custom_exception import CustomException
@@ -25,24 +24,18 @@ class SchoolRole(db.Model, GenericMixin):
     description = db.Column(db.String(1000), nullable=True)
     school_permissions = db.relationship("SchoolPermission", secondary='school_role_permission', back_populates='school_roles', cascade="all, delete")
     schools = db.relationship("School", back_populates='school_roles', cascade="all, delete")
+    managers = db.relationship("SchoolManager", back_populates='school_roles', cascade="all, delete", passive_deletes=True)
 
     __table_args__ = (
         db.UniqueConstraint('school_id', 'name', name='uq_school_role_name'),
     )
 
     @staticmethod
-    def GetRole(id, school_id):
+    def GetSchoolRole(id, school_id):
         role = SchoolRole.query.filter_by(id=id, school_id=school_id).first()
         if not role:
             raise CustomException(message="The provided role does not exist")
         return role
-
-
-class SchoolUserRole(db.Model, GenericMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    school_role_id = db.Column(db.Integer, db.ForeignKey('school_role.id', ondelete="CASCADE"), nullable=True)
-    school_id = db.Column(db.Integer, db.ForeignKey('school.id', ondelete="CASCADE"), nullable=True)
-    active = db.Column(db.Boolean, default=True)
 
 
 class SchoolRolePermission(db.Model, GenericMixin):

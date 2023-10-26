@@ -25,7 +25,7 @@ class ParentModel:
                 "parents": [{
                     **(res.user.as_dict() if res.user else {}),
                     **res.to_dict(),
-                    "schools": [{"name" : x.name} for x in res.schools],
+                    "schools": [{"name": x.name} for x in res.schools],
                     "num_of_children": len(res.students) if res and res.students else 0,
                     "num_of_active_children": len([x for x in res.students if not x.user.isDeactivated]),
                     "num_of_deactivated_children": len([x for x in res.students if x.user.isDeactivated]),
@@ -55,6 +55,9 @@ class ParentModel:
         role = Role.GetRoleByName(BasicRoles.PARENT.value)
 
         _school = School.GetSchool(req.school_id)
+
+        if not current_user.admins or (current_user.managers and current_user.managers.school_id != _school.id):
+            raise CustomException("You do not have privilege to access this school")
 
         if req.student:
 
@@ -124,6 +127,6 @@ class ParentModel:
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
-            "students": [{**x.to_dict(), "school" : x.schools.name} for x in _user.students],
-            "schools" : [x.to_dict(add_filter=False) for x in _user.schools]
+            "students": [{**x.to_dict(), "school": x.schools.name} for x in _user.students],
+            "schools": [x.to_dict(add_filter=False) for x in _user.schools]
         }
