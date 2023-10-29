@@ -1,5 +1,6 @@
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
+from exceptions.custom_exception import CustomException
 
 
 class SchoolManager(db.Model, GenericMixin):
@@ -28,3 +29,10 @@ class SchoolManager(db.Model, GenericMixin):
     def gender(self):
         # Ensure that the value is capitalized before assigning it
         return self._gender
+
+    @classmethod
+    def GetSchoolAdmin(cls, user_id, school_id):
+        admin = SchoolManager.query.filter_by(id=user_id, school_id=school_id).first()
+        if not admin:
+            raise CustomException(message="School Admin does not exist", status_code=404)
+        return admin

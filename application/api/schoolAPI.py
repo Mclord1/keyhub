@@ -1,9 +1,10 @@
 from flask import Blueprint, request
 
+from application.module.SchoolAdmin import SchoolAdminModel
 from application.module.SchoolLearningGroup import SchoolLearningGroupsModel
 from application.module.SchoolProject import SchoolProjectModel
-from application.module.SchoolsRole import SchoolRoleModel
 from application.module.Schools import SchoolModel
+from application.module.SchoolsRole import SchoolRoleModel
 from application.utils.output import return_json, OutputObj
 from . import *
 
@@ -15,14 +16,6 @@ school_blueprint = Blueprint('school', __name__)
 def add_school():
     req = request.json
     return return_json(OutputObj(code=200, message=SchoolModel.add_school(req)))
-
-
-@school_blueprint.route('/<int:school_id>/add-school-admin', methods=['POST'])
-@authenticate(PermissionEnum.ADD_SCHOOL_MANAGERS)
-@has_school_privilege
-def add_school_admin(school_id):
-    req = request.json
-    return return_json(OutputObj(code=200, message=SchoolModel.add_school_admin(school_id, req)))
 
 
 @school_blueprint.route('/<int:school_id>', methods=['PUT'])
@@ -184,6 +177,65 @@ def remove_user_from_school_project(school_id, project_id):
 
     return return_json(
         OutputObj(code=200, message=SchoolProjectModel.remove_user_from_project(school_id, project_id, req, query)))
+
+
+# ===================================== SCHOOL ADMIN =====================================
+
+@school_blueprint.route('/<int:school_id>/add-school-admin', methods=['POST'])
+@authenticate(PermissionEnum.ADD_SCHOOL_MANAGERS)
+@has_school_privilege
+def add_school_admin(school_id):
+    req = request.json
+    return return_json(OutputObj(code=200, message=SchoolAdminModel.add_school_admin(school_id, req)))
+
+
+@school_blueprint.route('/<int:school_id>/get-admin/<int:user_id>', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_SCHOOL_MANAGERS)
+@has_school_privilege
+def get_school_admin(school_id, user_id):
+    return return_json(OutputObj(code=200, message="School Admin results", data=SchoolAdminModel.get_user(user_id, school_id)))
+
+
+@school_blueprint.route('/<int:school_id>/update-school-admin', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_SCHOOL_MANAGERS)
+@has_school_privilege
+def update_school_admin(school_id):
+    user_id = request.args.get('user_id', None)
+    if not user_id or not user_id.isdigit():
+        raise CustomException(message="You need to pass user id as query parameter", status_code=400)
+    args = request.json
+    return return_json(OutputObj(code=200, message="User information has been updated successfully", data=SchoolAdminModel.update_school_admin(user_id, school_id, args)))
+
+
+@school_blueprint.route('/<int:school_id>/search-school-admin', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_SCHOOL_MANAGERS)
+def search_school_admin(school_id):
+    query = request.args.get('query')
+    return return_json(OutputObj(code=200, message="Admin results", data=SchoolAdminModel.search_school_admin(query, school_id)))
+
+
+@school_blueprint.route('/<int:school_id>/toggle-school-admin-status', methods=['PUT'])
+@authenticate(PermissionEnum.DEACTIVATE_SCHOOL_MANAGERS)
+def delete_school_admin(school_id):
+    args = request.json
+    admin_id = args.get('admin_id')
+    reason = args.get('reason')
+
+    if not admin_id or not reason:
+        raise CustomException(message="admin_id and reason must be provided")
+
+    return return_json(
+        OutputObj(code=200, message="Admin information", data=SchoolAdminModel.deactivate_school_user(admin_id, school_id, reason)))
+
+
+@school_blueprint.route('/<int:school_id>/reset-school-admin-password', methods=['POST'])
+@authenticate(PermissionEnum.RESET_SCHOOL_MANAGERS_PASSWORD)
+def reset_school_admin_password(school_id):
+    req = request.json
+    user_id = req.get('user_id')
+    if not user_id:
+        raise CustomException(message="user_id is required")
+    return return_json(OutputObj(code=200, message=SchoolAdminModel.reset_school_password(user_id, school_id)))
 
 
 # ===================================== SCHOOL ROLE =====================================

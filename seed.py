@@ -4,7 +4,6 @@ from os.path import dirname, abspath
 import bcrypt
 
 from application.Enums.Enums import BasicRoles
-from application.models.permission import SchoolPermission
 
 sys.path.append(dirname(abspath(__file__)))
 
@@ -19,7 +18,7 @@ class Seed:
 
     @staticmethod
     def AddRole():
-        add_roles = ['system_admin', 'school_admin', 'teacher', 'student', 'parent']
+        add_roles = ['system_admin', 'teacher', 'student', 'parent']
 
         for role in add_roles:
             try:
@@ -28,6 +27,8 @@ class Seed:
             except IntegrityError:
                 db.session.rollback()
         print("Role Model has been added")
+
+
 
     @staticmethod
     def AddPermission():
@@ -135,8 +136,8 @@ class Seed:
              Implementation scripts to automate the creation of the database and seeding with initial data.
              This ensures that all developers have the same initial data for testing and development.
         """
-        # self.AddRole()
-        # self.AddPermission()
+        self.AddRole()
+        self.AddPermission()
         self.AddSchoolPermission()
         # self.AddAdmin()
         # self.populate_country()

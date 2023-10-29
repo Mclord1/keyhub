@@ -19,6 +19,7 @@ class Authentication:
                 'role_name': None,
                 'role_id': None
             }
+
             if user.roles:
                 role = user.roles
 
@@ -26,6 +27,15 @@ class Authentication:
                 user_details.update({
                     'role_name': ' '.join(str(role.name).split('_')) if role.name else None,
                     'role_id': user.role_id,
+                    **user.as_dict()
+                })
+
+            if user.managers and user.managers.school_roles:
+                role = user.managers.school_roles
+
+                user_details.update({
+                    'role_name': ' '.join(str(role.name).split('_')) if role.name else None,
+                    'role_id': user.managers.school_role_id,
                     **user.as_dict()
                 })
 
@@ -43,15 +53,14 @@ class Authentication:
                 user_details.update(user.admins.to_dict())
 
             if user.managers:
-                user_details.update({**user.managers.to_dict(), "school_id": user.managers.school_id})
+                user_details.update(
+                    {
+                        **user.managers.to_dict(),
+                        "school_id": user.managers.school_id
+                    })
 
             return return_json(
-                OutputObj(message="Login successful",
-                          data={"access_token": access_token,
-                                "refresh_token": refresh_token,
-                                'expiration_in_minutes': 120,
-                                **user_details},
-                          code=200)
+                OutputObj(message="Login successful", data={"access_token": access_token, "refresh_token": refresh_token, 'expiration_in_minutes': 120, **user_details}, code=200)
             )
 
         else:

@@ -41,6 +41,8 @@ class TeacherModel:
         if gender:
             _teacher.gender = gender
         _teacher.update_table(data)
+        Audit.add_audit('Update Teacher Information', current_user, _teacher.to_dict())
+
         return _teacher.to_dict()
 
     @classmethod
@@ -71,6 +73,8 @@ class TeacherModel:
                     schools=[school]
                 )
                 add_user.save(refresh=True)
+                Audit.add_audit('Add Teacher', current_user, add_user.to_dict())
+
                 return add_user
 
         except Exception as e:
@@ -85,6 +89,7 @@ class TeacherModel:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
 
         _user: User = _teacher.user
+        Audit.add_audit('Reset Teacher Password', current_user, _user.to_dict())
 
         return Helper.send_otp(_user)
 
@@ -96,6 +101,7 @@ class TeacherModel:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
 
         _user: User = _teacher.user
+        Audit.add_audit('Change Teacher Account Status', current_user, _user.to_dict())
 
         return Helper.disable_account(_user, reason)
 

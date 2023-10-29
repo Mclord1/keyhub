@@ -21,6 +21,7 @@ class SubscriptionModel:
             )
 
             create_plan.save(refresh=True)
+            Audit.add_audit('Add Subscription Plan', current_user, create_plan.to_dict())
 
             return create_plan.to_dict(add_filter=False)
 
@@ -35,6 +36,7 @@ class SubscriptionModel:
         if not plan:
             raise CustomException(ExceptionCode.RESOURCE_NOT_FOUND)
         plan.update_table(data)
+        Audit.add_audit('Update Subscription Plan', current_user, plan.to_dict())
         return plan.to_dict(add_filter=False)
 
     @classmethod
@@ -44,6 +46,7 @@ class SubscriptionModel:
             raise CustomException(ExceptionCode.RESOURCE_NOT_FOUND)
 
         try:
+            Audit.add_audit('Delete Subscription Plan', current_user, plan.to_dict())
             db.session.delete(plan)
             db.session.commit()
             return 'Plan has been deleted successfully'
@@ -64,6 +67,7 @@ class SubscriptionModel:
         try:
             plan.isActive = not plan.isActive
             db.session.commit()
+            Audit.add_audit('Deactivate Subscription Plan' if not plan.isActive else 'Activate Subscription Plan', current_user, plan.to_dict())
             return f'Plan status has been set to {plan.isActive}'
         except Exception:
             db.session.rollback()

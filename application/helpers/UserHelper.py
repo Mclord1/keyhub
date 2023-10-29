@@ -53,7 +53,7 @@ class Helper:
             user.isDeactivated = not user.isDeactivated
             user.deactivate_reason = reason
             db.session.commit()
-            return f"{user.email} account status has been set to {user.isDeactivated}"
+            return f"{user.email} account has been deactivated" if user.isDeactivated else f"{user.email} account has been activated"
 
         except Exception:
             db.session.rollback()

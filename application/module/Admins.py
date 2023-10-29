@@ -26,6 +26,7 @@ class SystemAdmins:
                     gender=req.gender,
                 )
                 add_user.save(refresh=True)
+                Audit.add_audit('Added System Admin', current_user, add_user.to_dict())
                 return add_user.to_dict()
 
         except Exception:
@@ -70,6 +71,7 @@ class SystemAdmins:
         if gender:
             _admin.gender = gender
         _admin.update_table(data)
+        Audit.add_audit('Update System Admin Information', current_user, _admin.to_dict())
         return _admin.to_dict()
 
     @classmethod
@@ -80,6 +82,7 @@ class SystemAdmins:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
 
         _user: User = _admin.user
+        Audit.add_audit('Reset System Admin Password', current_user, _user.to_dict())
 
         return Helper.send_otp(_user)
 
@@ -91,6 +94,8 @@ class SystemAdmins:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
 
         _user: User = _admin.user
+
+        Audit.add_audit('Change System Admin Account Status ', current_user, _user.to_dict())
 
         return Helper.disable_account(_user, reason)
 

@@ -11,3 +11,5 @@ from application.api.parentsAPI import parent_blueprint
 from application.api.studentAPI import student_blueprint
 from application.api.helperAPI import helper_blueprint
 from application.api.subscriptionAPI import subcription_blueprint
+from application.api.transactionAPI import transaction_blueprint
+from application.api.auditAPI import audit_blueprint

@@ -26,7 +26,7 @@ class GenericMixin(object):
 
     def to_dict(cls, add_filter=True):
         return {'user_id' if column.name == 'id' and add_filter else column.name: getattr(cls, column.name) for
-                column in cls.__table__.columns if column.name != 'user_id'}
+                column in cls.__table__.columns if column.name != 'user_id' and column.name != "password"}
 
     def update_table(cls, updates: dict):
         try:

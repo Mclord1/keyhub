@@ -60,6 +60,7 @@ class SchoolLearningGroupsModel:
         try:
             new_group = LearningGroup(name=req.name, created_by=current_user.id, description=req.description, schools=_school)
             new_group.save(refresh=True)
+            Audit.add_audit('Add School Learning group', current_user, new_group.to_dict())
             return new_group.to_dict(add_filter=False)
         except IntegrityError:
             db.session.rollback()
@@ -72,7 +73,8 @@ class SchoolLearningGroupsModel:
         try:
             _group.isDeactivated = not _group.isDeactivated
             db.session.commit()
-            return f"The Group active status has been changed to {_group.isDeactivated}"
+            Audit.add_audit("Deactivate learning group" if _group.isDeactivated else "Activate learning group ", current_user, _group.to_dict())
+            return f"The Group has been deactivated" if _group.isDeactivated else "The Group has been activated"
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
@@ -88,6 +90,7 @@ class SchoolLearningGroupsModel:
 
             db.session.commit()
             db.session.delete(_group)
+            Audit.add_audit('Delete Learning group', current_user, _group.to_dict())
             db.session.commit()
             return "The group has been deleted"
         except Exception:
@@ -103,6 +106,7 @@ class SchoolLearningGroupsModel:
             if description:
                 _group.description = description
             db.session.commit()
+            Audit.add_audit('Update Learning group information', current_user, _group.to_dict())
             return _group.to_dict(add_filter=False)
         except Exception:
             db.session.rollback()

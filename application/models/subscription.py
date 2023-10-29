@@ -14,6 +14,12 @@ class SubscriptionStatusEnum(enum.Enum):
     EXPIRED = "expired"
 
 
+class SubcriptionFeatures(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(350), nullable=True, unique=True)
+    description = db.Column(db.String(350), nullable=True)
+
+
 class SubcriptionPlan(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(350), nullable=True, unique=True)

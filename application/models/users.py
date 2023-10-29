@@ -32,6 +32,7 @@ class User(db.Model, GenericMixin):
     subscription_plan = db.relationship("SubcriptionPlan", back_populates='user')
     projects = db.relationship("Project", back_populates='user')
     learning_groups = db.relationship("LearningGroup", back_populates='user')
+    audits = db.relationship("Audit", back_populates='user')
 
     def as_dict(self, include_sensitive_info=False):
         """
@@ -50,6 +51,27 @@ class User(db.Model, GenericMixin):
         if not user:
             raise CustomException(message="User does not exist", status_code=404)
         return user
+
+    @classmethod
+    def GetUserFullName(cls, user_id):
+        user = User.query.filter_by(id=user_id).first()
+
+        # Check and add user-related attributes if they are not None
+        if user.parents:
+            return f"{user.parents.first_name} {user.parents.last_name}"
+
+        if user.teachers:
+            return f"{user.teachers.first_name} {user.teachers.last_name}"
+
+        if user.students:
+            return f"{user.students.first_name} {user.students.last_name}"
+
+        if user.admins:
+            return f"{user.admins.first_name} {user.admins.last_name}"
+
+        if user.managers:
+            return f"{user.managers.name}"
+
 
     @classmethod
     def CreateUser(cls, email, msisdn, role, password=None):

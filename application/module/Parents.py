@@ -44,6 +44,7 @@ class ParentModel:
         if gender:
             _parent.gender = gender
         _parent.update_table(data)
+        Audit.add_audit('Update Parent Information ', current_user, _parent.to_dict())
         return _parent.to_dict()
 
     @classmethod
@@ -89,6 +90,7 @@ class ParentModel:
                 )
                 add_parent.schools.append(_school)
                 add_parent.save(refresh=True)
+                Audit.add_audit('Add Parent', current_user, add_parent.to_dict())
                 return add_parent
 
         except Exception:
@@ -103,7 +105,7 @@ class ParentModel:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
 
         _user: User = _parent.user
-
+        Audit.add_audit('Reset Parent Password ', current_user, _user.to_dict())
         return Helper.send_otp(_user)
 
     @classmethod
@@ -114,7 +116,7 @@ class ParentModel:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
 
         _user: User = _parent.user
-
+        Audit.add_audit('Change Parent account status ', current_user, _user.to_dict())
         return Helper.disable_account(_user, reason)
 
     @classmethod

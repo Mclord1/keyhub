@@ -42,6 +42,7 @@ class StudentModel:
         if gender:
             _student.gender = gender
         _student.update_table(data)
+        Audit.add_audit('Update Student Information', current_user, _student.to_dict())
         return _student.to_dict()
 
     @classmethod
@@ -83,6 +84,8 @@ class StudentModel:
                     parents=_parent
                 )
                 add_user.save(refresh=True)
+                Audit.add_audit('Add Student', current_user, add_user.to_dict())
+
                 return add_user
 
         except Exception:
@@ -97,7 +100,7 @@ class StudentModel:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
 
         _user: User = _student.user
-
+        Audit.add_audit('Reset Student password', current_user, _user.to_dict())
         return Helper.send_otp(_user)
 
     @classmethod
@@ -108,6 +111,7 @@ class StudentModel:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
 
         _user: User = _student.user
+        Audit.add_audit('Change Student Account Status', current_user, _user.to_dict())
 
         return Helper.disable_account(_user, reason)
 

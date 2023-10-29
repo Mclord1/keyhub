@@ -15,14 +15,6 @@ class SchoolPermissionEnum(enum.Enum):
     VIEW_LEARNING_GROUPS = 'view_learning_groups'
     DEACTIVATE_LEARNING_GROUPS = 'deactivate_learning_groups'
 
-    # SCHOOL
-    ADD_SCHOOL = 'add_school'
-    VIEW_SCHOOL = 'view_school'
-    DEACTIVATE_SCHOOL = 'deactivate_school'
-    MODIFY_SCHOOL = 'modify_school'
-
-
-
     # SCHOOL MANAGER
     ADD_SCHOOL_MANAGERS = 'add_school_manager'
     VIEW_SCHOOL_MANAGERS = 'view_school_manager'
@@ -142,3 +134,6 @@ class PermissionEnum(enum.Enum):
     MODIFY_PROJECTS = 'modify_projects'
     ADD_PROJECTS = 'add_projects'
     DEACTIVATE_PROJECTS = 'deactivate_projects'
+
+    # AUDIT
+    VIEW_AUDIT = 'view_audits'

@@ -1,5 +1,5 @@
 from . import *
-from ..Schema.school import UpdateSchoolSchema, SchoolSchema, PrimaryContact
+from ..Schema.school import UpdateSchoolSchema, SchoolSchema
 
 
 class SchoolModel:
@@ -10,6 +10,8 @@ class SchoolModel:
 
         _school.isDeactivated = not _school.isDeactivated
         db.session.commit()
+        Audit.add_audit("Deactivate School" if _school.isDeactivated else "Activate School", current_user, _school.to_dict())
+
         return "School has been deactivated" if _school.isDeactivated else "School has been activated"
 
     @classmethod
@@ -113,6 +115,8 @@ class SchoolModel:
                                   status_code=403)
 
         school.update_table(data)
+        Audit.add_audit('Update School Information', current_user, school.to_dict())
+
         return f"School information has been updated successfully"
 
     @classmethod
@@ -150,6 +154,8 @@ class SchoolModel:
             raise CustomException(message=f"School attributes already exist: {', '.join(existing_values)}",
                                   status_code=403)
 
+        Helper.User_Email_OR_Msisdn_Exist(primary_contact.email, primary_contact.msisdn)
+
         try:
 
             # Add school details to school model
@@ -157,12 +163,14 @@ class SchoolModel:
                                 state=state, address=address)
             add_school.save(refresh=True)
 
-            Helper.User_Email_OR_Msisdn_Exist(primary_contact.email, primary_contact.msisdn)
-
-            role = Role.GetRoleByName(BasicRoles.SCHOOL_ADMIN.value)
+            # create school role for school_admin
+            _role = SchoolRole(name=BasicRoles.SCHOOL_ADMIN.value, admin_id=current_user.id, description='School admin role', schools=add_school)
+            _role.save(refresh=True)
 
             # create the user account on User model
-            user = User.CreateUser(primary_contact.email, primary_contact.msisdn, role)
+            new_admin = User(email=primary_contact.email, msisdn=primary_contact.msisdn, password=None)
+            db.session.add(new_admin)
+            new_admin.save(refresh=True)
 
             # create and add school admin
             add_school_admin = SchoolManager(
@@ -170,48 +178,18 @@ class SchoolModel:
                 name=primary_contact.name,
                 gender=primary_contact.gender,
                 residence=primary_contact.address,
-                user_id=user.id
-            )
-
-            add_school_admin.save(refresh=True)
-
-            return f"The school {add_school.name} has been added successfully"
-        except Exception as e:
-            db.session.rollback()
-            print(e)
-            raise e
-
-    @classmethod
-    def add_school_admin(cls, school_id, data):
-
-        req: PrimaryContact = validator.validate_data(PrimaryContact, data)
-
-        Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
-
-        _school = School.GetSchool(school_id)
-
-        _role: SchoolRole = SchoolRole.GetSchoolRole(req.role, _school.id)
-
-        try:
-            new_admin = User(email=req.email, msisdn=req.msisdn, password=None)
-            db.session.add(new_admin)
-            new_admin.save(refresh=True)
-
-            add_school_admin = SchoolManager(
-                school_id=_school.id,
-                name=req.name,
-                gender=req.gender,
-                residence=req.address,
                 user_id=new_admin.id
             )
-
             add_school_admin.school_roles = _role
             add_school_admin.save(refresh=True)
-            return add_school_admin.to_dict()
+            Audit.add_audit('Add School', current_user, add_school.to_dict())
 
-        except Exception:
+            return f"The school {add_school.name} and admin has been added successfully"
+        except IntegrityError:
             db.session.rollback()
-            raise CustomException(ExceptionCode.DATABASE_ERROR)
+        except Exception as e:
+            db.session.rollback()
+            raise e
 
     @classmethod
     def get_account_admins(cls, school_id, page, per_page):

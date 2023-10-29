@@ -84,6 +84,7 @@ class SchoolRoleModel:
         try:
             new_role = SchoolRole(name=role_name, admin_id=current_user.id, description=description, schools=_school)
             new_role.save(refresh=True)
+            Audit.add_audit('Add School Role', current_user, new_role.to_dict())
             return new_role.to_dict(add_filter=False)
         except IntegrityError:
             db.session.rollback()
@@ -96,7 +97,7 @@ class SchoolRoleModel:
         if _role.schools:
             raise CustomException(message="There are schools associated to this school role", status_code=500)
         try:
-
+            Audit.add_audit('Delete School Role', current_user, _role.to_dict())
             db.session.commit()
             db.session.delete(_role)
             db.session.commit()
@@ -108,11 +109,10 @@ class SchoolRoleModel:
     @classmethod
     def toggle_school_role_status(cls, role_id, school_id):
         _role: SchoolRole = SchoolRole.GetSchoolRole(role_id, school_id)
-
-
         try:
             _role.active = not _role.active
             db.session.commit()
+            Audit.add_audit('Deactivate School Role' if not _role.active else 'Activate School Role', current_user, _role.to_dict())
             return f"The School active status has been changed to {_role.active}"
         except Exception:
             db.session.rollback()
@@ -128,6 +128,7 @@ class SchoolRoleModel:
             if description:
                 _role.description = description
             db.session.commit()
+            Audit.add_audit('Update School Role Information', current_user, _role.to_dict())
             return _role.to_dict(add_filter=False)
         except Exception:
             db.session.rollback()
@@ -149,6 +150,7 @@ class SchoolRoleModel:
 
             _permission.school_roles.append(_role)
             db.session.commit()
+            Audit.add_audit('Assign Permission to School Role Information', current_user, _role.to_dict())
             return f"The School permission {_permission.name} has been assigned to {_role.name} role"
         except Exception:
             db.session.rollback()
@@ -165,6 +167,7 @@ class SchoolRoleModel:
 
             _role.school_permissions.remove(_permission)
             db.session.commit()
+            Audit.add_audit('Remove Permission from School Role Information', current_user, _role.to_dict())
             return {'permissions': [x.to_dict(add_filter=False) for x in _role.school_permissions]}
         except Exception:
             db.session.rollback()
