@@ -23,8 +23,8 @@ class SchoolRole(db.Model, GenericMixin):
     active = db.Column(db.Boolean, default=True)
     description = db.Column(db.String(1000), nullable=True)
     school_permissions = db.relationship("SchoolPermission", secondary='school_role_permission', back_populates='school_roles', cascade="all, delete")
-    schools = db.relationship("School", back_populates='school_roles', cascade="all, delete")
-    managers = db.relationship("SchoolManager", back_populates='school_roles', cascade="all, delete", passive_deletes=True)
+    schools = db.relationship("School", back_populates='school_roles')
+    managers = db.relationship("SchoolManager", back_populates='school_roles',  passive_deletes=True)
 
     __table_args__ = (
         db.UniqueConstraint('school_id', 'name', name='uq_school_role_name'),

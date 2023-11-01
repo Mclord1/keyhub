@@ -93,9 +93,8 @@ class SchoolRoleModel:
     @classmethod
     def delete_school_role(cls, role_id, school_id):
         _role: SchoolRole = SchoolRole.GetSchoolRole(role_id, school_id)
-
-        if _role.schools:
-            raise CustomException(message="There are schools associated to this school role", status_code=500)
+        if _role.managers:
+            raise CustomException(message="There are schools managers associated to this school role", status_code=500)
         try:
             Audit.add_audit('Delete School Role', current_user, _role.to_dict())
             db.session.commit()
