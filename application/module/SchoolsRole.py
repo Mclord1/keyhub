@@ -64,7 +64,6 @@ class SchoolRoleModel:
             "parents": [],
             "teacher": [],
             "school_manager": [],
-            "school": [],
             "roles": [],
             "permissions": [],
             "learning_groups": []
