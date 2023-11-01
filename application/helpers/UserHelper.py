@@ -83,8 +83,7 @@ class Helper:
 
         if not _user:
             raise CustomException(message=f"{Model.__name__} does not exist", status_code=404)
-
-        if not current_user.admins or current_user.managers.school_id != _user.school_id:
+        if not current_user.admins or (current_user.managers and current_user.managers.school_id != _user.school_id):
             raise CustomException("You do not have privilege to access this user")
 
         return _user
