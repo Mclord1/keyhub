@@ -10,7 +10,7 @@ class SchoolModel:
 
         _school.isDeactivated = not _school.isDeactivated
         db.session.commit()
-        Audit.add_audit("Deactivate School" if _school.isDeactivated else "Activate School", current_user, _school.to_dict())
+        Audit.add_audit("Deactivate School" if _school.isDeactivated else "Activate School", current_user, _school.to_dict(add_filter=False))
 
         return "School has been deactivated" if _school.isDeactivated else "School has been activated"
 
@@ -115,7 +115,7 @@ class SchoolModel:
                                   status_code=403)
 
         school.update_table(data)
-        Audit.add_audit('Update School Information', current_user, school.to_dict())
+        Audit.add_audit('Update School Information', current_user, school.to_dict(add_filter=False))
 
         return f"School information has been updated successfully"
 
@@ -182,7 +182,7 @@ class SchoolModel:
             )
             add_school_admin.school_roles = _role
             add_school_admin.save(refresh=True)
-            Audit.add_audit('Add School', current_user, add_school.to_dict())
+            Audit.add_audit('Add School', current_user, add_school.to_dict(add_filter=False))
 
             return f"The school {add_school.name} and admin has been added successfully"
         except IntegrityError:

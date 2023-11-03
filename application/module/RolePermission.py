@@ -83,7 +83,7 @@ class RolePermission:
         try:
             _role.active = not _role.active
             db.session.commit()
-            Audit.add_audit('Change Role status', current_user, _role.to_dict())
+            Audit.add_audit('Change Role status', current_user, _role.to_dict(add_filter=False))
             return f"The Role active status has been changed to {_role.active}"
         except Exception:
             db.session.rollback()
@@ -94,7 +94,7 @@ class RolePermission:
         try:
             new_role = Role(name=role_name, admin_id=current_user.id, description=description)
             new_role.save(refresh=True)
-            Audit.add_audit('Add Role', current_user, new_role.to_dict())
+            Audit.add_audit('Add Role', current_user, new_role.to_dict(add_filter=False))
             return new_role.to_dict(add_filter=False)
         except IntegrityError:
             db.session.rollback()
@@ -107,7 +107,7 @@ class RolePermission:
             _role.name = role_name
             _role.description = description
             db.session.commit()
-            Audit.add_audit('Update Role Information', current_user, _role.to_dict())
+            Audit.add_audit('Update Role Information', current_user, _role.to_dict(add_filter=False))
             return _role.to_dict(add_filter=False)
         except Exception:
             db.session.rollback()
@@ -123,7 +123,7 @@ class RolePermission:
             raise CustomException(message="There are users associated to this role", status_code=500)
 
         try:
-            Audit.add_audit('Delete Role', current_user, _role.to_dict())
+            Audit.add_audit('Delete Role', current_user, _role.to_dict(add_filter=False))
             db.session.commit()
             db.session.delete(_role)
             db.session.commit()
@@ -146,7 +146,7 @@ class RolePermission:
 
             _permission.roles.append(_role)
             db.session.commit()
-            Audit.add_audit('Assign permission to Role', current_user, _role.to_dict())
+            Audit.add_audit('Assign permission to Role', current_user, _role.to_dict(add_filter=False))
             return f"The permission {_permission.name} has been assigned to {_role.name} role"
         except Exception:
             db.session.rollback()
@@ -160,7 +160,7 @@ class RolePermission:
         if _permission not in _role.permissions:
             raise CustomException(message="This permission doesn't exist on the role", status_code=404)
         try:
-            Audit.add_audit('Remove permission from role', current_user, _role.to_dict())
+            Audit.add_audit('Remove permission from role', current_user, _role.to_dict(add_filter=False))
             _role.permissions.remove(_permission)
             db.session.commit()
             return {'permissions': [x.to_dict(add_filter=False) for x in _role.permissions]}

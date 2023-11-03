@@ -32,6 +32,11 @@ class SchoolSchema(BaseModel):
     primary_contact: PrimaryContact
 
 
+class SubscribeSchema(BaseModel):
+    recurring: bool
+    plan_id: int
+
+
 class UpdateSchoolSchema(BaseModel):
     name: Optional[str] = None
     msisdn: Optional[str] = None

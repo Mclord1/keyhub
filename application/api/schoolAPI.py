@@ -5,6 +5,7 @@ from application.module.SchoolLearningGroup import SchoolLearningGroupsModel
 from application.module.SchoolProject import SchoolProjectModel
 from application.module.Schools import SchoolModel
 from application.module.SchoolsRole import SchoolRoleModel
+from application.module.Subscriptions import SubscriptionModel
 from application.utils.output import return_json, OutputObj
 from . import *
 
@@ -376,3 +377,37 @@ def update_school_group(group_id, school_id):
     description = args.get('description', None)
     return return_json(OutputObj(code=200, message="School learning group has been successfully updated",
                                  data=SchoolLearningGroupsModel.update_group(school_id, group_id, name, description)))
+
+
+# ===================================== SCHOOL SUBCRIPTION =====================================
+
+
+@school_blueprint.route('/<int:school_id>/subcription', methods=['POST'])
+@authenticate(PermissionEnum.ADD_SUBSCRIPTION)
+@has_school_privilege
+def add_school_subscription(school_id):
+    args = request.json
+    return SubscriptionModel.create_subscription(school_id, args)
+
+
+@school_blueprint.route('/<int:school_id>/subcription', methods=['DELETE'])
+@authenticate(PermissionEnum.ADD_SUBSCRIPTION)
+@has_school_privilege
+def cancel_school_subscription(school_id):
+    return SubscriptionModel.cancel_subscription(school_id)
+
+
+@school_blueprint.route('/<int:school_id>/subcription', methods=['GET'])
+@authenticate(PermissionEnum.ADD_SUBSCRIPTION)
+@has_school_privilege
+def active_school_subscription(school_id):
+    return SubscriptionModel.active_subscription(school_id)
+
+
+@school_blueprint.route('/<int:school_id>/subcription/history', methods=['GET'])
+@authenticate(PermissionEnum.ADD_SUBSCRIPTION)
+@has_school_privilege
+def school_subscription_history(school_id):
+    page = request.args.get('page', 1)
+    per_page = request.args.get('per_page', 10)
+    return SubscriptionModel.PaymentHistory(school_id, page, per_page)

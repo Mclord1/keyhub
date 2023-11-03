@@ -104,5 +104,6 @@ def error_handling(error):
         message = error.message
         code = error.status_code
         db.session.close()
+
     output = OutputObj(code=code, message=message, response_code=response_code)
     return return_json(output)

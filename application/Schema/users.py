@@ -71,6 +71,6 @@ class ParentSchema(BaseModel):
 class SubscriptionSchema(BaseModel):
     name: str
     description: str
-    billing_cycle: str
+    billing_cycle: int
     amount: str
     features: List[str]

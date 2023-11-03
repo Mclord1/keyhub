@@ -21,6 +21,18 @@ class LearningGroupProjects(db.Model, GenericMixin):
     project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'), nullable=False)
 
 
+class ProjectActivity(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(350), nullable=True)
+    group_id = db.Column(db.Integer, db.ForeignKey('learning_group.id', ondelete='CASCADE'), nullable=False)
+    description = db.Column(db.String(350), nullable=True)
+    objectives = db.Column(db.String(350), nullable=True)
+    resources = db.Column(db.String(350), nullable=True)
+    weblinks = db.Column(db.String(350), nullable=True)
+    way_to_extend = db.Column(db.String(350), nullable=True)
+    learning_groups = db.relationship("LearningGroup", back_populates='project_activities')
+
+
 class LearningGroup(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(350), nullable=True)
@@ -31,6 +43,7 @@ class LearningGroup(db.Model, GenericMixin):
     school_id = db.Column(db.Integer, db.ForeignKey('school.id', ondelete='CASCADE'), nullable=False)
     schools = db.relationship("School", back_populates='learning_groups')
     user = db.relationship("User", back_populates='learning_groups')
+    project_activities = db.relationship("ProjectActivity", back_populates='learning_groups')
     projects = db.relationship("Project", secondary='learning_group_projects', back_populates="learning_groups")
     students = db.relationship("Student", secondary='learning_group_students', back_populates="learning_groups")
     teachers = db.relationship("Teacher", secondary='learning_group_teachers', back_populates="learning_groups")

@@ -77,7 +77,7 @@ class SchoolProjectModel:
             _learning_group.projects.append(add_project)
 
             add_project.save(refresh=True)
-            Audit.add_audit('Add School Project', current_user, add_project.to_dict())
+            Audit.add_audit('Add School Project', current_user, add_project.to_dict(add_filter=False))
 
             return add_project.to_dict()
 
@@ -89,14 +89,14 @@ class SchoolProjectModel:
     def update_project(cls, school_id, project_id, data):
         project = Project.GetProject(school_id=school_id, project_id=project_id)
         project.update_table(data)
-        Audit.add_audit('Update School Project Information', current_user, project.to_dict())
+        Audit.add_audit('Update School Project Information', current_user, project.to_dict(add_filter=False))
         return project.to_dict(add_filter=False)
 
     @classmethod
     def delete_project(cls, school_id, project_id):
         project: Project = Project.GetProject(school_id=school_id, project_id=project_id)
         db.session.delete(project)
-        Audit.add_audit('Delete School Project', current_user, project.to_dict())
+        Audit.add_audit('Delete School Project', current_user, project.to_dict(add_filter=False))
         db.session.commit()
         return "Project has been deleted"
 
@@ -106,7 +106,7 @@ class SchoolProjectModel:
         project.isDeactivated = not project.isDeactivated
         project.deactivate_reason = reason
         db.session.commit()
-        Audit.add_audit("Deactivate School Project" if project.isDeactivated else "Activate School Project", current_user, project.to_dict())
+        Audit.add_audit("Deactivate School Project" if project.isDeactivated else "Activate School Project", current_user, project.to_dict(add_filter=False))
         return "Project has been deactivated" if project.isDeactivated else "Project has been activated"
 
     @classmethod
@@ -151,7 +151,7 @@ class SchoolProjectModel:
 
                     _project.teachers.append(_teacher)
 
-                    Audit.add_audit('Assign Teacher to School Project', current_user, _project.to_dict())
+                    Audit.add_audit('Assign Teacher to School Project', current_user, _project.to_dict(add_filter=False))
 
             if model == "student":
 
@@ -170,7 +170,7 @@ class SchoolProjectModel:
 
                     _project.students.append(_student)
 
-                    Audit.add_audit('Assign Student to  School Project', current_user, _project.to_dict())
+                    Audit.add_audit('Assign Student to  School Project', current_user, _project.to_dict(add_filter=False))
 
             db.session.commit()
             return "User has been added to the project"
@@ -203,7 +203,7 @@ class SchoolProjectModel:
 
                     project.teachers.remove(_teacher)
 
-                    Audit.add_audit('Remove Teacher from School Project', current_user, project.to_dict())
+                    Audit.add_audit('Remove Teacher from School Project', current_user, project.to_dict(add_filter=False))
 
             if model == "student":
                 for _user in req.users:
@@ -218,7 +218,7 @@ class SchoolProjectModel:
 
                     project.students.remove(_student)
 
-                    Audit.add_audit('Remove Student from School Project', current_user, project.to_dict())
+                    Audit.add_audit('Remove Student from School Project', current_user, project.to_dict(add_filter=False))
 
             db.session.commit()
             return "User has been removed from the project"
