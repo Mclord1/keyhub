@@ -18,7 +18,7 @@ class SubscriptionModel:
         calc_date: Callable = lambda days: today_date.strptime(str(date.today() + datetime.timedelta(days=days)), "%Y-%m-%d")
 
         if not plan:
-            raise CustomException(ExceptionCode.RESOURCE_NOT_FOUND)
+            raise CustomException(ExceptionCode.INVALID_PLAN)
 
         """
             Check if user has an active subscription running
