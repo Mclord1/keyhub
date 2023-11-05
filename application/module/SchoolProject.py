@@ -225,3 +225,5 @@ class SchoolProjectModel:
         except Exception as e:
             db.session.rollback()
             raise e
+
+

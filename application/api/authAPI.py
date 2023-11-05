@@ -41,6 +41,6 @@ def set_password():
     return authenticationModel.set_up_password(email, password)
 
 
-@auth_blueprint.route('/ping')
+@auth_blueprint.route('/ping', methods=['GET'])
 def ping():
     return return_json(OutputObj(message="pong!!"))
