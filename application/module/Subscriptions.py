@@ -42,7 +42,6 @@ class SubscriptionModel:
             db.session.commit()
             return return_json(OutputObj(message="Your plan has been updated.", code=200))
 
-
         try:
             if is_active:
                 # if subscription already exist
@@ -152,8 +151,7 @@ class SubscriptionModel:
     def PaymentHistory(cls, school_id, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        sub = Subscription.query.filter(Subscription.school_id == school_id).order_by(desc(Subscription.created_at)).paginate(page=page, per_page=per_page,
-                                                                                                                              error_out=False)
+        sub = Subscription.query.filter(Subscription.school_id == school_id).order_by(desc(Subscription.created_at)).paginate(page=page, per_page=per_page, error_out=False)
         total_items = sub.total
         results = [item for item in sub.items]
         total_pages = (total_items - 1) // per_page + 1
