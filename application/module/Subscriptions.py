@@ -50,7 +50,10 @@ class SubscriptionModel:
                     "type": "change-plan"
                 }
                 db.session.commit()
-                Audit.add_audit('Changed subcription plan', current_user, sub.to_dict(add_filter=False))
+                table_info = sub.to_dict(add_filter=False)
+                table_info['next_billing_date'] = sub.next_billing_date.isoformat()
+                table_info['status'] = sub.status.value
+                Audit.add_audit('Changed subcription plan', current_user, table_info)
                 result = f"You have successfully changed your plan to {plan} and it will be effective at the end of your current billing period on {sub.next_billing_date.date()} and you be charged {plan.amount}"
             else:
 
