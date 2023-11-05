@@ -33,8 +33,8 @@ class SubscriptionModel:
             )
         ).first()
 
-        is_active = sub.status.value == SubscriptionStatusEnum.ACTIVE.value
-        is_processing = sub.status.value == SubscriptionStatusEnum.PROCESSING.value
+        is_active = sub and sub.status.value == SubscriptionStatusEnum.ACTIVE.value
+        is_processing = sub and sub.status.value == SubscriptionStatusEnum.PROCESSING.value
 
         if is_processing:
             sub.recurring = req.recurring
@@ -154,7 +154,8 @@ class SubscriptionModel:
     def PaymentHistory(cls, school_id, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        sub = Subscription.query.filter(Subscription.school_id == school_id).order_by(desc(Subscription.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        sub = Subscription.query.filter(Subscription.school_id == school_id).order_by(desc(Subscription.created_at)).paginate(page=page, per_page=per_page,
+                                                                                                                              error_out=False)
         total_items = sub.total
         results = [item for item in sub.items]
         total_pages = (total_items - 1) // per_page + 1
