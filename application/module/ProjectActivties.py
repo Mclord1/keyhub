@@ -1,6 +1,6 @@
 from datetime import date
 
-from pydantic import constr, HttpUrl
+from pydantic import constr
 
 from . import *
 
@@ -44,6 +44,8 @@ class ProjectActivityModel:
             )
             db.session.add(activity_model)
             db.session.commit()
+            return True
+
         except Exception as e:
             db.session.rollback()
             raise e
@@ -78,6 +80,8 @@ class ProjectActivityModel:
         try:
             activity.update_table(data)
             db.session.commit()
+            return True
+
         except Exception as e:
             db.session.rollback()
             raise e
@@ -92,5 +96,10 @@ class ProjectActivityModel:
         if not activity:
             raise CustomException(message="Activity not found", status_code=404)
 
-        db.session.delete(activity)
-        db.session.commit()
+        try:
+            db.session.delete(activity)
+            db.session.commit()
+            return True
+        except Exception as e:
+            db.session.rollback()
+            raise e
