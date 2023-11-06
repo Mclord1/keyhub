@@ -49,6 +49,11 @@ class SmeModel:
         return sme.to_dict(add_filter=False)
 
     @classmethod
+    def get_all_sme(cls, school_id):
+        sme = SME.query.filter_by(school_id=school_id).all()
+        return [x.to_dict(add_filter=False) for x in sme]
+
+    @classmethod
     def update_sme(cls, school_id, data):
         _sme = SME.query.filter_by(school_id=school_id).first()
         if not _sme:

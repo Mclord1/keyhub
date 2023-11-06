@@ -25,6 +25,14 @@ def get_sme(school_id):
     return return_json(OutputObj(code=200, message="SME fetched", data=sme))
 
 
+@sme_bp.route("/<int:school_id>/all", methods=["GET"])
+@authenticate(PermissionEnum.VIEW_SME)
+@has_school_privilege
+def get_all_sme(school_id):
+    sme = SmeModel.get_all_sme(school_id)
+    return return_json(OutputObj(code=200, message="SME fetched", data=sme))
+
+
 @sme_bp.route("/<int:school_id>", methods=["PUT"])
 @authenticate(PermissionEnum.MODIFY_SME)
 @has_school_privilege
