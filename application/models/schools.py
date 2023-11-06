@@ -67,6 +67,7 @@ class School(db.Model, GenericMixin):
     school_roles = db.relationship("SchoolRole", back_populates='schools')
     learning_groups = db.relationship("LearningGroup", back_populates='schools', cascade="all, delete-orphan")
     smes = db.relationship("SME", back_populates="schools")
+    transactions = db.relationship("Transaction", back_populates='schools')
 
     @classmethod
     def GetSchool(cls, school_id):

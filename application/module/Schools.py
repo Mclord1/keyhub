@@ -319,13 +319,8 @@ class SchoolModel:
         }
         return PaginationSchema(**pagination_data).model_dump()
 
-    @classmethod
-    def get_transactions(cls, school_id):
-        pass
 
-    @classmethod
-    def get_subscriptions(cls, school_id):
-        pass
+
 
     @classmethod
     def get_profile_settings(cls, school_id):

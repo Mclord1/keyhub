@@ -6,9 +6,48 @@ from sqlalchemy import and_
 from . import *
 from ..Schema.school import SubscribeSchema
 from ..models.subscription import SubscriptionStatusEnum
+from ..models.transactions import Transaction
 
 
 class SubscriptionModel:
+    calc_date: Callable = lambda days: today_date.strptime(str(date.today() + datetime.timedelta(days=days)), "%Y-%m-%d")
+
+    @classmethod
+    def process_subscription(cls, processed_result):
+        result = processed_result.get('data')
+        transaction_status = result.get('status', None)
+        amount = result.get('amount')
+        metadata = result.get('metadata')
+        school_id = metadata.get('schoolId')
+        channel = result.get('channel')
+        _school = School.GetSchool(school_id)
+
+        amount = amount / 100
+
+        sub: Subscription = Subscription.query.filter(
+            and_(
+                Subscription.status.in_([SubscriptionStatusEnum.PROCESSING.value]),
+                Subscription.school_id == school_id
+            )
+        ).first()
+
+        if transaction_status.lower() == "success":
+            sub.amount = amount
+            sub.status = SubscriptionStatusEnum.ACTIVE.value
+            sub.next_billing_date = cls.calc_date(days=30),
+            sub.payment_type = channel,
+            sub.start_date = date.today(),
+            sub.end_date = cls.calc_date(days=30)
+            db.session.commit()
+        else:
+            sub.amount = amount
+            sub.status = SubscriptionStatusEnum.FAILED.value
+            sub.payment_type = channel,
+            db.session.commit()
+
+        result['purpose'] = "subscription"
+        add_transaction = Transaction(result, school=_school, subscriptions=sub)
+        add_transaction.save(refresh=True)
 
     @classmethod
     def create_subscription(cls, school_id, data: dict):
@@ -62,7 +101,6 @@ class SubscriptionModel:
                     subscription_plan=plan,
                     amount=plan.amount,
                     status=SubscriptionStatusEnum.PROCESSING.value,
-                    next_billing_date=calc_date(days=int(plan.bill_cycle)),
                     recurring=req.recurring,
                 )
                 table.save(refresh=True)

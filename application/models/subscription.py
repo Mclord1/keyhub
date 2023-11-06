@@ -49,3 +49,4 @@ class Subscription(db.Model, GenericMixin):
                        default=SubscriptionStatusEnum.ACTIVE.value)
     schools = db.relationship("School", back_populates='subscriptions')
     subscription_plan = db.relationship("SubcriptionPlan", back_populates='subscriptions')
+    transactions = db.relationship("Transaction", back_populates='subscriptions')
