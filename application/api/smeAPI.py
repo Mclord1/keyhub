@@ -22,7 +22,7 @@ def create_sme(school_id):
 @has_school_privilege
 def get_sme(school_id):
     sme = SmeModel.get_sme(school_id)
-    return return_json(OutputObj(code=200, message="SME fetched", data=sme.to_dict(add_filter=False)))
+    return return_json(OutputObj(code=200, message="SME fetched", data=sme))
 
 
 @sme_bp.route("/<int:school_id>", methods=["PUT"])

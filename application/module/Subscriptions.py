@@ -168,7 +168,7 @@ class SubscriptionModel:
         to_next_plan = None if not sub.action else sub.action.get('plan')
         to_next_type = None if not sub.action else sub.action.get('type')
         result['end_date'] = sub.end_date.timestamp() if sub.end_date else None
-        result['next_billing_date'] = sub.next_billing_date.timestamp()
+        result['next_billing_date'] = sub.next_billing_date.timestamp() if sub.next_billing_date else None
         result['start_date'] = sub.start_date.timestamp() if sub.start_date else None
         result['cancelled'] = False
         result['status'] = sub.status.value
