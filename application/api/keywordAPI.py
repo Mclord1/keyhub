@@ -27,7 +27,7 @@ def create_keyword():
 @authenticate(PermissionEnum.ADD_SCHOOL)
 def get_all_keywords():
     keywords = Keywords.query.all()
-    keyword_list = [keyword.serialize() for keyword in keywords]
+    keyword_list = [keyword.to_dict(add_filter=False) for keyword in keywords]
     return jsonify(keyword_list)
 
 
@@ -35,7 +35,7 @@ def get_all_keywords():
 @keywords_bp.route("/<int:keyword_id>", methods=["PUT"])
 @authenticate(PermissionEnum.ADD_SCHOOL)
 def update_keyword(keyword_id):
-    keyword = Keywords.query.filter(Keywords.id == keyword_id).first()
+    keyword = Keywords.query.filter_by(id=keyword_id).first()
     if not keyword:
         return jsonify({"error": "Keyword not found"}), 404
 
@@ -43,7 +43,7 @@ def update_keyword(keyword_id):
     if "name" not in data:
         return jsonify({"error": "name is required"}), 400
 
-    keyword.update(**data)
+    keyword.update_table(data)
     db.session.commit()
     return jsonify({"message": "Keyword updated successfully"})
 
@@ -52,7 +52,7 @@ def update_keyword(keyword_id):
 @keywords_bp.route("/<int:keyword_id>", methods=["DELETE"])
 @authenticate(PermissionEnum.ADD_SCHOOL)
 def delete_keyword(keyword_id):
-    keyword = Keywords.query.filter(Keywords.id == keyword_id).first()
+    keyword = Keywords.query.filter_by(id=keyword_id).first()
     if not keyword:
         return jsonify({"error": "Keyword not found"}), 404
 

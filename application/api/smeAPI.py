@@ -59,10 +59,10 @@ def create_sme(school_id):
 @authenticate(PermissionEnum.MODIFY_SCHOOL)
 @has_school_privilege
 def get_sme(school_id):
-    sme = SME.query.fiilter(SME.school_id == school_id).first()
+    sme = SME.query.filter_by(school_id = school_id).first()
     if not sme:
         return jsonify({"error": "SME not found"}), 404
-    return jsonify(sme.serialize())
+    return jsonify(sme.to_dict(add_filter=False))
 
 
 # Update an SME by ID
@@ -70,12 +70,13 @@ def get_sme(school_id):
 @authenticate(PermissionEnum.MODIFY_SCHOOL)
 @has_school_privilege
 def update_sme(school_id):
-    sme = SME.query.fiilter(SME.school_id == school_id).first()
-    if not sme:
+    _sme : SME = SME.query.filter_by(school_id = school_id).first()
+    if not _sme:
         return jsonify({"error": "SME not found"}), 404
 
     data = request.get_json()
-    sme.update(**data)
+    print(data)
+    _sme.update_table(data)
     db.session.commit()
     return jsonify({"message": "SME updated successfully"})
 
@@ -85,7 +86,7 @@ def update_sme(school_id):
 @authenticate(PermissionEnum.MODIFY_SCHOOL)
 @has_school_privilege
 def delete_sme(school_id):
-    sme = SME.query.fiilter(SME.school_id == school_id).first()
+    sme = SME.query.filter_by(school_id = school_id).first()
     if not sme:
         return jsonify({"error": "SME not found"}), 404
 
