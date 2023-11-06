@@ -105,7 +105,7 @@ class SubscriptionModel:
                 )
                 table.save(refresh=True)
                 table_info = table.to_dict(add_filter=False)
-                table_info['next_billing_date'] = table.next_billing_date.isoformat()
+                table_info['next_billing_date'] = table.next_billing_date.isoformat() if table.next_billing_date else None
                 table_info['status'] = table.status.value
                 Audit.add_audit('Added subcription plan', current_user, table_info)
                 result = f"Your subscription plan has been created successfully."

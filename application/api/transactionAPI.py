@@ -14,13 +14,30 @@ transaction_blueprint = Blueprint('transaction', __name__)
 paystack_key = os.environ.get('PAYSTACK_TEST')
 
 
+def compute_hmac_sha512(key, json_input):
+    result = ""
+    secret_key_bytes = key.encode("utf-8")
+    input_bytes = json_input.encode("utf-8")
+
+    hmac_sha512 = hashlib.new("sha512", secret_key_bytes)
+    hmac_sha512.update(input_bytes)
+    hash_value = hmac_sha512.digest()
+
+    result = hash_value.hex()
+    return result
+
+
 @transaction_blueprint.route('/paystack-webhook', methods=['POST'])
 def paystack_webhook():
     print("webhook has been called")
     request_data = request.get_data()
-    combined_data = paystack_key + request_data
-    _hash = hashlib.sha512(combined_data.encode()).hexdigest()
-    if _hash == request.headers.get('x-paystack-signature'):
+    print(request_data)
+    result = compute_hmac_sha512(paystack_key, request_data)
+    print(result)
+    print(request.headers.get('x-paystack-signature'))
+    # combined_data = paystack_key + request_data.decode('utf-8')
+    # _hash = hashlib.sha512(combined_data.encode()).hexdigest()
+    if result.lower() == request.headers.get('x-paystack-signature'):
         # Retrieve the request's body
         event = request.get_json()
         if event:
