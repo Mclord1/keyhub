@@ -56,6 +56,9 @@ class TransactionModel:
     def mark_as_completed(cls, transaction_id):
         _transaction: Transaction = Transaction.GetSchoolTransaction(transaction_id)
 
+        if not current_user.admins:
+            raise CustomException(message="Only System admin can perform this action", status_code=400)
+
         if _transaction.subscriptions:
             if not any(x for x in _transaction.school.subscriptions if x.status == SubscriptionStatusEnum.ACTIVE.value):
                 _transaction.subscriptions.status = SubscriptionStatusEnum.ACTIVE.value
@@ -68,6 +71,9 @@ class TransactionModel:
     @classmethod
     def mark_as_cancelled(cls, transaction_id):
         _transaction = Transaction.GetSchoolTransaction(transaction_id)
+
+        if not current_user.admins:
+            raise CustomException(message="Only System admin can perform this action", status_code=400)
 
         if _transaction.subscriptions:
             _transaction.subscriptions.status = SubscriptionStatusEnum.CANCELLED.value
