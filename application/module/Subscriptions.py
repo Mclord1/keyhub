@@ -90,7 +90,9 @@ class SubscriptionModel:
                 }
                 db.session.commit()
                 table_info = sub.to_dict(add_filter=False)
-                table_info['next_billing_date'] = sub.next_billing_date.isoformat()
+                table_info['next_billing_date'] = sub.next_billing_date.isoformat() if sub.next_billing_date else None
+                table_info['end_date'] = sub.end_date.isoformat() if sub.end_date else None
+                table_info['start_date'] = sub.start_date.isoformat() if sub.start_date else None
                 table_info['status'] = sub.status.value
                 Audit.add_audit('Changed subcription plan', current_user, table_info)
                 result = f"You have successfully changed your plan to {plan} and it will be effective at the end of your current billing period on {sub.next_billing_date.date()} and you be charged {plan.amount}"
@@ -143,6 +145,8 @@ class SubscriptionModel:
             db.session.commit()
             table_info = sub.to_dict(add_filter=False)
             table_info['next_billing_date'] = sub.next_billing_date.isoformat() if sub.next_billing_date else None
+            table_info['end_date'] = sub.end_date.isoformat() if sub.end_date else None
+            table_info['start_date'] = sub.start_date.isoformat() if sub.start_date else None
             table_info['status'] = sub.status.value
             Audit.add_audit('Cancelled subcription plan', current_user, table_info)
             return return_json(OutputObj(message=result, code=200))
