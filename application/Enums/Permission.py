@@ -15,8 +15,6 @@ class SchoolPermissionEnum(enum.Enum):
     VIEW_LEARNING_GROUPS = 'view_learning_groups'
     DEACTIVATE_LEARNING_GROUPS = 'deactivate_learning_groups'
 
-
-
     # TEACHERS
     VIEW_TEACHERS = 'view_teacher'
     MODIFY_TEACHER = 'modify_teacher'
@@ -56,6 +54,12 @@ class SchoolPermissionEnum(enum.Enum):
     ADD_PROJECTS = 'add_projects'
     DEACTIVATE_PROJECTS = 'deactivate_projects'
 
+    # SME
+    ADD_SME = 'add_sme'
+    MODIFY_SME = 'update_sme'
+    VIEW_SME = 'view_sme'
+    DELETE_SME = 'delete_sme'
+
 
 class PermissionEnum(enum.Enum):
     # ROLES & PERMISSIONS
@@ -83,7 +87,6 @@ class PermissionEnum(enum.Enum):
     VIEW_SCHOOL = 'view_school'
     DEACTIVATE_SCHOOL = 'deactivate_school'
     MODIFY_SCHOOL = 'modify_school'
-
 
     # SCHOOL MANAGER
     ADD_SCHOOL_MANAGERS = 'add_school_manager'
@@ -133,3 +136,15 @@ class PermissionEnum(enum.Enum):
 
     # AUDIT
     VIEW_AUDIT = 'view_audits'
+
+    # KEWORDS
+    ADD_KEYWORD = 'add_keywords'
+    MODIFY_KEYWORD = 'update_keywords'
+    VIEW_KEYWORD = 'view_keywords'
+    DEACTIVATE_KEYWORD = 'deactivate_keywords'
+
+    # SME
+    ADD_SME = 'add_sme'
+    MODIFY_SME = 'update_sme'
+    VIEW_SME = 'view_sme'
+    DELETE_SME = 'delete_sme'

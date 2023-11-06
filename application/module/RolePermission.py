@@ -47,7 +47,9 @@ class RolePermission:
             "school": [],
             "system_admin": [],
             "roles": [],
-            "permissions": []
+            "permissions": [],
+            "keyword": [],
+            "sme": []
         }
 
         for _permission in _permissions:

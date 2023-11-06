@@ -66,7 +66,8 @@ class SchoolRoleModel:
             "school_manager": [],
             "roles": [],
             "permissions": [],
-            "learning_groups": []
+            "learning_groups": [],
+            "sme": []
         }
 
         for _permission in _permissions:

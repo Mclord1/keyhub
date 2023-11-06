@@ -15,6 +15,22 @@ class TeacherProject(db.Model, GenericMixin):
     project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'))
 
 
+class ProjectActivity(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    start_date = db.Column(db.Date, nullable=True)
+    finish_date = db.Column(db.Date, nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    learning_objectives = db.Column(db.Text, nullable=True)
+    resources = db.Column(db.Text, nullable=True)
+    supporting_weblinks = db.Column(db.String(350), nullable=True)
+    supporting_media = db.Column(db.String(350), nullable=True)
+    ways_to_extend = db.Column(db.Text, nullable=True)
+
+    projects = db.relationship("Project", back_populates="activities")
+
+
 class Project(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(350), nullable=True)
@@ -47,6 +63,7 @@ class Project(db.Model, GenericMixin):
     students = db.relationship("Student", secondary='student_project', back_populates="projects")
     teachers = db.relationship("Teacher", secondary='teacher_project', back_populates="projects")
     learning_groups = db.relationship("LearningGroup", secondary='learning_group_projects', back_populates="projects")
+    activities = db.relationship("ProjectActivity", back_populates="projects")
 
     __table_args__ = (
         db.UniqueConstraint('school_id', 'name', name='uq_school_project_name'),

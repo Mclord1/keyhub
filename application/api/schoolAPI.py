@@ -6,6 +6,7 @@ from application.module.SchoolProject import SchoolProjectModel
 from application.module.Schools import SchoolModel
 from application.module.SchoolsRole import SchoolRoleModel
 from application.module.Subscriptions import SubscriptionModel
+from application.module.ProjectActivties import ProjectActivityModel
 from application.utils.output import return_json, OutputObj
 from . import *
 
@@ -411,3 +412,53 @@ def school_subscription_history(school_id):
     page = request.args.get('page', 1)
     per_page = request.args.get('per_page', 10)
     return SubscriptionModel.PaymentHistory(school_id, page, per_page)
+
+
+# ===================================== SCHOOL PROJECT ACTIVITIES =====================================
+
+
+# Create a Project Activity
+@school_blueprint.route("/<int:school_id>/activity", methods=["POST"])
+@authenticate(PermissionEnum.ADD_PROJECTS)
+@has_school_privilege
+def create_activity(school_id):
+    data = request.get_json()
+    ProjectActivityModel.create_project_activity(school_id, data)
+    return return_json(OutputObj(code=201, message="Project Activity created successfully"))
+
+
+# Get Project Activities for a Specific Project
+@school_blueprint.route("/<int:school_id>/project/<int:project_id>", methods=["GET"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def get_activities(project_id, school_id):
+    activities = ProjectActivityModel.get_project_activities(school_id, project_id)
+    return return_json(OutputObj(code=200, message="Activities fetched", data=activities))
+
+
+# Get a Specific Project Activity by ID
+@school_blueprint.route("/<int:school_id>/activity/<int:activity_id>", methods=["GET"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def get_activity(activity_id, school_id):
+    activity = ProjectActivityModel.get_project_activity(activity_id, school_id)
+    return return_json(OutputObj(code=200, message="Activity fetched", data=activity))
+
+
+# Update a Project Activity by ID
+@school_blueprint.route("/<int:school_id>/activity/<int:activity_id>", methods=["PUT"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def update_activity(activity_id, school_id):
+    data = request.get_json()
+    ProjectActivityModel.update_project_activity(activity_id, school_id, data)
+    return return_json(OutputObj(code=200, message="Project activity updated successfully"))
+
+
+# Delete a Project Activity by ID
+@school_blueprint.route("/<int:school_id>/activity/<int:activity_id>", methods=["DELETE"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def delete_activity(activity_id, school_id):
+    ProjectActivityModel.delete_project_activity(activity_id, school_id)
+    return return_json(OutputObj(code=200, message="Project activity deleted successfully"))
