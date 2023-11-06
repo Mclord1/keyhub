@@ -132,17 +132,17 @@ class SubscriptionModel:
 
             if sub.status.value == SubscriptionStatusEnum.PROCESSING.value:
                 sub.status = SubscriptionStatusEnum.CANCELLED.value
+                result = "Processing subscription has been cancelled successfully"
             else:
                 sub.action = {
                     "plan": sub.subscription_plan.name,
                     "type": "cancel"
                 }
+                result = f"Cancellation on your {sub.subscription_plan.name} plan will be effective at the end of your current billing period on {sub.next_billing_date.date()}."
 
             db.session.commit()
-
-            result = f"Cancellation on your {sub.subscription_plan.name} plan will be effective at the end of your current billing period on {sub.next_billing_date.date()}."
             table_info = sub.to_dict(add_filter=False)
-            table_info['next_billing_date'] = sub.next_billing_date.isoformat()
+            table_info['next_billing_date'] = sub.next_billing_date.isoformat() if sub.next_billing_date else None
             table_info['status'] = sub.status.value
             Audit.add_audit('Cancelled subcription plan', current_user, table_info)
             return return_json(OutputObj(message=result, code=200))
@@ -152,7 +152,6 @@ class SubscriptionModel:
 
     @classmethod
     def active_subscription(cls, school_id):
-        sub: Subscription = Subscription.query.filter_by(status=SubscriptionStatusEnum.ACTIVE.value, school_id=school_id).first()
 
         sub: Subscription = Subscription.query.filter(
             and_(
