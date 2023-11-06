@@ -49,6 +49,8 @@ class SchoolModel:
     @classmethod
     def view_school_info(cls, school_id):
         _school: School = School.GetSchool(school_id)
+        sub : Subscription = Subscription.query.filter(Subscription.school_id == _school.id, Subscription.status == "active").first()
+        subcription_plan = sub.subscription_plan.name if sub else None
 
         return {
             "num_of_teachers": len(_school.teachers),
@@ -56,6 +58,7 @@ class SchoolModel:
             "num_of_parents": len(_school.parents),
             "num_of_school_administrators": len(_school.managers),
             "learning_groups": [x.id for x in _school.learning_groups],
+            "subcription_plan": subcription_plan,
             "student_by_gender": {
                 "male": {
                     "count": len([x for x in _school.students if x.gender == "Male"]),

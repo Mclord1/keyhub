@@ -56,6 +56,7 @@ class ProjectSchema(BaseModel):
 class UpdateProjectSchema(BaseModel):
     users: Optional[Union[List[int], int]] = None
     group_id: int
+    teacher_type: Optional[str] = None
 
 
 class LearningGroupSchema(BaseModel):

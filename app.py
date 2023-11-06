@@ -18,6 +18,7 @@ app.register_blueprint(helper_blueprint, url_prefix='/helper')
 app.register_blueprint(subcription_blueprint, url_prefix='/subscription')
 app.register_blueprint(transaction_blueprint, url_prefix='/transaction')
 app.register_blueprint(audit_blueprint, url_prefix='/audit')
+app.register_blueprint(sme_bp, url_prefix='/sme')
 
 
 @jwt.user_lookup_loader

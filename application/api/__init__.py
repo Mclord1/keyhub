@@ -13,3 +13,4 @@ from application.api.helperAPI import helper_blueprint
 from application.api.subscriptionAPI import subcription_blueprint
 from application.api.transactionAPI import transaction_blueprint
 from application.api.auditAPI import audit_blueprint
+from application.api.smeAPI import sme_bp

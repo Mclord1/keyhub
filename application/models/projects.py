@@ -23,7 +23,8 @@ class Project(db.Model, GenericMixin):
     reg_number = db.Column(db.String(350), nullable=True)
 
     requirements = db.Column(db.JSON(none_as_null=True), nullable=True)
-
+    lead_teacher = db.Column(db.Integer, nullable=True)
+    supporting_teachers = db.Column(db.String(350), nullable=True)
     documents = db.Column(db.JSON(none_as_null=True), nullable=True)
     description = db.Column(db.String(350), nullable=True)
     academic_year = db.Column(db.String(350), nullable=True)
@@ -38,7 +39,7 @@ class Project(db.Model, GenericMixin):
     milestones = db.Column(db.String(350), nullable=True)
     final_product = db.Column(db.JSON(none_as_null=True), nullable=True)
     learning_goals = db.Column(db.JSON(none_as_null=True), nullable=True)
-
+    project_duration = db.Column(db.String(450), nullable=True)
     isDeactivated = db.Column(db.Boolean, default=False)
     deactivate_reason = db.Column(db.String(450), nullable=True)
     schools = db.relationship("School", back_populates='projects')

@@ -1,3 +1,5 @@
+import ast
+
 from . import *
 from ..Schema.school import ProjectSchema, UpdateProjectSchema
 
@@ -135,6 +137,8 @@ class SchoolProjectModel:
 
         try:
             if model == "teacher":
+                if not req.teacher_type or str(req.teacher_type).lower() not in ("lead_teacher", "support_teacher"):
+                    raise CustomException(message="teacher_type i must be either lead_teacher or support_teacher", status_code=400)
                 for _user in req.users:
 
                     _teacher: Teacher = Teacher.GetTeacher(_user)
@@ -147,7 +151,23 @@ class SchoolProjectModel:
                         _teacher.students.extend(_project.students)
 
                     if _teacher not in _learning_group.teachers:
+                        # Add teacher to a learning group if teacher don't belong to a learning group
                         _learning_group.teachers.append(_teacher)
+
+                    if req.teacher_type.lower() == "lead_teacher":
+                        _project.lead_teacher = _teacher.id
+
+                    if req.teacher_type.lower() == "support_teacher":
+
+                        if _project.supporting_teachers:
+                            new_member = ast.literal_eval(_project.supporting_teachers)
+                            if _teacher.id not in new_member:
+                                new_member.append(_teacher.id)
+
+                        else:
+                            new_member = [_teacher.id]
+
+                        _project.supporting_teachers = str(new_member)
 
                     _project.teachers.append(_teacher)
 
@@ -165,12 +185,13 @@ class SchoolProjectModel:
                         # append teachers to student if project teachers exist
                         _student.teachers.extend(_project.teachers)
 
+                    # Add student to a learning group if student don't belong to a learning group
                     if _student not in _learning_group.students:
                         _learning_group.students.append(_student)
 
                     _project.students.append(_student)
 
-                    Audit.add_audit('Assign Student to  School Project', current_user, _project.to_dict(add_filter=False))
+                    Audit.add_audit('Assign Student to School Project', current_user, _project.to_dict(add_filter=False))
 
             db.session.commit()
             return "User has been added to the project"
@@ -225,5 +246,3 @@ class SchoolProjectModel:
         except Exception as e:
             db.session.rollback()
             raise e
-
-
