@@ -92,6 +92,7 @@ class PlanModel:
             "results": {
                 "subscriptions": [{
                     **res.to_dict(add_filter=False),
+                    "status" : res.status.value
                 } for res in results]
             }
         }
