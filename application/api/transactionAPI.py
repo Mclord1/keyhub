@@ -1,5 +1,3 @@
-import base64
-import hashlib
 import hmac
 import json
 import os
@@ -29,7 +27,11 @@ def paystack_webhook():
     if request.method != 'POST' or 'X-Paystack-Signature' not in request.headers:
         return "Method Not Allowed", 405
 
-    ip = request.headers.get('X-Forwarded-For')
+    ip_address = request.headers.get('X-Forwarded-For')
+
+    if ip_address not in ('52.49.173.169', '52.31.139.75', '52.214.14.220'):
+        # check if ip_address is coming from paystack
+        return "Forbidden", 403
 
     print("webhook has been called")
     request_data = request.get_data()
@@ -73,7 +75,7 @@ def paystack_webhook():
     print(event)
     SubscriptionModel.process_subscription(event)
     # Do something with the event
-    return response
+    return '', 200
 
 
 @transaction_blueprint.route('/all', methods=['GET'])
@@ -112,6 +114,3 @@ def mark_cancelled(transaction_id):
 import hashlib
 
 SECRET_KEY = 'pk_test_0f44563f9339ea378c37ec1d8ce0c6ef85fb9467'  # Replace with your actual secret key
-
-
-

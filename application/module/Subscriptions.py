@@ -49,6 +49,8 @@ class SubscriptionModel:
         add_transaction = Transaction(result, school=_school, subscriptions=sub)
         add_transaction.save(refresh=True)
 
+        return '', 200
+
     @classmethod
     def create_subscription(cls, school_id, data: dict):
 

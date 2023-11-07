@@ -118,9 +118,12 @@ class SchoolProjectModel:
             "email": _project.user.email,
             "msisdn": _project.user.msisdn,
             "school": _project.schools.name,
+            "students": [x.to_dict() for x in _project.students],
+            "activities": [x.to_dict(add_filter=False) for x in _project.activities],
             "learning_groups": [x.id for x in _project.learning_groups],
-            "assigned_teachers": [x.to_dict() for x in _project.teachers],
-            **_project.to_dict(add_filter=False)
+            **_project.to_dict(add_filter=False),
+            "lead_teacher": Teacher.GetTeacher(_project.lead_teacher).to_dict() if _project.lead_teacher else None,
+            "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in ast.literal_eval(_project.supporting_teachers)],
         }
 
     @classmethod
