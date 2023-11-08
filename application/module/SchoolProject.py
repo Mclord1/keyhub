@@ -1,7 +1,5 @@
 import ast
 
-from sqlalchemy.sql.operators import is_not
-
 from . import *
 from ..Schema.school import ProjectSchema, UpdateProjectSchema
 
@@ -55,6 +53,7 @@ class SchoolProjectModel:
                 "email": x.user.email,
                 "msisdn": x.user.msisdn,
                 "school": x.schools.name,
+                "students": [x.to_dict() for x in x.students],
                 "activities": [activity.to_dict(add_filter=False) for activity in x.activities],
                 "lead_teacher": Teacher.GetTeacher(x.lead_teacher).to_dict() if x.lead_teacher else None,
                 "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
@@ -80,7 +79,8 @@ class SchoolProjectModel:
                 "email": x.user.email,
                 "msisdn": x.user.msisdn,
                 "school": x.schools.name,
-                "activities" : [activity.to_dict(add_filter=False) for activity in x.activities],
+                "students": [x.to_dict() for x in x.students],
+                "activities": [activity.to_dict(add_filter=False) for activity in x.activities],
                 "lead_teacher": Teacher.GetTeacher(x.lead_teacher).to_dict() if x.lead_teacher else None,
                 "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
                                         ast.literal_eval(x.supporting_teachers)] if x.supporting_teachers is not None else None,
@@ -95,7 +95,7 @@ class SchoolProjectModel:
 
         _school = School.GetSchool(school_id)
 
-        project_exist = Project.query.filter_by(name=req.name, schools=_school).first()
+        project_exist: Project = Project.query.filter_by(name=req.name, schools=_school).first()
 
         if project_exist:
             raise CustomException(message="Project with same name already exist", status_code=400)
@@ -106,19 +106,25 @@ class SchoolProjectModel:
 
         try:
 
-            del data['group_id']
+            spread_in_project = {x: data[x] for x in data if x not in ['group_id', 'student_id', 'teacher_id']}
 
-            if data.get('student_id'):
-                del data['student_id']
-
-            if data.get('teacher_id'):
-                del data['teacher_id']
-
-            add_project: Project = Project(**data, schools=school, user=current_user)
+            add_project: Project = Project(**spread_in_project, schools=school, user=current_user)
 
             _learning_group.projects.append(add_project)
 
             add_project.save(refresh=True)
+
+            # Add students to the project / learning group
+            if student_list := data.get('student_id'):
+                for _user in student_list:
+                    _student: Student = Student.GetStudent(_user)
+
+                    # Add student to a learning group if student don't belong to a learning group
+                    if _student not in _learning_group.students:
+                        _learning_group.students.append(_student)
+
+                    add_project.students.append(_student)
+
             Audit.add_audit('Add School Project', current_user, add_project.to_dict(add_filter=False))
 
             return add_project.to_dict()
@@ -154,7 +160,6 @@ class SchoolProjectModel:
     @classmethod
     def view_project_detail(cls, school_id, project_id):
         _project: Project = Project.GetProject(school_id, project_id)
-        print(_project.supporting_teachers)
         return {
             "email": _project.user.email,
             "msisdn": _project.user.msisdn,
