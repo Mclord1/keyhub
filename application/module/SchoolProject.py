@@ -1,5 +1,7 @@
 import ast
 
+from sqlalchemy.sql.operators import is_not
+
 from . import *
 from ..Schema.school import ProjectSchema, UpdateProjectSchema
 
@@ -30,6 +32,7 @@ class SchoolProjectModel:
                     "email": project.user.email,
                     "msisdn": project.user.msisdn,
                     "school": project.schools.name,
+                    "activities": [activity.to_dict(add_filter=False) for activity in project.activities],
                     **project.to_dict(add_filter=False),
                     "lead_teacher": Teacher.GetTeacher(project.lead_teacher).to_dict() if project.lead_teacher else None,
                     "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
@@ -52,6 +55,7 @@ class SchoolProjectModel:
                 "email": x.user.email,
                 "msisdn": x.user.msisdn,
                 "school": x.schools.name,
+                "activities": [activity.to_dict(add_filter=False) for activity in x.activities],
                 "lead_teacher": Teacher.GetTeacher(x.lead_teacher).to_dict() if x.lead_teacher else None,
                 "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
                                         ast.literal_eval(x.supporting_teachers)] if x.supporting_teachers is not None else None,
@@ -68,7 +72,7 @@ class SchoolProjectModel:
 
         query = Project.query.filter(
             (Project.name.ilike(f'%{args}%'))
-        )
+        ).filter(Project.is_private.is_(False))
         result = [
             {
                 **x.to_dict(add_filter=False),
@@ -76,7 +80,7 @@ class SchoolProjectModel:
                 "email": x.user.email,
                 "msisdn": x.user.msisdn,
                 "school": x.schools.name,
-                "assigned_teachers": [_teacher.to_dict() for _teacher in x.teachers],
+                "activities" : [activity.to_dict(add_filter=False) for activity in x.activities],
                 "lead_teacher": Teacher.GetTeacher(x.lead_teacher).to_dict() if x.lead_teacher else None,
                 "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
                                         ast.literal_eval(x.supporting_teachers)] if x.supporting_teachers is not None else None,
