@@ -46,7 +46,6 @@ class Project(db.Model, GenericMixin):
     academic_year = db.Column(db.String(350), nullable=True)
     term = db.Column(db.String(350), nullable=True)
     project_type = db.Column(db.String(350), nullable=True)
-    subject_matter = db.Column(db.JSON(none_as_null=True), nullable=True)
     age_group = db.Column(db.String(350), nullable=True)
     key_words = db.Column(db.JSON(none_as_null=True), nullable=True)
     project_aim = db.Column(db.String(350), nullable=True)

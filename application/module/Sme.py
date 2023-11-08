@@ -54,8 +54,8 @@ class SmeModel:
         return [x.to_dict(add_filter=False) for x in sme]
 
     @classmethod
-    def update_sme(cls, school_id, data):
-        _sme = SME.query.filter_by(school_id=school_id).first()
+    def update_sme(cls, school_id, sme_id, data):
+        _sme = SME.query.filter_by(school_id=school_id, id=sme_id).first()
         if not _sme:
             raise CustomException(message="SME not found", status_code=404)
 
@@ -67,8 +67,8 @@ class SmeModel:
             raise e
 
     @classmethod
-    def delete_sme(cls, school_id):
-        sme = SME.query.filter_by(school_id=school_id).first()
+    def delete_sme(cls, school_id, sme_id):
+        sme = SME.query.filter_by(school_id=school_id, id=sme_id).first()
         if not sme:
             raise CustomException(message="SME not found", status_code=404)
 

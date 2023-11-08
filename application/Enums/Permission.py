@@ -60,6 +60,12 @@ class SchoolPermissionEnum(enum.Enum):
     VIEW_SME = 'view_sme'
     DELETE_SME = 'delete_sme'
 
+    # KEWORDS
+    ADD_KEYWORD = 'add_keywords'
+    MODIFY_KEYWORD = 'update_keywords'
+    VIEW_KEYWORD = 'view_keywords'
+    DEACTIVATE_KEYWORD = 'deactivate_keywords'
+
 
 class PermissionEnum(enum.Enum):
     # ROLES & PERMISSIONS

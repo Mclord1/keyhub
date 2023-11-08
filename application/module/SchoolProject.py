@@ -30,8 +30,10 @@ class SchoolProjectModel:
                     "email": project.user.email,
                     "msisdn": project.user.msisdn,
                     "school": project.schools.name,
-                    "assigned_teachers": [x.to_dict() for x in project.teachers],
-                    **project.to_dict(add_filter=False)
+                    **project.to_dict(add_filter=False),
+                    "lead_teacher": Teacher.GetTeacher(project.lead_teacher).to_dict() if project.lead_teacher else None,
+                    "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
+                                            ast.literal_eval(project.supporting_teachers)] if project.supporting_teachers is not None else None,
                 } for project in results]
             }
         }
@@ -51,7 +53,34 @@ class SchoolProjectModel:
                 "email": x.user.email,
                 "msisdn": x.user.msisdn,
                 "school": x.schools.name,
+                "lead_teacher": Teacher.GetTeacher(x.lead_teacher).to_dict() if x.lead_teacher else None,
+                "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
+                                        ast.literal_eval(x.supporting_teachers)] if x.supporting_teachers is not None else None,
+            }
+
+            for x in query.all()]
+        return result
+
+    @classmethod
+    def search_all_school_projects(cls, args):
+
+        if not current_user.admins:
+            raise CustomException(message="You don't have permission to access this service.")
+
+        query = Project.query.filter(
+            (Project.name.ilike(f'%{args}%'))
+        )
+        result = [
+            {
+                **x.to_dict(add_filter=False),
+                "learning_group": [groups.id for groups in x.learning_groups],
+                "email": x.user.email,
+                "msisdn": x.user.msisdn,
+                "school": x.schools.name,
                 "assigned_teachers": [_teacher.to_dict() for _teacher in x.teachers],
+                "lead_teacher": Teacher.GetTeacher(x.lead_teacher).to_dict() if x.lead_teacher else None,
+                "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
+                                        ast.literal_eval(x.supporting_teachers)] if x.supporting_teachers is not None else None,
             }
 
             for x in query.all()]
@@ -74,7 +103,8 @@ class SchoolProjectModel:
 
         try:
 
-            add_project: Project = Project(name=req.name, description=req.description, schools=school, user=current_user)
+            del data['group_id']
+            add_project: Project = Project(**data, schools=school, user=current_user)
 
             _learning_group.projects.append(add_project)
 
@@ -114,6 +144,7 @@ class SchoolProjectModel:
     @classmethod
     def view_project_detail(cls, school_id, project_id):
         _project: Project = Project.GetProject(school_id, project_id)
+        print(_project.supporting_teachers)
         return {
             "email": _project.user.email,
             "msisdn": _project.user.msisdn,
@@ -123,7 +154,7 @@ class SchoolProjectModel:
             "learning_groups": [x.id for x in _project.learning_groups],
             **_project.to_dict(add_filter=False),
             "lead_teacher": Teacher.GetTeacher(_project.lead_teacher).to_dict() if _project.lead_teacher else None,
-            "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in ast.literal_eval(_project.supporting_teachers)],
+            "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in ast.literal_eval(_project.supporting_teachers)] if _project.supporting_teachers is not None else None,
         }
 
     @classmethod

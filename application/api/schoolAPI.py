@@ -1,12 +1,12 @@
 from flask import Blueprint, request
 
+from application.module.ProjectActivties import ProjectActivityModel
 from application.module.SchoolAdmin import SchoolAdminModel
 from application.module.SchoolLearningGroup import SchoolLearningGroupsModel
 from application.module.SchoolProject import SchoolProjectModel
 from application.module.Schools import SchoolModel
 from application.module.SchoolsRole import SchoolRoleModel
 from application.module.Subscriptions import SubscriptionModel
-from application.module.ProjectActivties import ProjectActivityModel
 from application.utils.output import return_json, OutputObj
 from . import *
 
@@ -111,6 +111,14 @@ def school_projects_search(school_id):
     query = request.args.get('query')
     return return_json(
         OutputObj(code=200, message="projects results", data=SchoolProjectModel.search_projects(query, school_id)))
+
+
+@school_blueprint.route('/projects/search', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+def all_school_projects_search():
+    query = request.args.get('query')
+    return return_json(
+        OutputObj(code=200, message="projects results", data=SchoolProjectModel.search_all_school_projects(query)))
 
 
 @school_blueprint.route('/<int:school_id>/projects', methods=['POST'])

@@ -25,17 +25,17 @@ def get_sme(school_id):
     return return_json(OutputObj(code=200, message="SME fetched", data=sme))
 
 
-@sme_bp.route("/<int:school_id>", methods=["PUT"])
+@sme_bp.route("/<int:sme_id>/school/<int:school_id>", methods=["PUT"])
 @authenticate(PermissionEnum.MODIFY_SME)
 @has_school_privilege
-def update_sme(school_id):
+def update_sme(school_id, sme_id):
     data = request.get_json()
-    SmeModel.update_sme(school_id, data)
+    SmeModel.update_sme(school_id,sme_id, data)
     return return_json(OutputObj(code=200, message="SME updated successfully"))
 
 
 # Delete an SME by ID
-@sme_bp.route("/<int:school_id>", methods=["DELETE"])
+@sme_bp.route("/<int:sme_id>/school/<int:school_id>", methods=["PUT"])
 @authenticate(PermissionEnum.DELETE_SME)
 @has_school_privilege
 def delete_sme(school_id):
