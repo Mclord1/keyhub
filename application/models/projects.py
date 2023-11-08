@@ -56,14 +56,7 @@ class Project(db.Model, GenericMixin):
     learning_goals = db.Column(db.JSON(none_as_null=True), nullable=True)
     meets_project_duration = db.Column(db.String(450), nullable=True)
 
-    is_key_knowledge = db.Column(db.Boolean, default=False)
-    is_challenging_problem = db.Column(db.Boolean, default=False)
-    is_sustained_inquiry = db.Column(db.Boolean, default=False)
-    is_authentic = db.Column(db.Boolean, default=False)
-    is_student_voice = db.Column(db.Boolean, default=False)
-    is_reflection = db.Column(db.Boolean, default=False)
-    is_critique = db.Column(db.Boolean, default=False)
-    is_public_product = db.Column(db.Boolean, default=False)
+    project_checklist = db.Column(db.JSON(none_as_null=True), nullable=True)
     is_private = db.Column(db.Boolean, default=False)
     project_duration = db.Column(db.String(450), nullable=True)
 
