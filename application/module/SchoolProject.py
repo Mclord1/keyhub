@@ -42,7 +42,6 @@ class SchoolProjectModel:
 
     @classmethod
     def search_projects(cls, args, school_id):
-
         query = Project.query.filter(Project.school_id == int(school_id)).filter(
             (Project.name.ilike(f'%{args}%'))
         )
@@ -104,6 +103,13 @@ class SchoolProjectModel:
         try:
 
             del data['group_id']
+
+            if data.get('student_id'):
+                del data['student_id']
+
+            if data.get('teacher_id'):
+                del data['teacher_id']
+
             add_project: Project = Project(**data, schools=school, user=current_user)
 
             _learning_group.projects.append(add_project)
@@ -154,7 +160,8 @@ class SchoolProjectModel:
             "learning_groups": [x.id for x in _project.learning_groups],
             **_project.to_dict(add_filter=False),
             "lead_teacher": Teacher.GetTeacher(_project.lead_teacher).to_dict() if _project.lead_teacher else None,
-            "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in ast.literal_eval(_project.supporting_teachers)] if _project.supporting_teachers is not None else None,
+            "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
+                                    ast.literal_eval(_project.supporting_teachers)] if _project.supporting_teachers is not None else None,
         }
 
     @classmethod

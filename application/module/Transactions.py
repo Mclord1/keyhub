@@ -60,7 +60,7 @@ class TransactionModel:
             raise CustomException(message="Only System admin can perform this action", status_code=400)
 
         if _transaction.subscriptions:
-            if not any(x for x in _transaction.school.subscriptions if x.status == SubscriptionStatusEnum.ACTIVE.value):
+            if not any(x for x in _transaction.schools.subscriptions if x.status == SubscriptionStatusEnum.ACTIVE.value):
                 _transaction.subscriptions.status = SubscriptionStatusEnum.ACTIVE.value
 
         _transaction.status = "success"
