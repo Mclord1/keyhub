@@ -91,10 +91,9 @@ class SchoolProjectModel:
 
     @classmethod
     def add_project(cls, school_id, data):
+
         req: ProjectSchema = validator.validate_data(ProjectSchema, data)
-
         _school = School.GetSchool(school_id)
-
         project_exist: Project = Project.query.filter_by(name=req.name, schools=_school).first()
 
         if project_exist:
@@ -102,29 +101,23 @@ class SchoolProjectModel:
 
         school = School.GetSchool(school_id)
 
-        _learning_group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, req.group_id)
-
         try:
 
             spread_in_project = {x: data[x] for x in data if x not in ['group_id', 'student_id', 'teacher_id']}
-
             add_project: Project = Project(**spread_in_project, schools=school, user=current_user)
 
-            _learning_group.projects.append(add_project)
+            for group in req.group_id:
+                _learning_group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, group)
+
+                student_list = data.get('student_id', [])
+                _students = Student.query.filter(Student.id.in_(student_list)).all()
+
+                _learning_group.students.extend(_students)
+                add_project.students.extend(_students)
+
+                _learning_group.projects.append(add_project)
 
             add_project.save(refresh=True)
-
-            # Add students to the project / learning group
-            if student_list := data.get('student_id'):
-                for _user in student_list:
-                    _student: Student = Student.GetStudent(_user)
-
-                    # Add student to a learning group if student don't belong to a learning group
-                    if _student not in _learning_group.students:
-                        _learning_group.students.append(_student)
-
-                    add_project.students.append(_student)
-
             Audit.add_audit('Add School Project', current_user, add_project.to_dict(add_filter=False))
 
             return add_project.to_dict()
@@ -165,8 +158,9 @@ class SchoolProjectModel:
             "msisdn": _project.user.msisdn,
             "school": _project.schools.name,
             "students": [x.to_dict() for x in _project.students],
+            "sme": [x.to_dict(add_filter=False) for x in _project.schools.smes],
             "activities": [x.to_dict(add_filter=False) for x in _project.activities],
-            "learning_groups": [x.id for x in _project.learning_groups],
+            "learning_groups": [x.to_dict(add_filter=False) for x in _project.learning_groups],
             **_project.to_dict(add_filter=False),
             "lead_teacher": Teacher.GetTeacher(_project.lead_teacher).to_dict() if _project.lead_teacher else None,
             "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in

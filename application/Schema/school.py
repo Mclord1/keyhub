@@ -50,7 +50,7 @@ class UpdateSchoolSchema(BaseModel):
 class ProjectSchema(BaseModel):
     name: str
     description: str
-    group_id: int
+    group_id: List[int]
 
 
 class UpdateProjectSchema(BaseModel):
