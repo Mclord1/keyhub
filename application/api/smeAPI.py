@@ -30,7 +30,7 @@ def get_sme(school_id):
 @has_school_privilege
 def update_sme(school_id, sme_id):
     data = request.get_json()
-    SmeModel.update_sme(school_id,sme_id, data)
+    SmeModel.update_sme(school_id, sme_id, data)
     return return_json(OutputObj(code=200, message="SME updated successfully"))
 
 
