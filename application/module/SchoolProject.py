@@ -162,7 +162,7 @@ class SchoolProjectModel:
             "activities": [x.to_dict(add_filter=False) for x in _project.activities],
             "learning_groups": [x.to_dict(add_filter=False) for x in _project.learning_groups],
             **_project.to_dict(add_filter=False),
-            "learning_goals": list(_project.learning_goals) if _project.learning_goals else 0,
+            "learning_goals": list(_project.learning_goals) if _project.learning_goals else [],
             "lead_teacher": Teacher.GetTeacher(_project.lead_teacher).to_dict() if _project.lead_teacher else None,
             "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
                                     ast.literal_eval(_project.supporting_teachers)] if _project.supporting_teachers is not None else None,
