@@ -63,7 +63,6 @@ class SchoolRoleModel:
             "transactions": [],
             "parents": [],
             "teacher": [],
-            "school": [],
             "roles": [],
             "permissions": [],
             "learning_groups": [],
@@ -74,7 +73,6 @@ class SchoolRoleModel:
             for category in permission_groups.keys():
                 if category in _permission.name:
                     permission_groups[category].append(_permission.to_dict(add_filter=False))
-
         return permission_groups
 
     @classmethod
