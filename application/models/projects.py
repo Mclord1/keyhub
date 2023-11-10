@@ -55,6 +55,7 @@ class Project(db.Model, GenericMixin):
     final_product = db.Column(db.JSON(none_as_null=True), nullable=True)
     learning_goals = db.Column(db.JSON(none_as_null=True), nullable=True)
     meets_project_duration = db.Column(db.String(450), nullable=True)
+    curriculum = db.Column(db.String(450), nullable=True)
 
     project_checklist = db.Column(db.JSON(none_as_null=True), nullable=True)
     is_private = db.Column(db.Boolean, default=False)
