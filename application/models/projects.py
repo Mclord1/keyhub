@@ -54,6 +54,7 @@ class Project(db.Model, GenericMixin):
     milestones = db.Column(db.String(350), nullable=True)
     final_product = db.Column(db.JSON(none_as_null=True), nullable=True)
     learning_goals = db.Column(db.JSON(none_as_null=True), nullable=True)
+    subject_matter = db.Column(db.JSON(none_as_null=True), nullable=True)
     meets_project_duration = db.Column(db.String(450), nullable=True)
     curriculum = db.Column(db.String(450), nullable=True)
 
