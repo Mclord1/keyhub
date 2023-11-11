@@ -20,7 +20,7 @@ from exceptions.custom_exception import CustomException
 from flask_cors import CORS
 
 app = FlaskLambda(__name__)
-CORS(app, origins=['https://keyhub-frontend.vercel.app'])
+CORS(app, origins="*")
 app.app_context().push()
 SECRET_KEY = os.environ.get('SECRET_KEY')
 app.config['SECRET_KEY'] = SECRET_KEY
