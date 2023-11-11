@@ -39,7 +39,7 @@ class Helper:
         if not current_user.admins and current_user.managers:
             query.filter(Model.school_id == current_user.managers.school_id)
 
-        result = [x.to_dict() | x.user.to_dict() for x in query.all()]
+        result = [ x.user.to_dict() | x.to_dict() for x in query.all()]
 
         for item in result:
             item.pop("password", None)
