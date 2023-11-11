@@ -35,6 +35,10 @@ class StudentModel:
     @classmethod
     def update_information(cls, user_id, data):
         _student: Student = Helper.get_user(Student, user_id)
+
+        if not data:
+            raise CustomException(message="Please provide data to update", status_code=400)
+
         gender = data.get('gender')
         role = data.get('role')
         if role:
