@@ -179,6 +179,7 @@ class SubscriptionModel:
         result['status'] = sub.status.value
         result['plan_name'] = sub.subscription_plan.name
         result['features'] = sub.subscription_plan.features
+        result['school_name'] = sub.schools.name
 
         if to_next_plan and to_next_type == 'cancel':
             result['cancelled'] = True
@@ -200,7 +201,7 @@ class SubscriptionModel:
         sub = Subscription.query.filter(Subscription.school_id == school_id).order_by(desc(Subscription.created_at)).paginate(page=page, per_page=per_page,
                                                                                                                               error_out=False)
         total_items = sub.total
-        results = [item for item in sub.items]
+        results : List[Subscription] = [item for item in sub.items]
         total_pages = (total_items - 1) // per_page + 1
 
         pagination_data = {
@@ -212,7 +213,8 @@ class SubscriptionModel:
                 **x.to_dict(add_filter=False),
                 "status": x.status.value,
                 "features": x.subscription_plan.features,
-                "plan_name": x.subscription_plan.name
+                "plan_name": x.subscription_plan.name,
+                "school_name" : x.schools.name
 
             } for x in results]
         }

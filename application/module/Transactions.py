@@ -20,7 +20,7 @@ class TransactionModel:
         _transactions = query.order_by(desc(Transaction.created_at)).paginate(page=page, per_page=per_page, error_out=False)
 
         total_items = _transactions.total
-        results = [item for item in _transactions.items]
+        results: List[Transaction] = [item for item in _transactions.items]
         total_pages = (total_items - 1) // per_page + 1
         pagination_data = {
             "page": page,
@@ -33,8 +33,8 @@ class TransactionModel:
                 "num_of_pending_transactions": len([x for x in results if x.status == "success"]),
                 "transactions": [{
                     "created": trans.created_at,
-                    "amount": trans.amount,
-                    "payer": trans.customer_name,
+                    "amount": trans.amount / 100,
+                    "payer": trans.schools.name,
                     "purpose": trans.purpose,
                     "status": trans.status,
                     "currency": trans.currency,
@@ -48,9 +48,17 @@ class TransactionModel:
     @classmethod
     def get_single_transaction(cls, transaction_id):
 
-        _transaction = Transaction.GetSchoolTransaction(transaction_id)
-
-        return _transaction.to_dict(add_filter=True)
+        _transaction: Transaction = Transaction.GetSchoolTransaction(transaction_id)
+        print(_transaction.schools.transactions)
+        return {
+            **_transaction.to_dict(add_filter=True),
+            "payer": _transaction.schools.name,
+            "phone_number": _transaction.schools.msisdn,
+            "amount": _transaction.amount / 100,
+            "total_transaction_volume": len(_transaction.schools.transactions),
+            "total_transaction_pending": len([x for x in _transaction.schools.transactions if x.status == "processing"]),
+            "total_transaction_completed": len([x for x in _transaction.schools.transactions if x.status == "success"]),
+        }
 
     @classmethod
     def mark_as_completed(cls, transaction_id):
