@@ -81,7 +81,7 @@ class PlanModel:
                                                                                             per_page=per_page,
                                                                                             error_out=False)
         total_items = subscriptions.total
-        results = [item for item in subscriptions.items]
+        results : List[Subscription] = [item for item in subscriptions.items]
         total_pages = (total_items - 1) // per_page + 1
 
         pagination_data = {
@@ -92,7 +92,9 @@ class PlanModel:
             "results": {
                 "subscriptions": [{
                     **res.to_dict(add_filter=False),
-                    "status" : res.status.value
+                    "status": res.status.value,
+                    "school_name": res.schools.name,
+                    "plan_name": res.subscription_plan.name
                 } for res in results]
             }
         }
