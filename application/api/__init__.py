@@ -15,3 +15,4 @@ from application.api.transactionAPI import transaction_blueprint
 from application.api.auditAPI import audit_blueprint
 from application.api.smeAPI import sme_bp
 from application.api.keywordAPI import keywords_bp
+from application.api.dashboardAPI import dashboard_blueprint

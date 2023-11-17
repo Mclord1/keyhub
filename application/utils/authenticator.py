@@ -21,7 +21,7 @@ def authenticate(permission_name='Not-Set'):
 
                 # Check if the user's role has the required permission if permission is provided
 
-                if permission_name != 'Not-Set':
+                if permission_name and permission_name != 'Not-Set':
                     if user.managers and user.managers.school_roles:
                         if permission_name.value in [
                             school_permission.name for school_permission in user.managers.school_roles.school_permissions
@@ -40,6 +40,10 @@ def authenticate(permission_name='Not-Set'):
                             return func_response
                         else:
                             raise CustomException(ExceptionCode.PERMISSION_DENIED)
+                else:
+                    print("yes")
+                    return f(*args, **kwargs)
+
 
             except jwt.ExpiredSignatureError:
                 raise CustomException(ExceptionCode.EXPIRED_TOKEN)

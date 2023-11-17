@@ -81,7 +81,7 @@ class PlanModel:
                                                                                             per_page=per_page,
                                                                                             error_out=False)
         total_items = subscriptions.total
-        results : List[Subscription] = [item for item in subscriptions.items]
+        results: List[Subscription] = [item for item in subscriptions.items]
         total_pages = (total_items - 1) // per_page + 1
 
         pagination_data = {
