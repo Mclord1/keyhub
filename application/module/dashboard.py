@@ -56,7 +56,8 @@ class DashboardModel:
         last_day_of_month = (first_day_of_month + timedelta(days=31)).replace(day=1) - timedelta(days=1)
 
         # Calculate the number of weeks in the month
-        weeks = ((last_day_of_month - first_day_of_month).days // 7) + 1
+        weeks = ((last_day_of_month - first_day_of_month).days // 7)
+
 
         # Calculate revenue per week
         weekly_revenue = {}
@@ -71,7 +72,6 @@ class DashboardModel:
             )
             weekly_revenue[f'Week {i + 1}'] = weekly_total
 
-            print(weekly_revenue)
 
         # Calculate total revenue for the month
         total_revenue = (
