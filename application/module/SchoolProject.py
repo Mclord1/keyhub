@@ -124,7 +124,7 @@ class SchoolProjectModel:
 
         except Exception as e:
             db.session.rollback()
-            raise CustomException(ExceptionCode.DATABASE_ERROR)
+            raise e
 
     @classmethod
     def update_project(cls, school_id, project_id, data):

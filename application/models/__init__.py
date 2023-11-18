@@ -10,7 +10,7 @@ from application.models.projects import Project, TeacherProject, StudentProject,
 from application.models.reports import Report
 from application.models.roles import Role
 from application.models.school_manager import SchoolManager
-from application.models.schools import SchoolRole, School, SchoolTeacher, SchoolParent, SchoolRolePermission
+from application.models.schools import SchoolRole, School, SchoolTeacher, SchoolParent, SchoolRolePermission, Term, AcademicYear
 from application.models.smeModel import SME, Keywords
 from application.models.state import State
 from application.models.students import Student

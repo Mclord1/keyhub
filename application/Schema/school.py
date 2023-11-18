@@ -30,6 +30,7 @@ class SchoolSchema(BaseModel):
     state: str
     address: str
     primary_contact: PrimaryContact
+    profile_image : str
 
 
 class SubscribeSchema(BaseModel):

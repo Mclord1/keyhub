@@ -58,7 +58,6 @@ class DashboardModel:
         # Calculate the number of weeks in the month
         weeks = ((last_day_of_month - first_day_of_month).days // 7)
 
-
         # Calculate revenue per week
         weekly_revenue = {}
         for i in range(weeks):
@@ -71,7 +70,6 @@ class DashboardModel:
                     .scalar() or 0
             )
             weekly_revenue[f'Week {i + 1}'] = weekly_total
-
 
         # Calculate total revenue for the month
         total_revenue = (
@@ -90,6 +88,3 @@ class DashboardModel:
         return [{
             **x.to_dict(add_filter=False)
         } for x in _school]
-
-
-

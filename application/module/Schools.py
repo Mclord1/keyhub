@@ -49,7 +49,7 @@ class SchoolModel:
     @classmethod
     def view_school_info(cls, school_id):
         _school: School = School.GetSchool(school_id)
-        sub : Subscription = Subscription.query.filter(Subscription.school_id == _school.id, Subscription.status == "active").first()
+        sub: Subscription = Subscription.query.filter(Subscription.school_id == _school.id, Subscription.status == "active").first()
         subcription_plan = sub.subscription_plan.name if sub else None
 
         return {
@@ -126,6 +126,8 @@ class SchoolModel:
     def add_school(cls, data):
         req_schema: SchoolSchema = validator.validate_data(SchoolSchema, data)
 
+        FileHandler.validate_image(req_schema.profile_image)
+
         name = req_schema.name
         email = req_schema.email
         msisdn = req_schema.msisdn
@@ -185,6 +187,13 @@ class SchoolModel:
             )
             add_school_admin.school_roles = _role
             add_school_admin.save(refresh=True)
+
+            # TODO :: Add background service to image processing
+            profile_url = FileHandler.upload_file(req_schema.profile_image, FileFolder.school, add_school.id)
+
+            # save image to table
+            add_school.update_table({'logo': profile_url})
+
             Audit.add_audit('Add School', current_user, add_school.to_dict(add_filter=False))
 
             return f"The school {add_school.name} and admin has been added successfully"
@@ -318,9 +327,6 @@ class SchoolModel:
 
         }
         return PaginationSchema(**pagination_data).model_dump()
-
-
-
 
     @classmethod
     def get_profile_settings(cls, school_id):

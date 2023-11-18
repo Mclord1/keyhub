@@ -24,7 +24,7 @@ class SchoolRole(db.Model, GenericMixin):
     description = db.Column(db.String(1000), nullable=True)
     school_permissions = db.relationship("SchoolPermission", secondary='school_role_permission', back_populates='school_roles', cascade="all, delete")
     schools = db.relationship("School", back_populates='school_roles')
-    managers = db.relationship("SchoolManager", back_populates='school_roles',  passive_deletes=True)
+    managers = db.relationship("SchoolManager", back_populates='school_roles', passive_deletes=True)
 
     __table_args__ = (
         db.UniqueConstraint('school_id', 'name', name='uq_school_role_name'),
@@ -42,6 +42,20 @@ class SchoolRolePermission(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     school_permission_id = db.Column(db.Integer, db.ForeignKey('school_permission.id', ondelete="CASCADE"), nullable=True)
     school_role_id = db.Column(db.Integer, db.ForeignKey('school_role.id', ondelete="CASCADE"), nullable=True)
+
+
+class Term(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    school_id = db.Column(db.ForeignKey('school.id'), nullable=True)
+    schools = db.relationship("School", back_populates='terms')
+
+
+class AcademicYear(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    school_id = db.Column(db.ForeignKey('school.id'), nullable=True)
+    schools = db.relationship("School", back_populates='academics')
 
 
 class School(db.Model, GenericMixin):
@@ -68,6 +82,8 @@ class School(db.Model, GenericMixin):
     learning_groups = db.relationship("LearningGroup", back_populates='schools', cascade="all, delete-orphan")
     smes = db.relationship("SME", back_populates="schools")
     transactions = db.relationship("Transaction", back_populates='schools')
+    academics = db.relationship("AcademicYear", back_populates='schools', cascade="all, delete-orphan")
+    terms = db.relationship("Term", back_populates='schools', cascade="all, delete-orphan")
 
     @classmethod
     def GetSchool(cls, school_id):

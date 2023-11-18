@@ -1,3 +1,4 @@
+import binascii
 from dotenv import load_dotenv
 # from flask import Flask
 from flask_lambda import FlaskLambda
@@ -86,6 +87,10 @@ def error_handling(error):
         message = error.response.get('Error', {}).get('Code') + " : " + error.response.get('Error', {}).get('Message')
         code = 400
 
+    elif isinstance(error, binascii.Error):
+        message = str(error) + ":" + "invalid image"
+        response_code = 1000
+        code = 400
     elif isinstance(error, CustomException):
         message = error.message
         response_code = error.response_code

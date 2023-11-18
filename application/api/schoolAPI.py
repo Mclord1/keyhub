@@ -1,9 +1,11 @@
 from flask import Blueprint, request
 
 from application.module.ProjectActivties import ProjectActivityModel
+from application.module.SchoolAcademic import SchoolAcademicModel
 from application.module.SchoolAdmin import SchoolAdminModel
 from application.module.SchoolLearningGroup import SchoolLearningGroupsModel
 from application.module.SchoolProject import SchoolProjectModel
+from application.module.SchoolTerms import SchoolTermsModel
 from application.module.Schools import SchoolModel
 from application.module.SchoolsRole import SchoolRoleModel
 from application.module.Subscriptions import SubscriptionModel
@@ -470,3 +472,93 @@ def update_activity(activity_id, school_id):
 def delete_activity(activity_id, school_id):
     ProjectActivityModel.delete_project_activity(activity_id, school_id)
     return return_json(OutputObj(code=200, message="Project activity deleted successfully"))
+
+
+# ===================================== SCHOOL TERMS  =====================================
+
+
+@school_blueprint.route("/<int:school_id>/terms", methods=["POST"])
+@authenticate(PermissionEnum.ADD_PROJECTS)
+@has_school_privilege
+def create_terms(school_id):
+    data = request.get_json()
+    SchoolTermsModel.create_school_terms(school_id, data)
+    return return_json(OutputObj(code=201, message="School Terms created successfully"))
+
+
+@school_blueprint.route("/<int:school_id>/terms", methods=["GET"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def get_all_terms(school_id):
+    terms = SchoolTermsModel.get_school_terms(school_id)
+    return return_json(OutputObj(code=200, message="School Terms  fetched", data=terms))
+
+
+@school_blueprint.route("/<int:school_id>/term/<int:term_id>", methods=["GET"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def get_term(term_id, school_id):
+    term = SchoolTermsModel.get_single_term(term_id, school_id)
+    return return_json(OutputObj(code=200, message="School Term fetched", data=term))
+
+
+@school_blueprint.route("/<int:school_id>/term/<int:term_id>", methods=["PUT"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def update_term(term_id, school_id):
+    data = request.get_json()
+    SchoolTermsModel.update_school_term(term_id, school_id, data)
+    return return_json(OutputObj(code=200, message="School Term updated successfully"))
+
+
+@school_blueprint.route("/<int:school_id>/term/<int:term_id>", methods=["DELETE"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def delete_term(term_id, school_id):
+    SchoolTermsModel.delete_school_term(term_id, school_id)
+    return return_json(OutputObj(code=200, message="School Term deleted successfully"))
+
+
+# ===================================== SCHOOL ACADEMICS =====================================
+
+
+@school_blueprint.route("/<int:school_id>/academics", methods=["POST"])
+@authenticate(PermissionEnum.ADD_PROJECTS)
+@has_school_privilege
+def create_academics(school_id):
+    data = request.get_json()
+    SchoolAcademicModel.create_school_academic(school_id, data)
+    return return_json(OutputObj(code=201, message="School Academic created successfully"))
+
+
+@school_blueprint.route("/<int:school_id>/academics", methods=["GET"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def get_all_academics(school_id):
+    academics = SchoolAcademicModel.get_school_academics(school_id)
+    return return_json(OutputObj(code=200, message="School Academics fetched", data=academics))
+
+
+@school_blueprint.route("/<int:school_id>/academic/<int:academic_id>", methods=["GET"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def get_academic(academic_id, school_id):
+    academics = SchoolAcademicModel.get_single_academic(academic_id, school_id)
+    return return_json(OutputObj(code=200, message="School Academic  fetched", data=academics))
+
+
+@school_blueprint.route("/<int:school_id>/academic/<int:academic_id>", methods=["PUT"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def update_academic(academic_id, school_id):
+    data = request.get_json()
+    SchoolAcademicModel.update_school_academic(academic_id, school_id, data)
+    return return_json(OutputObj(code=200, message="School Academic updated successfully"))
+
+
+@school_blueprint.route("/<int:school_id>/academic/<int:academic_id>", methods=["DELETE"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def delete_academic(academic_id, school_id):
+    SchoolAcademicModel.delete_school_academic(academic_id, school_id)
+    return return_json(OutputObj(code=200, message="School Academic deleted successfully"))
