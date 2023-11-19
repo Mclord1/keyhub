@@ -22,17 +22,17 @@ class FileFolder:
 
     @classmethod
     def student_file(cls, school_name, email):
-        file_name = f"file-{str(uuid.uuid4()[:8])}"
+        file_name = f"file-{str(uuid.uuid4())[:8]}"
         return f"{school_name}/students/{email}/{file_name}", file_name
 
     @classmethod
     def project_file(cls, school_name, project_name):
-        file_name = f"project-{str(uuid.uuid4()[:8])}"
+        file_name = f"project-{str(uuid.uuid4())[:8]}"
         return f"{school_name}/projects/{project_name}/{file_name}", file_name
 
     @classmethod
     def learning_group_file(cls, school_name, learning_group_name):
-        file_name = f"learning_group-{str(uuid.uuid4()[:8])}"
+        file_name = f"learning_group-{str(uuid.uuid4())[:8]}"
         return f"{school_name}/learning_group/{learning_group_name}/{file_name}", file_name
 
 

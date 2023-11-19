@@ -8,8 +8,8 @@ class StudentComment(db.Model, GenericMixin):
     student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=False)
     comment = db.Column(db.Text, nullable=False)
-    students = db.relationship("Student", backref="student_comments")
-    user = db.relationship("User", backref="student_comments")
+    students = db.relationship("Student", back_populates="student_comments")
+    user = db.relationship("User", back_populates="student_comments")
 
 
 class StudentFile(db.Model, GenericMixin):
@@ -19,8 +19,8 @@ class StudentFile(db.Model, GenericMixin):
     file_name = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.Text, nullable=False)
     file_url = db.Column(db.Text, nullable=False)
-    students = db.relationship("Student", backref="student_files")
-    user = db.relationship("User", backref="student_files")
+    students = db.relationship("Student", back_populates="student_files")
+    user = db.relationship("User", back_populates="student_files")
 
 
 class Student(db.Model, GenericMixin):

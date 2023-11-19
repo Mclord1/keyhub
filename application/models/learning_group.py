@@ -26,8 +26,8 @@ class LearningGroupComment(db.Model, GenericMixin):
     learning_group_id = db.Column(db.Integer, db.ForeignKey('learning_group.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=False)
     comment = db.Column(db.Text, nullable=False)
-    learning_groups = db.relationship("LearningGroup", backref="learning_group_comments")
-    user = db.relationship("User", backref="learning_group_comments")
+    learning_groups = db.relationship("LearningGroup", back_populates="learning_group_comments")
+    user = db.relationship("User", back_populates="learning_group_comments")
 
 
 class LearningGroupFile(db.Model, GenericMixin):
@@ -37,8 +37,8 @@ class LearningGroupFile(db.Model, GenericMixin):
     file_name = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.Text, nullable=False)
     file_url = db.Column(db.Text, nullable=False)
-    learning_groups = db.relationship("LearningGroup", backref="learning_group_files")
-    user = db.relationship("User", backref="learning_group_files")
+    learning_groups = db.relationship("LearningGroup", back_populates="learning_group_files")
+    user = db.relationship("User", back_populates="learning_group_files")
 
 
 class LearningGroup(db.Model, GenericMixin):

@@ -152,8 +152,14 @@ class StudentModel:
 
     @classmethod
     def get_comments(cls, student_id):
-        student = Student.GetStudent(student_id)
-        return [x.to_dict(add_filter=False) for x in student.student_comments]
+        student: Student = Student.GetStudent(student_id)
+        return [
+            {
+                **x.to_dict(add_filter=False),
+                "commented_by": x.user.email,
+
+            }
+            for x in student.student_comments]
 
     @classmethod
     def remove_comment(cls, student_id, comment_id):
@@ -161,8 +167,9 @@ class StudentModel:
         if not comments:
             raise CustomException(message="Comment not found", status_code=404)
 
-        if not current_user.managers or not current_user.admins or current_user.id != comments.user_id:
-            raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
+        if not current_user.managers or current_user.id != comments.user_id:
+            if not current_user.admins:
+                raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
 
         comments.delete()
         return "Comment has been deleted successfully"
@@ -175,14 +182,20 @@ class StudentModel:
 
         profile_url = FileHandler.upload_file(file, file_path)
 
-        new_file = StudentFile(student_id=student.id, filename=file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id)
+        new_file = StudentFile(student_id=student.id, file_name=file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id)
         new_file.save()
         return "File has been added successfully"
 
     @classmethod
     def get_files(cls, student_id):
-        student = Student.GetStudent(student_id)
-        return [x.to_dict(add_filter=False) for x in student.student_files]
+        student: Student = Student.GetStudent(student_id)
+        return [
+            {
+                **x.to_dict(add_filter=False),
+                "commented_by": x.user.email,
+
+            }
+            for x in student.student_files]
 
     @classmethod
     def remove_file(cls, student_id, file_id):
@@ -190,8 +203,9 @@ class StudentModel:
         if not _files:
             raise CustomException(message="File not found", status_code=404)
 
-        if not current_user.managers or not current_user.admins or current_user.id != _files.user_id:
-            raise CustomException(message="Only File author or admin can delete this File", status_code=400)
+        if not current_user.managers or current_user.id != _files.user_id:
+            if not current_user.admins:
+                raise CustomException(message="Only File author or admin can delete this File", status_code=400)
 
         FileHandler.delete_file(_files.file_path)
         _files.delete()

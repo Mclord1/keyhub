@@ -36,8 +36,8 @@ class ProjectComment(db.Model, GenericMixin):
     project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=False)
     comment = db.Column(db.Text, nullable=False)
-    projects = db.relationship("Project", backref="project_comments")
-    user = db.relationship("User", backref="project_comments")
+    projects = db.relationship("Project", back_populates="project_comments")
+    user = db.relationship("User", back_populates="project_comments")
 
 
 class ProjectFile(db.Model, GenericMixin):
@@ -47,8 +47,8 @@ class ProjectFile(db.Model, GenericMixin):
     file_name = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.Text, nullable=False)
     file_url = db.Column(db.Text, nullable=False)
-    projects = db.relationship("Project", backref="project_files")
-    user = db.relationship("User", backref="project_files")
+    projects = db.relationship("Project", back_populates="project_files")
+    user = db.relationship("User", back_populates="project_files")
 
 
 class Project(db.Model, GenericMixin):

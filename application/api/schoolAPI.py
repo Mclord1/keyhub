@@ -483,7 +483,7 @@ def get_school_group_file(school_id, group_id):
     return return_json(OutputObj(code=200, message="file fetched", data=SchoolLearningGroupsModel.get_files(school_id, group_id)))
 
 
-@school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/comment/<int:file_id>', methods=['DELETE'])
+@school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/file/<int:file_id>', methods=['DELETE'])
 @authenticate(PermissionEnum.MODIFY_LEARNING_GROUPS)
 @has_school_privilege
 def remove_school_group_file(school_id, group_id, file_id):

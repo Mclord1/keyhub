@@ -302,7 +302,13 @@ class SchoolProjectModel:
     @classmethod
     def get_comments(cls, school_id, project_id):
         comments: Project = Project.GetProject(school_id, project_id)
-        return [x.to_dict(add_filter=False) for x in comments.project_comments]
+        return [
+            {
+                **x.to_dict(add_filter=False),
+                "commented_by": x.user.email,
+
+            }
+            for x in comments.project_comments]
 
     @classmethod
     def remove_comment(cls, project_id, comment_id):
@@ -310,8 +316,9 @@ class SchoolProjectModel:
         if not comments:
             raise CustomException(message="Comment not found", status_code=404)
 
-        if not current_user.managers or not current_user.admins or current_user.id != comments.user_id:
-            raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
+        if not current_user.managers or current_user.id != comments.user_id:
+            if not current_user.admins:
+                raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
 
         comments.delete()
         return "Comment has been deleted successfully"
@@ -324,14 +331,20 @@ class SchoolProjectModel:
 
         profile_url = FileHandler.upload_file(file, file_path)
 
-        new_file = ProjectFile(project_id=project.id, filename=file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id)
+        new_file = ProjectFile(project_id=project.id, file_name=file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id)
         new_file.save()
         return "File has been added successfully"
 
     @classmethod
     def get_files(cls, school_id, project_id):
         _files: Project = Project.GetProject(school_id, project_id)
-        return [x.to_dict(add_filter=False) for x in _files.project_files]
+        return [
+            {
+                **x.to_dict(add_filter=False),
+                "uploaded_by": x.user.email,
+
+            }
+            for x in _files.project_files]
 
     @classmethod
     def remove_file(cls, project_id, file_id):
@@ -339,8 +352,9 @@ class SchoolProjectModel:
         if not _files:
             raise CustomException(message="File not found", status_code=404)
 
-        if not current_user.managers or not current_user.admins or current_user.id != _files.user_id:
-            raise CustomException(message="Only File author or admin can delete this File", status_code=400)
+        if not current_user.managers or current_user.id != _files.user_id:
+            if not current_user.admins:
+                raise CustomException(message="Only File author or admin can delete this File", status_code=400)
 
         FileHandler.delete_file(_files.file_path)
         _files.delete()
