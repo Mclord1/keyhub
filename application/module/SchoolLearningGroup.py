@@ -111,3 +111,57 @@ class SchoolLearningGroupsModel:
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
+
+    @classmethod
+    def add_comment(cls, school_id, group_id, comment):
+        group = LearningGroup.GetLearningGroupID(school_id, group_id)
+        new_comment = LearningGroupComment(learning_group_id=group.id, user_id=current_user.id, comment=comment)
+        new_comment.save(refresh=True)
+        return "Comment has been added successfully"
+
+    @classmethod
+    def get_comments(cls, school_id, group_id):
+        group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, group_id)
+        return [x.to_dict(add_filter=False) for x in group.learning_group_comments]
+
+    @classmethod
+    def remove_comment(cls, group_id, comment_id):
+        comments: LearningGroupComment = LearningGroupComment.query.filter_by(learning_group_id=group_id, id=comment_id).first()
+        if not comments:
+            raise CustomException(message="Comment not found", status_code=404)
+
+        if not current_user.managers or not current_user.admins or current_user.id != comments.user_id:
+            raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
+
+        comments.delete()
+        return "Comment has been deleted successfully"
+
+    @classmethod
+    def add_file(cls, school_id, group_id, file):
+        group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, group_id)
+
+        file_path, file_name = FileFolder.learning_group_file(group.schools.name, group.name)
+
+        profile_url = FileHandler.upload_file(file, file_path)
+
+        new_file = LearningGroupFile(learning_group_id=group.id, filename=file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id)
+        new_file.save()
+        return "File has been added successfully"
+
+    @classmethod
+    def get_files(cls, school_id, group_id):
+        group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, group_id)
+        return [x.to_dict(add_filter=False) for x in group.learning_group_files]
+
+    @classmethod
+    def remove_file(cls, group_id, file_id):
+        _files: LearningGroupFile = LearningGroupFile.query.filter_by(learning_group_id=group_id, id=file_id).first()
+        if not _files:
+            raise CustomException(message="File not found", status_code=404)
+
+        if not current_user.managers or not current_user.admins or current_user.id != _files.user_id:
+            raise CustomException(message="Only File author or admin can delete this File", status_code=400)
+
+        FileHandler.delete_file(_files.file_path)
+        _files.delete()
+        return "File has been deleted successfully"

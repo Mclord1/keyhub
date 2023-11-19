@@ -31,6 +31,26 @@ class ProjectActivity(db.Model, GenericMixin):
     projects = db.relationship("Project", back_populates="activities")
 
 
+class ProjectComment(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=False)
+    comment = db.Column(db.Text, nullable=False)
+    projects = db.relationship("Project", backref="project_comments")
+    user = db.relationship("User", backref="project_comments")
+
+
+class ProjectFile(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=False)
+    file_name = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.Text, nullable=False)
+    file_url = db.Column(db.Text, nullable=False)
+    projects = db.relationship("Project", backref="project_files")
+    user = db.relationship("User", backref="project_files")
+
+
 class Project(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(350), nullable=True)
@@ -69,7 +89,9 @@ class Project(db.Model, GenericMixin):
     students = db.relationship("Student", secondary='student_project', back_populates="projects")
     teachers = db.relationship("Teacher", secondary='teacher_project', back_populates="projects")
     learning_groups = db.relationship("LearningGroup", secondary='learning_group_projects', back_populates="projects")
-    activities = db.relationship("ProjectActivity", back_populates="projects", cascade="all, delete")
+    activities = db.relationship("ProjectActivity", back_populates="projects", cascade="all, delete-orphan")
+    project_files = db.relationship("ProjectFile", back_populates="projects", cascade="all, delete-orphan")
+    project_comments = db.relationship("ProjectComment", back_populates="projects", cascade="all, delete-orphan")
 
     __table_args__ = (
         db.UniqueConstraint('school_id', 'name', name='uq_school_project_name'),

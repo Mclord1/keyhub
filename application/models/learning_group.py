@@ -21,6 +21,26 @@ class LearningGroupProjects(db.Model, GenericMixin):
     project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'), nullable=False)
 
 
+class LearningGroupComment(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    learning_group_id = db.Column(db.Integer, db.ForeignKey('learning_group.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=False)
+    comment = db.Column(db.Text, nullable=False)
+    learning_groups = db.relationship("LearningGroup", backref="learning_group_comments")
+    user = db.relationship("User", backref="learning_group_comments")
+
+
+class LearningGroupFile(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    learning_group_id = db.Column(db.Integer, db.ForeignKey('learning_group.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=False)
+    file_name = db.Column(db.String(255), nullable=False)
+    file_path = db.Column(db.Text, nullable=False)
+    file_url = db.Column(db.Text, nullable=False)
+    learning_groups = db.relationship("LearningGroup", backref="learning_group_files")
+    user = db.relationship("User", backref="learning_group_files")
+
+
 class LearningGroup(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(350), nullable=True)
@@ -34,6 +54,10 @@ class LearningGroup(db.Model, GenericMixin):
     projects = db.relationship("Project", secondary='learning_group_projects', back_populates="learning_groups")
     students = db.relationship("Student", secondary='learning_group_students', back_populates="learning_groups")
     teachers = db.relationship("Teacher", secondary='learning_group_teachers', back_populates="learning_groups")
+
+    learning_group_files = db.relationship("LearningGroupFile", back_populates="learning_groups", cascade="all, delete-orphan")
+    learning_group_comments = db.relationship("LearningGroupComment", back_populates="learning_groups", cascade="all, delete-orphan")
+
 
     __table_args__ = (
         db.UniqueConstraint('school_id', 'name', name='uq_school_learning_group_name'),

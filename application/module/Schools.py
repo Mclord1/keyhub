@@ -126,7 +126,7 @@ class SchoolModel:
     def add_school(cls, data):
         req_schema: SchoolSchema = validator.validate_data(SchoolSchema, data)
 
-        FileHandler.validate_image(req_schema.profile_image)
+        profile_url, _ = FileHandler.upload_file(req_schema.profile_image, FileFolder.school(req_schema.name))
 
         name = req_schema.name
         email = req_schema.email
@@ -165,7 +165,7 @@ class SchoolModel:
 
             # Add school details to school model
             add_school = School(name=name, email=email, msisdn=msisdn, reg_number=reg_number, country=country,
-                                state=state, address=address)
+                                state=state, address=address, logo=str(profile_url))
             add_school.save(refresh=True)
 
             # create school role for school_admin
@@ -189,7 +189,6 @@ class SchoolModel:
             add_school_admin.save(refresh=True)
 
             # TODO :: Add background service to image processing
-            profile_url = FileHandler.upload_file(req_schema.profile_image, FileFolder.school, add_school.id)
 
             # save image to table
             add_school.update_table({'logo': profile_url})
@@ -197,8 +196,9 @@ class SchoolModel:
             Audit.add_audit('Add School', current_user, add_school.to_dict(add_filter=False))
 
             return f"The school {add_school.name} and admin has been added successfully"
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
+            raise e
         except Exception as e:
             db.session.rollback()
             raise e

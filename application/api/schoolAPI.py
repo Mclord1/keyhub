@@ -191,6 +191,56 @@ def remove_user_from_school_project(school_id, project_id):
         OutputObj(code=200, message=SchoolProjectModel.remove_user_from_project(school_id, project_id, req, query)))
 
 
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>/comment', methods=['POST'])
+@authenticate(PermissionEnum.MODIFY_PROJECTS)
+@has_school_privilege
+def add_school_project_comment(school_id, project_id):
+    data = request.json
+    comment = data.get('comment')
+    if not comment:
+        raise CustomException(message="Please provide comment", status_code=400)
+    return return_json(OutputObj(code=200, message=SchoolProjectModel.add_comment(school_id, project_id, comment)))
+
+
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>/comment', methods=['GET'])
+@authenticate(PermissionEnum.MODIFY_PROJECTS)
+@has_school_privilege
+def get_school_project_comment(school_id, project_id):
+    return return_json(OutputObj(code=200, message="comment fetched", data=SchoolProjectModel.get_comments(school_id, project_id)))
+
+
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>/comment/<int:comment_id>', methods=['DELETE'])
+@authenticate(PermissionEnum.MODIFY_PROJECTS)
+@has_school_privilege
+def remove_school_project_comment(school_id, project_id, comment_id):
+    return return_json(OutputObj(code=200, message=SchoolProjectModel.remove_comment(project_id, comment_id)))
+
+
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>/file', methods=['POST'])
+@authenticate(PermissionEnum.MODIFY_PROJECTS)
+@has_school_privilege
+def add_school_project_file(school_id, project_id):
+    data = request.json
+    file = data.get('file')
+    if not file:
+        raise CustomException(message="Please provide comment", status_code=400)
+    return return_json(OutputObj(code=200, message=SchoolProjectModel.add_file(school_id, project_id, file)))
+
+
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>/file', methods=['GET'])
+@authenticate(PermissionEnum.MODIFY_PROJECTS)
+@has_school_privilege
+def get_school_project_file(school_id, project_id):
+    return return_json(OutputObj(code=200, message="file fetched", data=SchoolProjectModel.get_files(school_id, project_id)))
+
+
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>/file/<int:file_id>', methods=['DELETE'])
+@authenticate(PermissionEnum.MODIFY_PROJECTS)
+@has_school_privilege
+def remove_school_project_file(school_id, project_id, file_id):
+    return return_json(OutputObj(code=200, message=SchoolProjectModel.remove_file(project_id, file_id)))
+
+
 # ===================================== SCHOOL ADMIN =====================================
 
 @school_blueprint.route('/<int:school_id>/add-school-admin', methods=['POST'])
@@ -388,6 +438,56 @@ def update_school_group(group_id, school_id):
     description = args.get('description', None)
     return return_json(OutputObj(code=200, message="School learning group has been successfully updated",
                                  data=SchoolLearningGroupsModel.update_group(school_id, group_id, name, description)))
+
+
+@school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/comment', methods=['POST'])
+@authenticate(PermissionEnum.MODIFY_LEARNING_GROUPS)
+@has_school_privilege
+def add_school_group_comment(school_id, group_id):
+    data = request.json
+    comment = data.get('comment')
+    if not comment:
+        raise CustomException(message="Please provide comment", status_code=400)
+    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.add_comment(school_id, group_id, comment)))
+
+
+@school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/comment', methods=['GET'])
+@authenticate(PermissionEnum.MODIFY_LEARNING_GROUPS)
+@has_school_privilege
+def get_school_group_comment(school_id, group_id):
+    return return_json(OutputObj(code=200, message="comment fetched", data=SchoolLearningGroupsModel.get_comments(school_id, group_id)))
+
+
+@school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/comment/<int:comment_id>', methods=['DELETE'])
+@authenticate(PermissionEnum.MODIFY_LEARNING_GROUPS)
+@has_school_privilege
+def remove_school_group_comment(school_id, group_id, comment_id):
+    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.remove_comment(group_id, comment_id)))
+
+
+@school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/file', methods=['POST'])
+@authenticate(PermissionEnum.MODIFY_LEARNING_GROUPS)
+@has_school_privilege
+def add_school_group_file(school_id, group_id):
+    data = request.json
+    file = data.get('file')
+    if not file:
+        raise CustomException(message="Please provide comment", status_code=400)
+    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.add_file(school_id, group_id, file)))
+
+
+@school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/file', methods=['GET'])
+@authenticate(PermissionEnum.MODIFY_LEARNING_GROUPS)
+@has_school_privilege
+def get_school_group_file(school_id, group_id):
+    return return_json(OutputObj(code=200, message="file fetched", data=SchoolLearningGroupsModel.get_files(school_id, group_id)))
+
+
+@school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/comment/<int:file_id>', methods=['DELETE'])
+@authenticate(PermissionEnum.MODIFY_LEARNING_GROUPS)
+@has_school_privilege
+def remove_school_group_file(school_id, group_id, file_id):
+    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.remove_file(group_id, file_id)))
 
 
 # ===================================== SCHOOL SUBCRIPTION =====================================

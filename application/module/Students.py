@@ -60,6 +60,14 @@ class StudentModel:
 
         school: School = School.GetSchool(req.school_id)
 
+        if req.profile_image:
+
+            file_path, file_name = FileFolder.student_profile(school.name, req.email)
+
+            profile_url = FileHandler.upload_file(req.profile_image, file_path)
+        else:
+            profile_url = None
+
         if not current_user.admins or (current_user.managers and current_user.managers.school_id != school.id):
             raise CustomException("You do not have privilege to access this school")
 
@@ -80,6 +88,7 @@ class StudentModel:
                     country=req.country,
                     state=req.state,
                     user_id=new_student.id,
+                    profile_image=profile_url,
                     address=req.address,
                     gender=req.gender,
                     dob=req.date_of_birth,
@@ -133,3 +142,57 @@ class StudentModel:
             "parent": _user.parents.to_dict() if _user.parents else {},
             "projects": [{'name': x.name, 'id': x.id} for x in _user.projects]
         }
+
+    @classmethod
+    def add_comment(cls, student_id, comment):
+        student = Student.GetStudent(student_id)
+        new_comment = StudentComment(student_id=student.id, user_id=current_user.id, comment=comment)
+        new_comment.save(refresh=True)
+        return "Comment has been added successfully"
+
+    @classmethod
+    def get_comments(cls, student_id):
+        student = Student.GetStudent(student_id)
+        return [x.to_dict(add_filter=False) for x in student.student_comments]
+
+    @classmethod
+    def remove_comment(cls, student_id, comment_id):
+        comments: StudentComment = StudentComment.query.filter_by(student_id=student_id, id=comment_id).first()
+        if not comments:
+            raise CustomException(message="Comment not found", status_code=404)
+
+        if not current_user.managers or not current_user.admins or current_user.id != comments.user_id:
+            raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
+
+        comments.delete()
+        return "Comment has been deleted successfully"
+
+    @classmethod
+    def add_file(cls, student_id, file):
+        student = Student.GetStudent(student_id)
+
+        file_path, file_name = FileFolder.student_file(student.schools.name, student.user.email)
+
+        profile_url = FileHandler.upload_file(file, file_path)
+
+        new_file = StudentFile(student_id=student.id, filename=file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id)
+        new_file.save()
+        return "File has been added successfully"
+
+    @classmethod
+    def get_files(cls, student_id):
+        student = Student.GetStudent(student_id)
+        return [x.to_dict(add_filter=False) for x in student.student_files]
+
+    @classmethod
+    def remove_file(cls, student_id, file_id):
+        _files: StudentFile = StudentFile.query.filter_by(project_id=student_id, id=file_id).first()
+        if not _files:
+            raise CustomException(message="File not found", status_code=404)
+
+        if not current_user.managers or not current_user.admins or current_user.id != _files.user_id:
+            raise CustomException(message="Only File author or admin can delete this File", status_code=400)
+
+        FileHandler.delete_file(_files.file_path)
+        _files.delete()
+        return "File has been deleted successfully"

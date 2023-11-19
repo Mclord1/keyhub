@@ -45,6 +45,7 @@ class StudentSchema(BaseModel):
     country: str
     state: str
     address: str
+    profile_image: str
     parent: Optional[int] = None
     img: Optional[str] = None
 

@@ -291,3 +291,57 @@ class SchoolProjectModel:
         except Exception as e:
             db.session.rollback()
             raise e
+
+    @classmethod
+    def add_comment(cls, school_id, project_id, comment):
+        project = Project.GetProject(school_id, project_id)
+        new_comment = ProjectComment(project_id=project.id, user_id=current_user.id, comment=comment)
+        new_comment.save(refresh=True)
+        return "Comment has been added successfully"
+
+    @classmethod
+    def get_comments(cls, school_id, project_id):
+        comments: Project = Project.GetProject(school_id, project_id)
+        return [x.to_dict(add_filter=False) for x in comments.project_comments]
+
+    @classmethod
+    def remove_comment(cls, project_id, comment_id):
+        comments: ProjectComment = ProjectComment.query.filter_by(project_id=project_id, id=comment_id).first()
+        if not comments:
+            raise CustomException(message="Comment not found", status_code=404)
+
+        if not current_user.managers or not current_user.admins or current_user.id != comments.user_id:
+            raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
+
+        comments.delete()
+        return "Comment has been deleted successfully"
+
+    @classmethod
+    def add_file(cls, school_id, project_id, file):
+        project: Project = Project.GetProject(school_id, project_id)
+
+        file_path, file_name = FileFolder.project_file(project.schools.name, project.name)
+
+        profile_url = FileHandler.upload_file(file, file_path)
+
+        new_file = ProjectFile(project_id=project.id, filename=file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id)
+        new_file.save()
+        return "File has been added successfully"
+
+    @classmethod
+    def get_files(cls, school_id, project_id):
+        _files: Project = Project.GetProject(school_id, project_id)
+        return [x.to_dict(add_filter=False) for x in _files.project_files]
+
+    @classmethod
+    def remove_file(cls, project_id, file_id):
+        _files: ProjectFile = ProjectFile.query.filter_by(project_id=project_id, id=file_id).first()
+        if not _files:
+            raise CustomException(message="File not found", status_code=404)
+
+        if not current_user.managers or not current_user.admins or current_user.id != _files.user_id:
+            raise CustomException(message="Only File author or admin can delete this File", status_code=400)
+
+        FileHandler.delete_file(_files.file_path)
+        _files.delete()
+        return "File has been deleted successfully"

@@ -49,3 +49,7 @@ class GenericMixin(object):
 
         if refresh:
             db.session.refresh(cls)
+
+    def delete(cls):
+        db.session.delete(cls)
+        db.session.commit()

@@ -60,3 +60,47 @@ def delete_student():
 @authenticate(PermissionEnum.VIEW_STUDENTS)
 def get_student(id):
     return return_json(OutputObj(code=200, message="Student results", data=Student.get_user(id)))
+
+
+@student_blueprint.route('/<int:id>/comment', methods=['POST'])
+@authenticate(PermissionEnum.MODIFY_STUDENTS)
+def add_student_comment(id):
+    data = request.json
+    comment = data.get('comment')
+    if not comment:
+        raise CustomException(message="Please provide comment", status_code=400)
+    return return_json(OutputObj(code=200, message=Student.add_comment(id, comment)))
+
+
+@student_blueprint.route('/<int:id>/comment', methods=['GET'])
+@authenticate(PermissionEnum.MODIFY_STUDENTS)
+def get_student_comment(id):
+    return return_json(OutputObj(code=200, message="comment fetched", data=Student.get_comments(id)))
+
+
+@student_blueprint.route('/<int:id>/comment/<int:comment_id>', methods=['DELETE'])
+@authenticate(PermissionEnum.MODIFY_STUDENTS)
+def remove_student_comment(id, comment_id):
+    return return_json(OutputObj(code=200, message=Student.remove_comment(id, comment_id)))
+
+
+@student_blueprint.route('/<int:id>/file', methods=['POST'])
+@authenticate(PermissionEnum.MODIFY_STUDENTS)
+def add_student_file(id):
+    data = request.json
+    file = data.get('file')
+    if not file:
+        raise CustomException(message="Please provide file", status_code=400)
+    return return_json(OutputObj(code=200, message=Student.add_file(id, file)))
+
+
+@student_blueprint.route('/<int:id>/file', methods=['GET'])
+@authenticate(PermissionEnum.MODIFY_STUDENTS)
+def get_student_file(id):
+    return return_json(OutputObj(code=200, message="file fetched", data=Student.get_files(id)))
+
+
+@student_blueprint.route('/<int:id>/file/<int:file_id>', methods=['DELETE'])
+@authenticate(PermissionEnum.MODIFY_STUDENTS)
+def remove_student_file(id, file_id):
+    return return_json(OutputObj(code=200, message=Student.remove_file(id, file_id)))

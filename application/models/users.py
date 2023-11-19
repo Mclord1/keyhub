@@ -33,6 +33,12 @@ class User(db.Model, GenericMixin):
     projects = db.relationship("Project", back_populates='user')
     learning_groups = db.relationship("LearningGroup", back_populates='user')
     audits = db.relationship("Audit", back_populates='user')
+    project_files = db.relationship("ProjectFile", back_populates="user", cascade="all, delete-orphan")
+    project_comments = db.relationship("ProjectComment", back_populates="user", cascade="all, delete-orphan")
+    student_files = db.relationship("StudentFile", back_populates="user", cascade="all, delete-orphan")
+    student_comments = db.relationship("StudentComment", back_populates="user", cascade="all, delete-orphan")
+    learning_group_files = db.relationship("LearningGroupFile", back_populates="user", cascade="all, delete-orphan")
+    learning_group_comments = db.relationship("LearningGroupComment", back_populates="user", cascade="all, delete-orphan")
 
     def as_dict(self, include_sensitive_info=False):
         """
@@ -71,7 +77,6 @@ class User(db.Model, GenericMixin):
 
         if user.managers:
             return f"{user.managers.name}"
-
 
     @classmethod
     def CreateUser(cls, email, msisdn, role, password=None):
