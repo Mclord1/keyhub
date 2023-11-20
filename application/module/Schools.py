@@ -83,6 +83,7 @@ class SchoolModel:
                         _school.teachers) if _school.teachers else 0
                 }
             },
+            "students_per_project": [{x.name: len(x.students)} for x in _school.projects],
             **_school.to_dict(add_filter=False)
         }
 
