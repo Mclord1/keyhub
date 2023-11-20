@@ -21,6 +21,7 @@ app.register_blueprint(audit_blueprint, url_prefix='/audit')
 app.register_blueprint(sme_bp, url_prefix='/sme')
 app.register_blueprint(keywords_bp, url_prefix='/keywords')
 app.register_blueprint(dashboard_blueprint, url_prefix='/dashboard')
+app.register_blueprint(report_blueprint, url_prefix='/reports')
 
 
 @jwt.user_lookup_loader
