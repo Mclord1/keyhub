@@ -30,7 +30,7 @@ class SchoolAdminModel:
 
             add_school_admin.school_roles = _role
             add_school_admin.save(refresh=True)
-            Audit.add_audit('Add School Admin', current_user, add_school_admin.to_dict())
+            Audit.add_audit('Added School Admin', current_user, add_school_admin.to_dict())
             return add_school_admin.to_dict()
 
         except Exception:
@@ -47,7 +47,7 @@ class SchoolAdminModel:
         if gender:
             _admin.gender = gender
         _admin.update_table(data)
-        Audit.add_audit('Update School Admin Information', current_user, _admin.to_dict())
+        Audit.add_audit('Updated School Admin Information', current_user, _admin.to_dict())
         return _admin.to_dict()
 
     @classmethod
@@ -69,7 +69,7 @@ class SchoolAdminModel:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
 
         _user: User = _admin.user
-        Audit.add_audit('Change School Admin account status', current_user, _user.to_dict())
+        Audit.add_audit('Changed School Admin account status', current_user, _user.to_dict())
         return Helper.disable_account(_user, reason)
 
     @classmethod

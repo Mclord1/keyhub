@@ -12,6 +12,13 @@ class SystemAdmins:
 
         role = Role.GetRole(req.role)
 
+        if req.img:
+
+            profile_url, _ = FileHandler.upload_file(req.img, FileFolder.admin_profile(req.email))
+
+        else:
+            profile_url = None
+
         try:
             new_admin = User.CreateUser(req.email, req.msisdn, role)
 
@@ -24,6 +31,7 @@ class SystemAdmins:
                     user_id=new_admin.id,
                     residence=req.address,
                     gender=req.gender,
+                    profile_image=profile_url
                 )
                 add_user.save(refresh=True)
                 Audit.add_audit('Added System Admin', current_user, add_user.to_dict())
@@ -32,6 +40,19 @@ class SystemAdmins:
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
+
+    @classmethod
+    def change_profile_image(cls, profile_image, user_id):
+        if not profile_image:
+            raise CustomException(message="User profile image is required")
+
+        _admin: Admin = Admin.GetAdmin(user_id)
+
+        profile_url, _ = FileHandler.upload_file(profile_image, FileFolder.admin_profile(_admin.user.email))
+
+        _admin.profile_image = profile_url
+        db.session.commit()
+        return "Profile Image has been updated successfully"
 
     @classmethod
     def get_all_admin(cls, page, per_page):
@@ -71,7 +92,7 @@ class SystemAdmins:
         if gender:
             _admin.gender = gender
         _admin.update_table(data)
-        Audit.add_audit('Update System Admin Information', current_user, _admin.to_dict())
+        Audit.add_audit('Updated System Admin Information', current_user, _admin.to_dict())
         return _admin.to_dict()
 
     @classmethod
@@ -95,7 +116,7 @@ class SystemAdmins:
 
         _user: User = _admin.user
 
-        Audit.add_audit('Change System Admin Account Status ', current_user, _user.to_dict())
+        Audit.add_audit('Changed System Admin Account Status ', current_user, _user.to_dict())
 
         return Helper.disable_account(_user, reason)
 

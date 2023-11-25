@@ -39,6 +39,8 @@ class User(db.Model, GenericMixin):
     student_comments = db.relationship("StudentComment", back_populates="user", cascade="all, delete-orphan")
     learning_group_files = db.relationship("LearningGroupFile", back_populates="user", cascade="all, delete-orphan")
     learning_group_comments = db.relationship("LearningGroupComment", back_populates="user", cascade="all, delete-orphan")
+    subscribed_groups = db.relationship("LearningGroupSubscription", back_populates='user', cascade="all, delete-orphan")
+    notifications = db.relationship("Notification", back_populates='user', cascade="all, delete-orphan")
 
     def as_dict(self, include_sensitive_info=False):
         """

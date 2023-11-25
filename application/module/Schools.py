@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from . import *
 from ..Schema.school import UpdateSchoolSchema, SchoolSchema
 
@@ -10,7 +12,7 @@ class SchoolModel:
 
         _school.isDeactivated = not _school.isDeactivated
         db.session.commit()
-        Audit.add_audit("Deactivate School" if _school.isDeactivated else "Activate School", current_user, _school.to_dict(add_filter=False))
+        Audit.add_audit("Deactivated School" if _school.isDeactivated else "Activate School", current_user, _school.to_dict(add_filter=False))
 
         return "School has been deactivated" if _school.isDeactivated else "School has been activated"
 
@@ -52,6 +54,15 @@ class SchoolModel:
         sub: Subscription = Subscription.query.filter(Subscription.school_id == _school.id, Subscription.status == "active").first()
         subcription_plan = sub.subscription_plan.name if sub else None
 
+        # Collecting students per month for each project
+        students_per_month = defaultdict(int)
+
+        for project in _school.projects:
+            for student in project.students:
+                # Assuming the 'enrollment_date' field exists in the Student model
+                month_year = datetime.datetime.fromtimestamp(student.created_at).strftime("%Y-%m")  # Format: YYYY-MM
+                students_per_month[month_year] += 1
+
         return {
             "num_of_teachers": len(_school.teachers),
             "num_of_students": len(_school.students),
@@ -59,6 +70,8 @@ class SchoolModel:
             "num_of_school_administrators": len(_school.managers),
             "learning_groups": [x.id for x in _school.learning_groups],
             "subcription_plan": subcription_plan,
+            "next_subscription_plan": sub.next_billing_date if sub else None,
+            "faqs": [x.to_dict(add_filter=False) for x in _school.faqs],
             "student_by_gender": {
                 "male": {
                     "count": len([x for x in _school.students if x.gender == "Male"]),
@@ -83,7 +96,7 @@ class SchoolModel:
                         _school.teachers) if _school.teachers else 0
                 }
             },
-            "students_per_project": [{x.name: len(x.students)} for x in _school.projects],
+            "students_per_month": students_per_month,
             **_school.to_dict(add_filter=False)
         }
 
@@ -119,7 +132,7 @@ class SchoolModel:
                                   status_code=403)
 
         school.update_table(data)
-        Audit.add_audit('Update School Information', current_user, school.to_dict(add_filter=False))
+        Audit.add_audit('Updated School Information', current_user, school.to_dict(add_filter=False))
 
         return f"School information has been updated successfully"
 
@@ -194,7 +207,7 @@ class SchoolModel:
             # save image to table
             add_school.update_table({'logo': profile_url})
 
-            Audit.add_audit('Add School', current_user, add_school.to_dict(add_filter=False))
+            Audit.add_audit('Added School', current_user, add_school.to_dict(add_filter=False))
 
             return f"The school {add_school.name} and admin has been added successfully"
         except IntegrityError as e:

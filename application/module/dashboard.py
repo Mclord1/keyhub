@@ -48,7 +48,10 @@ class DashboardModel:
     def activity_feed(cls):
         _audit = Audit.query.order_by(desc(Audit.created_at)).limit(5).all()
         return [{
-            **x.to_dict(add_filter=False)
+            "image": x.admins.profile_image if x.admins else None,
+            "action": x.action,
+            "created_at": x.created_at,
+            "action_performed_by": f"{x.user.admins.first_name} {x.user.admins.last_name}" if x.user.admins else x.user.managers.name
         } for x in _audit]
 
     def filter_revenue_by_month(month: int, year: int):

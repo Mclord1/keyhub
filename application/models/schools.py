@@ -51,6 +51,14 @@ class Term(db.Model, GenericMixin):
     schools = db.relationship("School", back_populates='terms')
 
 
+class FAQ(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.Text, nullable=False)
+    answer = db.Column(db.Text, nullable=False)
+    school_id = db.Column(db.ForeignKey('school.id', ondelete="CASCADE"), nullable=True)
+    schools = db.relationship("School", back_populates='faqs')
+
+
 class AcademicYear(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
@@ -84,6 +92,7 @@ class School(db.Model, GenericMixin):
     transactions = db.relationship("Transaction", back_populates='schools')
     academics = db.relationship("AcademicYear", back_populates='schools', cascade="all, delete-orphan")
     terms = db.relationship("Term", back_populates='schools', cascade="all, delete-orphan")
+    faqs = db.relationship("FAQ", back_populates='schools', cascade="all, delete-orphan")
 
     @classmethod
     def GetSchool(cls, school_id):

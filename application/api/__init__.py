@@ -17,3 +17,5 @@ from application.api.smeAPI import sme_bp
 from application.api.keywordAPI import keywords_bp
 from application.api.dashboardAPI import dashboard_blueprint
 from application.api.reportAPI import report_blueprint
+from application.api.notificationAPI import notification_blueprint
+from application.api.checklistAPI import checklists_bp

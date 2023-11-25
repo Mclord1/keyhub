@@ -3,6 +3,7 @@ from flask import Blueprint, request
 from application.module.ProjectActivties import ProjectActivityModel
 from application.module.SchoolAcademic import SchoolAcademicModel
 from application.module.SchoolAdmin import SchoolAdminModel
+from application.module.SchoolFAQ import FAQModel
 from application.module.SchoolLearningGroup import SchoolLearningGroupsModel
 from application.module.SchoolProject import SchoolProjectModel
 from application.module.SchoolTerms import SchoolTermsModel
@@ -440,6 +441,20 @@ def update_school_group(group_id, school_id):
                                  data=SchoolLearningGroupsModel.update_group(school_id, group_id, name, description)))
 
 
+@school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/subscribe', methods=['POST'])
+@authenticate()
+@has_school_privilege
+def subscribe_school_group(school_id, group_id):
+    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.subscribe(group_id, school_id)))
+
+
+@school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/unsubscribe', methods=['POST'])
+@authenticate()
+@has_school_privilege
+def unsubscribe_school_group(group_id):
+    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.unsubscribe(group_id)))
+
+
 @school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/comment', methods=['POST'])
 @authenticate(PermissionEnum.MODIFY_LEARNING_GROUPS)
 @has_school_privilege
@@ -662,3 +677,40 @@ def update_academic(academic_id, school_id):
 def delete_academic(academic_id, school_id):
     SchoolAcademicModel.delete_school_academic(academic_id, school_id)
     return return_json(OutputObj(code=200, message="School Academic deleted successfully"))
+
+
+# ===================================== SCHOOL FAQ =====================================
+
+
+@school_blueprint.route("/<int:school_id>/faq", methods=["POST"])
+@authenticate(PermissionEnum.ADD_PROJECTS)
+@has_school_privilege
+def create_faq(school_id):
+    data = request.get_json()
+    FAQModel.create_faq(school_id, data)
+    return return_json(OutputObj(code=201, message="School FAQ created successfully"))
+
+
+@school_blueprint.route("/<int:school_id>/faq", methods=["GET"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def get_all_faq(school_id):
+    faqs = FAQModel.get_faqs(school_id)
+    return return_json(OutputObj(code=200, message="School FAQ fetched", data=faqs))
+
+
+@school_blueprint.route("/<int:school_id>/faq/<int:faq_id>", methods=["PUT"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def update_faq(faq_id, school_id):
+    data = request.get_json()
+    FAQModel.update_faq(faq_id, school_id, data)
+    return return_json(OutputObj(code=200, message="School FAQ updated successfully"))
+
+
+@school_blueprint.route("/<int:school_id>/faq/<int:faq_id>", methods=["DELETE"])
+@authenticate(PermissionEnum.VIEW_PROJECTS)
+@has_school_privilege
+def delete_faq(faq_id, school_id):
+    FAQModel.delete_faq(faq_id, school_id)
+    return return_json(OutputObj(code=200, message="School FAQ deleted successfully"))

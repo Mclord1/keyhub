@@ -143,7 +143,7 @@ class PermissionEnum(enum.Enum):
     # AUDIT
     VIEW_AUDIT = 'view_audits'
 
-    # KEWORDS
+    # KEYWORDS
     ADD_KEYWORD = 'add_keywords'
     MODIFY_KEYWORD = 'update_keywords'
     VIEW_KEYWORD = 'view_keywords'
@@ -154,3 +154,9 @@ class PermissionEnum(enum.Enum):
     MODIFY_SME = 'update_sme'
     VIEW_SME = 'view_sme'
     DELETE_SME = 'delete_sme'
+
+    # CHECKLIST
+    ADD_CHECKLIST = 'add_checklist'
+    MODIFY_CHECKLIST = 'update_checklist'
+    VIEW_CHECKLIST = 'view_checklist'
+    DELETE_CHECKLIST = 'delete_checklist'

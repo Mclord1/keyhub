@@ -21,6 +21,10 @@ class FileFolder:
         return f"{school_name}/students/{email}/profile"
 
     @classmethod
+    def admin_profile(cls, email):
+        return f"admins/{email}"
+
+    @classmethod
     def student_file(cls, school_name, email):
         file_name = f"file-{str(uuid.uuid4())[:8]}"
         return f"{school_name}/students/{email}/{file_name}", file_name

@@ -41,6 +41,18 @@ class LearningGroupFile(db.Model, GenericMixin):
     user = db.relationship("User", back_populates="learning_group_files")
 
 
+class LearningGroupSubscription(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    learning_group_id = db.Column(db.Integer, db.ForeignKey('learning_group.id', ondelete='CASCADE'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    learning_groups = db.relationship("LearningGroup", back_populates="subscribed_groups")
+    user = db.relationship("User", back_populates="subscribed_groups")
+
+    __table_args__ = (
+        db.UniqueConstraint('learning_group_id', 'user_id', name='_user_learning_group_uc'),
+    )
+
+
 class LearningGroup(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(350), nullable=True)
@@ -57,7 +69,7 @@ class LearningGroup(db.Model, GenericMixin):
 
     learning_group_files = db.relationship("LearningGroupFile", back_populates="learning_groups", cascade="all, delete-orphan")
     learning_group_comments = db.relationship("LearningGroupComment", back_populates="learning_groups", cascade="all, delete-orphan")
-
+    subscribed_groups = db.relationship("LearningGroupSubscription", back_populates='learning_groups', cascade="all, delete-orphan")
 
     __table_args__ = (
         db.UniqueConstraint('school_id', 'name', name='uq_school_learning_group_name'),

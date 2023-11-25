@@ -44,11 +44,19 @@ class ProjectFile(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     project_id = db.Column(db.Integer, db.ForeignKey('project.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=False)
-    file_name = db.Column(db.String(255), nullable=False)
+    file_name = db.Column(db.Text, nullable=False)
     file_path = db.Column(db.Text, nullable=False)
     file_url = db.Column(db.Text, nullable=False)
     projects = db.relationship("Project", back_populates="project_files")
     user = db.relationship("User", back_populates="project_files")
+
+
+class ChecklistQuestion(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.Text, nullable=False)
+    is_private = db.Column(db.Boolean, default=False)
+    created_by = db.Column(db.Integer, db.ForeignKey('admin.id', ondelete='SET NULL'))
+    admins = db.relationship("Admin", back_populates="checklist")
 
 
 class Project(db.Model, GenericMixin):
@@ -64,23 +72,23 @@ class Project(db.Model, GenericMixin):
     documents = db.Column(db.JSON(none_as_null=True), nullable=True)
     description = db.Column(db.String(350), nullable=True)
     academic_year = db.Column(db.String(350), nullable=True)
-    term = db.Column(db.String(350), nullable=True)
+    term = db.Column(db.Text, nullable=True)
     project_type = db.Column(db.String(350), nullable=True)
     age_group = db.Column(db.String(350), nullable=True)
     key_words = db.Column(db.JSON(none_as_null=True), nullable=True)
-    project_aim = db.Column(db.String(350), nullable=True)
+    project_aim = db.Column(db.Text, nullable=True)
     problem_to_solve = db.Column(db.JSON(none_as_null=True), nullable=True)
-    weblinks = db.Column(db.String(350), nullable=True)
-    milestones = db.Column(db.String(350), nullable=True)
+    weblinks = db.Column(db.Text, nullable=True)
+    milestones = db.Column(db.Text, nullable=True)
     final_product = db.Column(db.JSON(none_as_null=True), nullable=True)
     learning_goals = db.Column(db.JSON(none_as_null=True), nullable=True)
     subject_matter = db.Column(db.JSON(none_as_null=True), nullable=True)
-    meets_project_duration = db.Column(db.String(450), nullable=True)
-    curriculum = db.Column(db.String(450), nullable=True)
+    meets_project_duration = db.Column(db.Text, nullable=True)
+    curriculum = db.Column(db.Text, nullable=True)
 
     project_checklist = db.Column(db.JSON(none_as_null=True), nullable=True)
     is_private = db.Column(db.Boolean, default=False)
-    project_duration = db.Column(db.String(450), nullable=True)
+    project_duration = db.Column(db.Text, nullable=True)
 
     isDeactivated = db.Column(db.Boolean, default=False)
     deactivate_reason = db.Column(db.String(450), nullable=True)

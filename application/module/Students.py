@@ -46,7 +46,7 @@ class StudentModel:
         if gender:
             _student.gender = gender
         _student.update_table(data)
-        Audit.add_audit('Update Student Information', current_user, _student.to_dict())
+        Audit.add_audit('Updated Student Information', current_user, _student.to_dict())
         return _student.to_dict()
 
     @classmethod
@@ -97,13 +97,28 @@ class StudentModel:
                     parents=_parent
                 )
                 add_user.save(refresh=True)
-                Audit.add_audit('Add Student', current_user, add_user.to_dict())
+                Audit.add_audit('Added Student', current_user, add_user.to_dict())
 
                 return add_user
 
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
+
+    @classmethod
+    def change_student_profile_image(cls, profile_image, student_id):
+        if not profile_image:
+            raise CustomException(message="User profile image is required")
+
+        _student: Student = Student.GetStudent(student_id)
+
+        file_path, file_name = FileFolder.student_profile(_student.schools.name, _student.user.email)
+
+        profile_url = FileHandler.upload_file(profile_image, file_path)
+
+        _student.profile_image = profile_url
+        db.session.commit()
+        return "Profile Image has been updated successfully"
 
     @classmethod
     def reset_password(cls, user_id):
@@ -124,7 +139,7 @@ class StudentModel:
             raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
 
         _user: User = _student.user
-        Audit.add_audit('Change Student Account Status', current_user, _user.to_dict())
+        Audit.add_audit('Changed Student Account Status', current_user, _user.to_dict())
 
         return Helper.disable_account(_user, reason)
 

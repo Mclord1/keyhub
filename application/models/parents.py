@@ -3,6 +3,8 @@ from application.Mixins.GenericMixins import GenericMixin
 from exceptions.custom_exception import CustomException
 
 
+
+
 class Parent(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(350), nullable=True)

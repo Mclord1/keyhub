@@ -30,6 +30,19 @@ def list_admins():
     return return_json(OutputObj(code=200, message="Admin results", data=SystemAdmins.get_all_admin(page, per_page)))
 
 
+@admin_blueprint.route('/change-profile-image', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_SYSTEM_ADMIN)
+def update_admin_profile_image():
+
+    user_id = request.args.get('user_id', None)
+    if not user_id or not user_id.isdigit():
+        raise CustomException(message="You need to pass user id as query parameter", status_code=400)
+
+    args = request.json
+    profile_image = args.get("profile_image", None)
+    return return_json(OutputObj(code=200, message="", data=SystemAdmins.change_profile_image(profile_image, user_id)))
+
+
 @admin_blueprint.route('/update-admin', methods=['PUT'])
 @authenticate(PermissionEnum.MODIFY_SYSTEM_ADMIN)
 def update_admin():
