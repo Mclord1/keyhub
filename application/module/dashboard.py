@@ -48,7 +48,7 @@ class DashboardModel:
     def activity_feed(cls):
         _audit = Audit.query.order_by(desc(Audit.created_at)).limit(5).all()
         return [{
-            "image": x.admins.profile_image if x.admins else None,
+            "image": x.user.admins.profile_image or None,
             "action": x.action,
             "created_at": x.created_at,
             "action_performed_by": f"{x.user.admins.first_name} {x.user.admins.last_name}" if x.user.admins else x.user.managers.name

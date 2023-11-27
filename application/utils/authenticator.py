@@ -41,7 +41,6 @@ def authenticate(permission_name='Not-Set'):
                         else:
                             raise CustomException(ExceptionCode.PERMISSION_DENIED)
                 else:
-                    print("yes")
                     return f(*args, **kwargs)
 
 
