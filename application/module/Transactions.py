@@ -55,7 +55,7 @@ class TransactionModel:
             "payer": _transaction.schools.name,
             "phone_number": _transaction.schools.msisdn,
             "amount": _transaction.amount / 100,
-            "total_transaction_volume": len(_transaction.schools.transactions),
+            "total_transaction_volume": sum([x.amount for x in _transaction.schools.transactions if x.status == "success"]),
             "total_transaction_pending": len([x for x in _transaction.schools.transactions if x.status == "processing"]),
             "total_transaction_completed": len([x for x in _transaction.schools.transactions if x.status == "success"]),
         }
