@@ -141,8 +141,7 @@ class SchoolProjectModel:
         project: Project = Project.GetProject(school_id=school_id, project_id=project_id)
         db.session.delete(project)
         Audit.add_audit('Deleted School Project', current_user, project.to_dict(add_filter=False))
-
-        subscribed_users = [x.user_id for x in project.learning_groups.subscribed_groups]
+        subscribed_users = [subs.user_id for x in project.learning_groups for subs in x.subscribed_groups]
         Notification.send_push_notification(subscribed_users, f"{project.name} project has been removed from the learning group", LearningGroup.__name__)
         db.session.commit()
         return "Project has been deleted"
@@ -155,7 +154,7 @@ class SchoolProjectModel:
         db.session.commit()
         Audit.add_audit("Deactivated School Project" if project.isDeactivated else "Activate School Project", current_user, project.to_dict(add_filter=False))
 
-        subscribed_users = [x.user_id for x in project.learning_groups.subscribed_groups]
+        subscribed_users = [subs.user_id for x in project.learning_groups for subs in x.subscribed_groups]
         Notification.send_push_notification(subscribed_users, f"{project.name} project has been deactivated from the learning group", LearningGroup.__name__)
 
         return "Project has been deactivated" if project.isDeactivated else "Project has been activated"

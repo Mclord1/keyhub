@@ -24,6 +24,7 @@ app.register_blueprint(dashboard_blueprint, url_prefix='/dashboard')
 app.register_blueprint(report_blueprint, url_prefix='/reports')
 app.register_blueprint(notification_blueprint, url_prefix='/notification')
 app.register_blueprint(checklists_bp, url_prefix='/checklist')
+app.register_blueprint(message_blueprint, url_prefix='/message')
 
 
 @jwt.user_lookup_loader

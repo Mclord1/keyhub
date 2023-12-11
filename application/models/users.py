@@ -2,6 +2,7 @@ import bcrypt
 
 from application import db
 from application.Mixins.GenericMixins import GenericMixin
+from application.models.messages import Message
 from exceptions.codes import ExceptionCode
 from exceptions.custom_exception import CustomException
 
@@ -40,7 +41,10 @@ class User(db.Model, GenericMixin):
     learning_group_files = db.relationship("LearningGroupFile", back_populates="user", cascade="all, delete-orphan")
     learning_group_comments = db.relationship("LearningGroupComment", back_populates="user", cascade="all, delete-orphan")
     subscribed_groups = db.relationship("LearningGroupSubscription", back_populates='user', cascade="all, delete-orphan")
+
     notifications = db.relationship("Notification", back_populates='user', cascade="all, delete-orphan")
+    sent_messages = db.relationship('Message', foreign_keys=[Message.sender_id], back_populates='sender')
+    received_messages = db.relationship('Message', foreign_keys=[Message.receiver_id], back_populates='receiver')
 
     def as_dict(self, include_sensitive_info=False):
         """
@@ -79,6 +83,23 @@ class User(db.Model, GenericMixin):
 
         if user.managers:
             return f"{user.managers.name}"
+
+    @classmethod
+    def GetSchool(cls, user_id):
+        user: User = User.query.filter_by(id=user_id).first()
+
+        # Check and add user-related attributes if they are not None
+        if user.parents:
+            return user.parents.schools
+
+        if user.teachers:
+            return user.teachers.schools
+
+        if user.students:
+            return user.students.schools
+
+        if user.managers:
+            return user.managers.schools
 
     @classmethod
     def CreateUser(cls, email, msisdn, role, password=None):

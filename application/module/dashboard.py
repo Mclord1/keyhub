@@ -54,6 +54,7 @@ class DashboardModel:
             "action_performed_by": f"{x.user.admins.first_name} {x.user.admins.last_name}" if x.user.admins else x.user.managers.name
         } for x in _audit]
 
+
     def filter_revenue_by_month(month: int, year: int):
         first_day_of_month = datetime(year, month, 1)
         last_day_of_month = (first_day_of_month + timedelta(days=31)).replace(day=1) - timedelta(days=1)

@@ -19,3 +19,5 @@ from application.models.teachers import Teacher, TeacherStudent
 from application.models.users import User, UserRole
 from application.models.transactions import Transaction
 from application.models.notifications import Notification
+from application.models.messages import Message
+
