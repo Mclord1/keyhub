@@ -98,6 +98,14 @@ class ParentModel:
             raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
+    def remove_student(cls, student_id, parent_id):
+        _parent: Parent = Helper.get_user(Parent, parent_id)
+        _student: Student = Helper.get_user(Student, student_id)
+        _parent.students.remove(_student)
+        db.session.commit()
+        return "Student has been removed successfully"
+
+    @classmethod
     def reset_password(cls, user_id):
         _parent: Parent = Helper.get_user(Parent, user_id)
 
@@ -132,5 +140,3 @@ class ParentModel:
             "students": [{**x.to_dict(), "school": x.schools.name} for x in _user.students],
             "schools": [x.to_dict(add_filter=False) for x in _user.schools]
         }
-
-

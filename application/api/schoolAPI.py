@@ -147,6 +147,13 @@ def delete_school_project(school_id, project_id):
     return return_json(OutputObj(code=200, message=SchoolProjectModel.delete_project(school_id, project_id)))
 
 
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>/approve', methods=['PUT'])
+@authenticate(PermissionEnum.APPROVE_PROJECT)
+@has_school_privilege
+def approved_school_project(school_id, project_id):
+    return return_json(OutputObj(code=200, message=SchoolProjectModel.approve_project(school_id, project_id)))
+
+
 @school_blueprint.route('/<int:school_id>/projects/<int:project_id>', methods=['GET'])
 @authenticate(PermissionEnum.VIEW_PROJECTS)
 @has_school_privilege
@@ -215,6 +222,17 @@ def get_school_project_comment(school_id, project_id):
 @has_school_privilege
 def remove_school_project_comment(school_id, project_id, comment_id):
     return return_json(OutputObj(code=200, message=SchoolProjectModel.remove_comment(project_id, comment_id)))
+
+
+@school_blueprint.route('/<int:school_id>/projects/<int:project_id>/comment/<int:comment_id>', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_PROJECTS)
+@has_school_privilege
+def update_school_project_comment(school_id, project_id, comment_id):
+    data = request.json
+    comment = data.get('comment')
+    if not comment:
+        raise CustomException(message="Please provide comment", status_code=400)
+    return return_json(OutputObj(code=200, message=SchoolProjectModel.edit_comment(project_id, comment_id, comment)))
 
 
 @school_blueprint.route('/<int:school_id>/projects/<int:project_id>/file', methods=['POST'])
@@ -478,6 +496,17 @@ def get_school_group_comment(school_id, group_id):
 @has_school_privilege
 def remove_school_group_comment(school_id, group_id, comment_id):
     return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.remove_comment(group_id, comment_id)))
+
+
+@school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/comment/<int:comment_id>', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_LEARNING_GROUPS)
+@has_school_privilege
+def update_school_group_comment(school_id, group_id, comment_id):
+    data = request.json
+    comment = data.get('comment')
+    if not comment:
+        raise CustomException(message="Please provide comment", status_code=400)
+    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.edit_comments(group_id, comment_id, comment)))
 
 
 @school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/file', methods=['POST'])

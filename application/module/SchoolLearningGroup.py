@@ -137,6 +137,20 @@ class SchoolLearningGroupsModel:
             for x in group.learning_group_comments]
 
     @classmethod
+    def edit_comments(cls, group_id, comment_id, new_comment):
+        comments: LearningGroupComment = LearningGroupComment.query.filter_by(learning_group_id=group_id, id=comment_id).first()
+        if not comments:
+            raise CustomException(message="Comment not found", status_code=404)
+
+        if not current_user.managers or current_user.id != comments.user_id:
+            if not current_user.admins:
+                raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
+
+        comments.comment = new_comment
+        db.session.commit()
+        return "Comment has been updated successfully"
+
+    @classmethod
     def remove_comment(cls, group_id, comment_id):
         comments: LearningGroupComment = LearningGroupComment.query.filter_by(learning_group_id=group_id, id=comment_id).first()
         if not comments:

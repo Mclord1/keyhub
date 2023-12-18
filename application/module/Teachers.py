@@ -111,12 +111,13 @@ class TeacherModel:
 
     @classmethod
     def get_user(cls, user_id):
-        _user = Helper.get_user(Teacher, user_id)
+        _user: Teacher = Helper.get_user(Teacher, user_id)
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
             "total_projects": len([x for x in _user.projects]) if _user.projects else 0,
             "projects": [x.to_dict(add_filter=False) for x in _user.projects],
             "total_students": len([x for x in _user.students]) if _user.students else 0,
-            "students": [x.to_dict() for x in _user.students]
+            "students": [x.to_dict() for x in _user.students],
+            "schools": [x.name for x in _user.schools]
         }

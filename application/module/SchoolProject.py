@@ -43,7 +43,7 @@ class SchoolProjectModel:
 
     @classmethod
     def search_projects(cls, args, school_id):
-        query = Project.query.filter(Project.school_id == int(school_id)).filter(
+        query = Project.query.filter(Project.school_id == int(school_id), Project.status == 'approved').filter(
             (Project.name.ilike(f'%{args}%'))
         )
         result = [
@@ -71,7 +71,7 @@ class SchoolProjectModel:
 
         query = Project.query.filter(
             (Project.name.ilike(f'%{args}%'))
-        ).filter(Project.is_private.is_(False))
+        ).filter(Project.is_private.is_(False), Project.status == 'approved')
         result = [
             {
                 **x.to_dict(add_filter=False),
@@ -145,6 +145,16 @@ class SchoolProjectModel:
         Notification.send_push_notification(subscribed_users, f"{project.name} project has been removed from the learning group", LearningGroup.__name__)
         db.session.commit()
         return "Project has been deleted"
+
+    @classmethod
+    def approve_project(cls, school_id, project_id):
+        project: Project = Project.GetProject(school_id=school_id, project_id=project_id)
+        project.status = "approved"
+        Audit.add_audit('Approved School Project', current_user, project.to_dict(add_filter=False))
+        subscribed_users = [subs.user_id for x in project.learning_groups for subs in x.subscribed_groups]
+        Notification.send_push_notification(subscribed_users, f"{project.name} project has been approved", LearningGroup.__name__)
+        db.session.commit()
+        return "Project has been approved"
 
     @classmethod
     def deactivate_project(cls, school_id, project_id, reason):
@@ -318,6 +328,20 @@ class SchoolProjectModel:
 
             }
             for x in comments.project_comments]
+
+    @classmethod
+    def edit_comment(cls, project_id, comment_id, new_comment):
+        comments: ProjectComment = ProjectComment.query.filter_by(project_id=project_id, id=comment_id).first()
+        if not comments:
+            raise CustomException(message="Comment not found", status_code=404)
+
+        if not current_user.managers or current_user.id != comments.user_id:
+            if not current_user.admins:
+                raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
+
+        comments.comment = new_comment
+        db.session.commit()
+        return "Comment has been updated successfully"
 
     @classmethod
     def remove_comment(cls, project_id, comment_id):

@@ -106,6 +106,13 @@ class StudentModel:
             raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
+    def remove_parent(cls, student_id):
+        _student: Student = Helper.get_user(Student, student_id)
+        _student.parent_id = None
+        db.session.commit()
+        return "Parent has been successfully removed"
+
+    @classmethod
     def change_student_profile_image(cls, profile_image, student_id):
         if not profile_image:
             raise CustomException(message="User profile image is required")

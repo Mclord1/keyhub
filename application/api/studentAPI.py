@@ -40,6 +40,13 @@ def search_student():
     return return_json(OutputObj(code=200, message="Student results", data=Student.search_students(query)))
 
 
+@student_blueprint.route('/remove-parent', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_STUDENTS)
+def remove_parent():
+    req = request.json
+    return return_json(OutputObj(code=200, message=Student.remove_parent(req['user_id'])))
+
+
 @student_blueprint.route('/reset-password', methods=['POST'])
 @authenticate(PermissionEnum.RESET_STUDENT_PASSWORD)
 def reset_password():

@@ -139,6 +139,7 @@ class PermissionEnum(enum.Enum):
     MODIFY_PROJECTS = 'modify_projects'
     ADD_PROJECTS = 'add_projects'
     DEACTIVATE_PROJECTS = 'deactivate_projects'
+    APPROVE_PROJECT = 'approve_projects'
 
     # AUDIT
     VIEW_AUDIT = 'view_audits'

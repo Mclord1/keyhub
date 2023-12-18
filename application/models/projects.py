@@ -68,9 +68,9 @@ class Project(db.Model, GenericMixin):
 
     requirements = db.Column(db.JSON(none_as_null=True), nullable=True)
     lead_teacher = db.Column(db.Integer, nullable=True)
-    supporting_teachers = db.Column(db.String(350), nullable=True)
+    supporting_teachers = db.Column(db.Text, nullable=True)
     documents = db.Column(db.JSON(none_as_null=True), nullable=True)
-    description = db.Column(db.String(350), nullable=True)
+    description = db.Column(db.Text, nullable=True)
     academic_year = db.Column(db.String(350), nullable=True)
     term = db.Column(db.Text, nullable=True)
     project_type = db.Column(db.String(350), nullable=True)
@@ -89,9 +89,9 @@ class Project(db.Model, GenericMixin):
     project_checklist = db.Column(db.JSON(none_as_null=True), nullable=True)
     is_private = db.Column(db.Boolean, default=False)
     project_duration = db.Column(db.Text, nullable=True)
-
+    status = db.Column(db.Text, default='pending')
     isDeactivated = db.Column(db.Boolean, default=False)
-    deactivate_reason = db.Column(db.String(450), nullable=True)
+    deactivate_reason = db.Column(db.Text, nullable=True)
     schools = db.relationship("School", back_populates='projects')
     user = db.relationship("User", back_populates='projects')
     students = db.relationship("Student", secondary='student_project', back_populates="projects")

@@ -47,6 +47,15 @@ def reset_password():
     return return_json(OutputObj(code=200, message=Parent.reset_password(req['user_id'])))
 
 
+@parent_blueprint.route('/remove-student', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_PARENTS)
+def remove_student():
+    req = request.json
+    student_id = req.get('student_id')
+    parent_id = req.get('parent_id')
+    return return_json(OutputObj(code=200, message=Parent.remove_student(student_id, parent_id)))
+
+
 @parent_blueprint.route('/delete-parent', methods=['DELETE'])
 @authenticate(PermissionEnum.DEACTIVATE_PARENTS)
 def delete_parent():
