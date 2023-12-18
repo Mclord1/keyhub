@@ -60,6 +60,15 @@ class PlanModel:
         return [{**x.to_dict(add_filter=False), "created_by": x.user.email} for x in plans]
 
     @classmethod
+    def get_single_plan(cls, plan_id):
+        plans: SubcriptionPlan = SubcriptionPlan.query.filter_by(id=plan_id).first()
+
+        if not plans:
+            raise CustomException(message="Plan does not exist", status_code=404)
+
+        return {**plans.to_dict(add_filter=False), "created_by": plans.user.email}
+
+    @classmethod
     def disable_plan(cls, plan_id):
         plan: SubcriptionPlan = SubcriptionPlan.query.filter_by(id=plan_id).first()
         if not plan:

@@ -49,7 +49,6 @@ class TransactionModel:
     def get_single_transaction(cls, transaction_id):
 
         _transaction: Transaction = Transaction.GetSchoolTransaction(transaction_id)
-        print(_transaction.schools.transactions)
         return {
             **_transaction.to_dict(add_filter=True),
             "payer": _transaction.schools.name,

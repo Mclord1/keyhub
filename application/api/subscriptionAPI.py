@@ -26,15 +26,19 @@ def subscriptions_page_info():
 @subcription_blueprint.route('/list-plans', methods=['GET'])
 @authenticate(PermissionEnum.VIEW_SUBSCRIPTION)
 def list_subcription_plans():
-    return return_json(OutputObj(code=200, message="subcription plans",
-                                 data=PlanModel.list_plans()))
+    return return_json(OutputObj(code=200, message="subcription plans", data=PlanModel.list_plans()))
+
+
+@subcription_blueprint.route('/get-plan/<int:plan_id>', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_SUBSCRIPTION)
+def get_subcription_plan(plan_id):
+    return return_json(OutputObj(code=200, message="subcription plan", data=PlanModel.get_single_plan(plan_id)))
 
 
 @subcription_blueprint.route('/toggle-plan-status/<int:id>', methods=['PUT'])
 @authenticate(PermissionEnum.DEACTIVATE_SUBSCRIPTION)
 def toggle_plan_status(id):
-    return return_json(OutputObj(code=200, message="Subscription plan status has been changed",
-                                 data=PlanModel.disable_plan(id)))
+    return return_json(OutputObj(code=200, message="Subscription plan status has been changed",data=PlanModel.disable_plan(id)))
 
 
 @subcription_blueprint.route('/delete-plan/<int:id>', methods=['DELETE'])
