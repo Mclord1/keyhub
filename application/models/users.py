@@ -65,6 +65,29 @@ class User(db.Model, GenericMixin):
         return user
 
     @classmethod
+    def GetUserObject(cls, user_id):
+        user = User.query.filter_by(id=user_id).first()
+
+        user_dict = user.to_dict()
+
+        if user.parents:
+            user_dict.update(user.parents.to_dict(add_filter=False))
+
+        if user.teachers:
+            user_dict.update(user.teachers.to_dict(add_filter=False))
+
+        if user.students:
+            user_dict.update(user.students.to_dict(add_filter=False))
+
+        if user.admins:
+            user_dict.update(user.admins.to_dict(add_filter=False))
+
+        if user.managers:
+            user_dict.update(user.managers.to_dict(add_filter=False))
+
+        return user_dict
+
+    @classmethod
     def GetUserFullName(cls, user_id):
         user = User.query.filter_by(id=user_id).first()
 

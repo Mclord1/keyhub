@@ -99,8 +99,8 @@ class Communication:
         ).all()
 
         return [{
-            'sender': User.GetUserFullName(message.sender_id) if message.sender_id != current_user.id else 'me',
-            'receiver': User.GetUserFullName(message.receiver_id) if message.receiver_id != current_user.id else 'me',
+            'sender': User.GetUserObject(message.sender_id) if message.sender_id != current_user.id else 'me',
+            'receiver': User.GetUserObject(message.receiver_id) if message.receiver_id != current_user.id else 'me',
             'content': message.content,
             'time': last_message_time,
             'is_read': message.is_read,
@@ -116,10 +116,10 @@ class Communication:
             ((Message.sender_id == receiver_id) & (Message.receiver_id == current_user.id))
         ).order_by(Message.created_at).all()
 
-        return [
+        result = [
             {
-                'sender': User.GetUserFullName(chat.sender_id) if chat.sender_id != current_user.id else 'me',
-                'receiver': User.GetUserFullName(chat.receiver_id) if chat.receiver_id != current_user.id else 'me',
+                'sender': User.GetUserObject(chat.sender_id) if chat.sender_id != current_user.id else 'me',
+                'receiver': User.GetUserObject(chat.receiver_id) if chat.receiver_id != current_user.id else 'me',
                 'content': chat.content,
                 'time': chat.created_at,
                 'user_id': chat.sender_id if current_user.id == chat.receiver_id else chat.receiver_id,
@@ -128,6 +128,8 @@ class Communication:
                 'request_accepted': chat.request_accepted
             }
             for chat in chats]
+        print(result)
+        return result
 
 
 
