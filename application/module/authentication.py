@@ -30,6 +30,11 @@ class Authentication:
                     **user.as_dict()
                 })
 
+                if user.roles.permissions:
+                    user_details.update({
+                        'permissions': [x.name for x in user.roles.permissions]
+                    })
+
             if user.managers and user.managers.school_roles:
                 role = user.managers.school_roles
 
@@ -60,7 +65,8 @@ class Authentication:
                     })
 
             return return_json(
-                OutputObj(message="Login successful", data={"access_token": access_token, "refresh_token": refresh_token, 'expiration_in_minutes': 120, **user_details}, code=200)
+                OutputObj(message="Login successful", data={"access_token": access_token, "refresh_token": refresh_token, 'expiration_in_minutes': 120, **user_details},
+                          code=200)
             )
 
         else:

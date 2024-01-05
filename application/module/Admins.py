@@ -14,7 +14,7 @@ class SystemAdmins:
 
         if req.img:
 
-            profile_url, _ = FileHandler.upload_file(req.img, FileFolder.admin_profile(req.email))
+            profile_url = FileHandler.upload_file(req.img, FileFolder.admin_profile(req.email))
 
         else:
             profile_url = None

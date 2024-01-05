@@ -62,7 +62,7 @@ class StudentModel:
 
         if req.profile_image:
 
-            file_path, file_name = FileFolder.student_profile(school.name, req.email)
+            file_path = FileFolder.student_profile(school.name, req.email)
 
             profile_url = FileHandler.upload_file(req.profile_image, file_path)
         else:

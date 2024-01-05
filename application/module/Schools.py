@@ -140,7 +140,7 @@ class SchoolModel:
     def add_school(cls, data):
         req_schema: SchoolSchema = validator.validate_data(SchoolSchema, data)
 
-        profile_url, _ = FileHandler.upload_file(req_schema.profile_image, FileFolder.school(req_schema.name))
+        profile_url = FileHandler.upload_file(req_schema.profile_image, FileFolder.school(req_schema.name))
 
         name = req_schema.name
         email = req_schema.email
