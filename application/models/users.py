@@ -1,3 +1,5 @@
+from typing import Callable
+
 import bcrypt
 
 from application import db
@@ -86,6 +88,27 @@ class User(db.Model, GenericMixin):
             user_dict.update(user.managers.to_dict(add_filter=False))
 
         return user_dict
+
+    @classmethod
+    def FindUser(cls, user_id):
+        from application.models import Teacher, Parent, Admin, SchoolManager, Student
+
+        get_user: Callable = lambda Model, user_x: Model.query.filter_by(id=user_x).first()
+
+        if x := get_user(Teacher, user_id):
+            return x.user
+
+        if x := get_user(Parent, user_id):
+            return x.user
+
+        if x := get_user(Admin, user_id):
+            return x.user
+
+        if x := get_user(SchoolManager, user_id):
+            return x.user
+
+        if x := get_user(Student, user_id):
+            return x.user
 
     @classmethod
     def GetUserFullName(cls, user_id):

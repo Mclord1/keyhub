@@ -69,8 +69,7 @@ class Authentication:
     @staticmethod
     def update_password(code: str, password):
         _user: User = User.GetUser(current_user.id)
-        confirm_code: ConfirmationCode = ConfirmationCode.query.filter(ConfirmationCode.code == code,
-                                                                       ConfirmationCode.user_id == current_user.id).first()
+        confirm_code: ConfirmationCode = ConfirmationCode.query.filter(ConfirmationCode.code == code, ConfirmationCode.user_id == current_user.id).first()
         current_time = datetime.datetime.now()
 
         if not confirm_code:
