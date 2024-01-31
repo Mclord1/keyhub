@@ -12,6 +12,7 @@ from application.module.SchoolsRole import SchoolRoleModel
 from application.module.Subscriptions import SubscriptionModel
 from application.utils.output import return_json, OutputObj
 from . import *
+from ..Enums.Permission import SchoolPermissionEnum
 
 school_blueprint = Blueprint('school', __name__)
 
@@ -51,6 +52,13 @@ def list_school():
 @authenticate(PermissionEnum.VIEW_SCHOOL)
 @has_school_privilege
 def view_school_info(school_id):
+    return return_json(OutputObj(code=200, message="school results", data=SchoolModel.view_school_info(school_id)))
+
+
+@school_blueprint.route('/school-dashboard/<int:school_id>', methods=['GET'])
+@authenticate(SchoolPermissionEnum.VIEW_DASHBOARD)
+@has_school_privilege
+def view_school_dashboard(school_id):
     return return_json(OutputObj(code=200, message="school results", data=SchoolModel.view_school_info(school_id)))
 
 

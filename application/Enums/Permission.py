@@ -2,6 +2,12 @@ import enum
 
 
 class SchoolPermissionEnum(enum.Enum):
+    # View School Dashboard
+    VIEW_DASHBOARD = 'view_dashboard'
+    SCHOOL_ADMIN = 'school_admin'
+    ACADEMIC_YEAR = 'academic_year'
+    ACADEMIC_TERMS = 'academic_terms'
+
     # ROLES & PERMISSIONS
     ADD_ROLES = 'add_roles'
     VIEW_ROLES = 'view_roles'
@@ -65,6 +71,9 @@ class SchoolPermissionEnum(enum.Enum):
     MODIFY_KEYWORD = 'update_keywords'
     VIEW_KEYWORD = 'view_keywords'
     DEACTIVATE_KEYWORD = 'deactivate_keywords'
+
+    # PLAN
+    VIEW_PLAN = 'view_plan'
 
 
 class PermissionEnum(enum.Enum):
@@ -161,3 +170,9 @@ class PermissionEnum(enum.Enum):
     MODIFY_CHECKLIST = 'update_checklist'
     VIEW_CHECKLIST = 'view_checklist'
     DELETE_CHECKLIST = 'delete_checklist'
+
+    # PLAN
+    ADD_PLAN = 'add_plan'
+    MODIFY_PLAN = 'update_plan'
+    VIEW_PLAN = 'view_plan'
+    DELETE_PLAN = 'delete_plan'
