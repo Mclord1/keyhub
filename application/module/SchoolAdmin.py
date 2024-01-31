@@ -94,5 +94,6 @@ class SchoolAdminModel:
         return {
             **_admin.to_dict(),
             **_admin.user.as_dict(),
-            "role_name": _admin.school_roles.name if _admin.school_roles else None
+            "role_name": _admin.school_roles.name if _admin.school_roles else None,
+            "permissions" : [x.name for x in _admin.school_roles.school_permissions] if _admin.school_roles else None
         }

@@ -203,8 +203,10 @@ class SchoolModel:
             add_school_admin.school_roles = _role
             add_school_admin.save(refresh=True)
 
+            # assign school permissions to the school admin role
             add_school_admin.school_roles.school_permissions.extend(permissions_all)
             db.session.commit()
+
             # TODO :: Add background service to image processing
 
             # save image to table

@@ -130,5 +130,6 @@ class SystemAdmins:
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
-            "role_name": _user.user.roles.name
+            "role_name": _user.user.roles.name,
+            "permissions": [x.name for x in _user.user.roles.permissions] if _user.user.roles else None
         }

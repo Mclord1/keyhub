@@ -20,6 +20,7 @@ class Authentication:
                 'role_id': None
             }
 
+
             if user.roles:
                 role = user.roles
 
@@ -37,6 +38,11 @@ class Authentication:
 
             if user.managers and user.managers.school_roles:
                 role = user.managers.school_roles
+
+                if role.school_permissions:
+                    user_details.update({
+                        'permissions': [x.name for x in role.school_permissions]
+                    })
 
                 user_details.update({
                     'role_name': ' '.join(str(role.name).split('_')) if role.name else None,
