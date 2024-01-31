@@ -98,16 +98,16 @@ class User(db.Model, GenericMixin):
         if x := get_user(Teacher, user_id):
             return x.user
 
-        if x := get_user(Parent, user_id):
+        elif x := get_user(Parent, user_id):
             return x.user
 
-        if x := get_user(Admin, user_id):
+        elif x := get_user(Admin, user_id):
             return x.user
 
-        if x := get_user(SchoolManager, user_id):
+        elif x := get_user(SchoolManager, user_id):
             return x.user
 
-        if x := get_user(Student, user_id):
+        elif x := get_user(Student, user_id):
             return x.user
 
     @classmethod

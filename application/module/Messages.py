@@ -48,7 +48,7 @@ class Communication:
     def user_send_message(cls, receiver, content, content_type):
 
         sender: User = User.GetUser(current_user.id)
-        receiver: User = User.FindUser(receiver)
+        receiver: User = User.GetUser(receiver)
 
         if content_type.lower() not in ('text', 'file'):
             raise CustomException(message="The file type is not supported", status_code=400)
@@ -63,10 +63,7 @@ class Communication:
 
     @classmethod
     def take_decision_on_message_request(cls, sender_id, decision: bool):
-
-        sender: User = User.FindUser(sender_id)
-
-        message: Message = Message.query.filter_by(sender_id=sender.id, receiver_id=current_user.id, request_accepted=False).first()
+        message: Message = Message.query.filter_by(sender_id=sender_id, receiver_id=current_user.id, request_accepted=False).first()
 
         if not message:
             raise CustomException(message="No message request was found", status_code=404)
@@ -114,12 +111,9 @@ class Communication:
 
     @classmethod
     def get_chat_messages(cls, receiver_id):
-
-        receiver: User = User.FindUser(receiver_id)
-
         chats: List[Message] = db.session.query(Message).filter(
-            ((Message.sender_id == current_user.id) & (Message.receiver_id == receiver.id)) |
-            ((Message.sender_id == receiver.id) & (Message.receiver_id == current_user.id))
+            ((Message.sender_id == current_user.id) & (Message.receiver_id == receiver_id)) |
+            ((Message.sender_id == receiver_id) & (Message.receiver_id == current_user.id))
         ).order_by(Message.created_at).all()
 
         result = [
@@ -135,3 +129,6 @@ class Communication:
             }
             for chat in chats]
         return result
+
+
+

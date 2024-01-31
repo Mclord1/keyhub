@@ -131,7 +131,7 @@ class SchoolLearningGroupsModel:
         return [
             {
                 **x.to_dict(add_filter=False),
-                "commented_by": x.user.email,
+                "commented_by": x.user.to_dict(),
 
             }
             for x in group.learning_group_comments]

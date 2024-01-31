@@ -178,7 +178,7 @@ class StudentModel:
         return [
             {
                 **x.to_dict(add_filter=False),
-                "commented_by": x.user.email,
+                "commented_by": x.user.to_dict(),
 
             }
             for x in student.student_comments]
@@ -214,7 +214,7 @@ class StudentModel:
         return [
             {
                 **x.to_dict(add_filter=False),
-                "commented_by": x.user.email,
+                "commented_by": x.user.to_dict(),
 
             }
             for x in student.student_files]

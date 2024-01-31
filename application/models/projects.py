@@ -27,7 +27,7 @@ class ProjectActivity(db.Model, GenericMixin):
     supporting_weblinks = db.Column(db.String(350), nullable=True)
     supporting_media = db.Column(db.String(350), nullable=True)
     ways_to_extend = db.Column(db.Text, nullable=True)
-
+    status = db.Column(db.Boolean, default=False)
     projects = db.relationship("Project", back_populates="activities")
 
 

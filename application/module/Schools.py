@@ -188,6 +188,7 @@ class SchoolModel:
 
             # create the user account on User model
             new_admin = User(email=primary_contact.email, msisdn=primary_contact.msisdn, password=None)
+            permissions_all = SchoolPermission.query.all()
             db.session.add(new_admin)
             new_admin.save(refresh=True)
 
@@ -202,6 +203,8 @@ class SchoolModel:
             add_school_admin.school_roles = _role
             add_school_admin.save(refresh=True)
 
+            add_school_admin.school_roles.school_permissions.extend(permissions_all)
+            db.session.commit()
             # TODO :: Add background service to image processing
 
             # save image to table
