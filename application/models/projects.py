@@ -111,3 +111,4 @@ class Project(db.Model, GenericMixin):
         if not project:
             raise CustomException(message="Project does not exist", status_code=404)
         return project
+

@@ -1,12 +1,41 @@
 from datetime import datetime, timedelta
 
-from sqlalchemy import func, desc
+from sqlalchemy import func
 
-from application import db
-from application.models import *
+from . import *
 
 
 class DashboardModel:
+
+    @classmethod
+    def news_feed(cls):
+        _user: User = User.query.filter_by(id=current_user.id).first()
+        if not _user:
+            raise CustomException(message="User not found")
+        _students: List[Student] = _user.parents.students if _user.parents else _user.teachers.students if _user.teachers else None
+        groups: List[LearningGroup] = [x.learning_groups for x in _students] if _students else None
+        all_learning_groups = [group for sublist in groups for group in sublist] if groups else None
+        comments = []
+        files = []
+        if all_learning_groups:
+            for l_groups in all_learning_groups:
+                comments.extend([
+                    {
+                        **x.to_dict(add_filter=False),
+                        "commented_by": x.user.to_dict(),
+                    }
+                    for x in l_groups.learning_group_comments])
+
+                files.extend([
+                    {
+                        **x.to_dict(add_filter=False),
+                        "uploaded_by": x.user.email,
+                    }
+                    for x in l_groups.learning_group_files])
+
+            return {'comments': comments, 'files': files}
+        else:
+            return "No groups found"
 
     @classmethod
     def school_stat(cls):
@@ -53,7 +82,6 @@ class DashboardModel:
             "created_at": x.created_at,
             "action_performed_by": f"{x.user.admins.first_name} {x.user.admins.last_name}" if x.user.admins else x.user.managers.name
         } for x in _audit]
-
 
     def filter_revenue_by_month(month: int, year: int):
         first_day_of_month = datetime(year, month, 1)

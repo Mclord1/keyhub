@@ -7,6 +7,12 @@ from application.utils.output import return_json, OutputObj
 dashboard_blueprint = Blueprint('dashboard', __name__)
 
 
+@dashboard_blueprint.route('/news-feed', methods=['GET'])
+@authenticate()
+def news_feed():
+    return return_json(OutputObj(code=200, message="", data=DashboardModel.news_feed()))
+
+
 @dashboard_blueprint.route('/school-statistics', methods=['GET'])
 @authenticate()
 def school_statistics():
