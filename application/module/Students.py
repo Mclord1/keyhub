@@ -215,6 +215,7 @@ class StudentModel:
             {
                 **x.to_dict(add_filter=False),
                 "commented_by": x.user.to_dict(),
+                "file_url": FileHandler.get_file_url(x.file_path)
 
             }
             for x in student.student_files]

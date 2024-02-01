@@ -30,6 +30,8 @@ class DashboardModel:
                     {
                         **x.to_dict(add_filter=False),
                         "uploaded_by": x.user.email,
+                        "file_url": FileHandler.get_file_url(x.file_path)
+
                     }
                     for x in l_groups.learning_group_files])
 
