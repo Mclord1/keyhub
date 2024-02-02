@@ -86,7 +86,8 @@ class FileHandler:
                 Params={
                     'Bucket': cls.bucket_name,
                     'Key': file_name,
-                }
+                },
+                ExpiresIn=3600
             )
             return response
         except ClientError as e:
