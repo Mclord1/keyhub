@@ -375,7 +375,7 @@ class SchoolProjectModel:
             {
                 **x.to_dict(add_filter=False),
                 "uploaded_by": x.user.email,
-                "file_url": FileHandler.get_file_url(x.file_path)
+                "my_file_url": FileHandler.get_file_url(x.file_path)
             }
             for x in _files.project_files]
 
