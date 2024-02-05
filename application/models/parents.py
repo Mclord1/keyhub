@@ -3,8 +3,6 @@ from application.Mixins.GenericMixins import GenericMixin
 from exceptions.custom_exception import CustomException
 
 
-
-
 class Parent(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(350), nullable=True)
@@ -18,6 +16,9 @@ class Parent(db.Model, GenericMixin):
     work_email = db.Column(db.String(350), nullable=True)
     work_address = db.Column(db.String(350), nullable=True)
     work_msisdn = db.Column(db.String(350), nullable=True)
+
+    # work_msisdn = db.Column(db.String(350), nullable=True)
+
     students = db.relationship("Student", back_populates='parents')
     schools = db.relationship("School", secondary='school_parent', back_populates='parents', passive_deletes=True)
 

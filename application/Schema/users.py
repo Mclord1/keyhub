@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from pydantic import BaseModel
 
@@ -38,8 +38,8 @@ class StudentSchema(BaseModel):
     first_name: str
     last_name: str
     gender: str
-    date_of_birth: str
-    age: str
+    dob: str
+    age: Union[str, int]
     msisdn: Optional[str] = None
     email: Optional[str] = None
     country: str
@@ -47,7 +47,31 @@ class StudentSchema(BaseModel):
     address: str
     profile_image: str
     parent: Optional[int] = None
-    img: Optional[str] = None
+    middle_name: str
+    nick_name: Optional[str] = None
+    current_school: Optional[str] = None
+    parent_name: Optional[str] = None
+    parent_email: Optional[str] = None
+    how_you_knew_about_us: Optional[str] = None
+    why_use_us: str
+    interest: str
+    parent_msisdn: Optional[str] = None
+    father_name: Optional[str] = None
+    father_msisdn: Optional[str] = None
+    father_address: Optional[str] = None
+    father_email: Optional[str] = None
+    mother_name: Optional[str] = None
+    mother_msisdn: Optional[str] = None
+    mother_address: Optional[str] = None
+    mother_email: Optional[str] = None
+    any_medical_condition: Optional[bool] = None
+    medical_condition: Optional[str] = None
+    any_educational_needs: Optional[bool] = None
+    educational_needs: Optional[str] = None
+    any_learning_delay: Optional[bool] = None
+    learning_delay: Optional[str] = None
+    emergency_contact_name: Optional[str] = None
+    emergency_contact_relationship: Optional[str] = None
 
 
 class ParentSchema(BaseModel):

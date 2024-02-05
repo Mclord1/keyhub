@@ -20,7 +20,6 @@ class Authentication:
                 'role_id': None
             }
 
-
             if user.roles:
                 role = user.roles
 

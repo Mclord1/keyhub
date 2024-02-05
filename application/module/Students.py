@@ -82,20 +82,26 @@ class StudentModel:
             new_student = User.CreateUser(req.email, req.msisdn, role)
 
             if new_student:
-                add_user = Student(
-                    first_name=req.first_name,
-                    last_name=req.last_name,
-                    country=req.country,
-                    state=req.state,
-                    user_id=new_student.id,
-                    profile_image=profile_url,
-                    address=req.address,
-                    gender=req.gender,
-                    dob=req.date_of_birth,
-                    age=req.age,
-                    schools=school,
-                    parents=_parent
-                )
+                student_data = {
+                    field: getattr(req, field)
+                    for field in req.model_fields.keys()
+                }
+                # Remove None values for optional fields
+                student_data = {k: v for k, v in student_data.items() if v is not None}
+
+                # Add additional data not included in StudentSchema
+                student_data.update({
+                    'user_id': new_student.id,
+                    'profile_image': profile_url,
+                    'parents': _parent,
+                    'schools': school,
+                })
+
+                # remove this as it is already added in user table
+                del student_data['email']
+                del student_data['msisdn']
+
+                add_user = Student(**student_data)
                 add_user.save(refresh=True)
                 Audit.add_audit('Added Student', current_user, add_user.to_dict())
 

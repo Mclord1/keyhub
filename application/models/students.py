@@ -38,15 +38,41 @@ class Student(db.Model, GenericMixin):
     country = db.Column(db.String(350), nullable=True)
     state = db.Column(db.String(350), nullable=True)
     address = db.Column(db.String(350), nullable=True)
+
+    middle_name = db.Column(db.String(350), nullable=True)
+    nick_name = db.Column(db.String(350), nullable=True)
+    current_school = db.Column(db.String(350), nullable=True)
+    parent_name = db.Column(db.String(350), nullable=True)
+    parent_email = db.Column(db.String(350), nullable=True)
+    how_you_knew_about_us = db.Column(db.String(350), nullable=True)
+    why_use_us = db.Column(db.String(350), nullable=True)
+    interest = db.Column(db.Text, nullable=True)
+    msisdn = db.Column(db.String(350), nullable=True)
+    parent_msisdn = db.Column(db.String(350), nullable=True)
+    father_name = db.Column(db.String(350), nullable=True)
+    father_msisdn = db.Column(db.String(350), nullable=True)
+    father_address = db.Column(db.String(350), nullable=True)
+    father_email = db.Column(db.String(350), nullable=True)
+    mother_name = db.Column(db.String(350), nullable=True)
+    mother_msisdn = db.Column(db.String(350), nullable=True)
+    mother_address = db.Column(db.String(350), nullable=True)
+    mother_email = db.Column(db.String(350), nullable=True)
+    any_medical_condition = db.Column(db.Boolean, default=False, nullable=True)
+    medical_condition = db.Column(db.Text, nullable=True)
+    any_educational_needs = db.Column(db.Boolean, default=False, nullable=True)
+    educational_needs = db.Column(db.Text, nullable=True)
+    any_learning_delay = db.Column(db.Boolean, default=False, nullable=True)
+    learning_delay = db.Column(db.Text, nullable=True)
+    emergency_contact_name = db.Column(db.String(350), nullable=True)
+    emergency_contact_relationship = db.Column(db.String(350), nullable=True)
+
     parents = db.relationship("Parent", back_populates='students')
     schools = db.relationship("School", back_populates='students')
     teachers = db.relationship("Teacher", secondary='teacher_student', back_populates='students')
     projects = db.relationship("Project", secondary='student_project', back_populates="students")
     learning_groups = db.relationship("LearningGroup", secondary='learning_group_students', back_populates="students")
-
     student_files = db.relationship("StudentFile", back_populates="students", cascade="all, delete-orphan")
     student_comments = db.relationship("StudentComment", back_populates="students", cascade="all, delete-orphan")
-
 
     @property
     def gender(self):
