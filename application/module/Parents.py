@@ -75,6 +75,8 @@ class ParentModel:
             new_parent = User.CreateUser(req.email, req.msisdn, role)
 
             if new_parent:
+                students_list = [Student.GetStudent(x) for x in req.student] if req.student else []
+
                 add_parent = Parent(
                     first_name=req.first_name,
                     last_name=req.last_name,
@@ -85,8 +87,9 @@ class ParentModel:
                     gender=req.gender,
                     work_email=req.work_email,
                     work_address=req.work_address,
+                    relationship_to_student=req.relationship_to_student,
                     work_msisdn=req.work_msisdn,
-                    students=[Student.GetStudent(x) for x in req.student]
+                    students=students_list
                 )
                 add_parent.schools.append(_school)
                 add_parent.save(refresh=True)
@@ -96,6 +99,14 @@ class ParentModel:
         except Exception:
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
+
+    @classmethod
+    def add_student(cls, student_id, parent_id):
+        _parent: Parent = Helper.get_user(Parent, parent_id)
+        _student: Student = Helper.get_user(Student, student_id)
+        _parent.students.add(_student)
+        db.session.commit()
+        return "Student has been added successfully"
 
     @classmethod
     def remove_student(cls, student_id, parent_id):

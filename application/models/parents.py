@@ -13,6 +13,7 @@ class Parent(db.Model, GenericMixin):
     _gender = db.Column(db.String(250), nullable=True)
     country = db.Column(db.String(350), nullable=True)
     state = db.Column(db.String(350), nullable=True)
+    relationship_to_student = db.Column(db.String(350), nullable=True)
     work_email = db.Column(db.String(350), nullable=True)
     work_address = db.Column(db.String(350), nullable=True)
     work_msisdn = db.Column(db.String(350), nullable=True)

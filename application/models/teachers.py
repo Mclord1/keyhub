@@ -17,7 +17,15 @@ class Teacher(db.Model, GenericMixin):
     user = db.relationship("User", back_populates='teachers')
     _gender = db.Column(db.String(250), nullable=True)
     country = db.Column(db.String(350), nullable=True)
+
     state = db.Column(db.String(350), nullable=True)
+    years_of_experience = db.Column(db.String(350), nullable=True)
+    has_bachelors_degree = db.Column(db.String(350), nullable=True)
+    early_years_education = db.Column(db.String(350), nullable=True)
+    linkedin = db.Column(db.String(350), nullable=True)
+    how_you_heard_about_us = db.Column(db.Text, nullable=True)
+    purpose_using_the_app = db.Column(db.Text, nullable=True)
+
     address = db.Column(db.String(350), nullable=True)
     reg_number = db.Column(db.String(350), nullable=True, unique=True)
     students = db.relationship("Student", secondary='teacher_student', back_populates='teachers')

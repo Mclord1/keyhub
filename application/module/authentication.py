@@ -51,22 +51,23 @@ class Authentication:
 
             # Check and add user-related attributes if they are not None
             if user.parents:
-                user_details.update({**user.parents.to_dict(), "school_id": [x.id for x in user.parents.schools]})
+                user_details.update({**user.parents.to_dict(), "school_id": [x.id for x in user.parents.schools], 'user_type': 'parent'})
 
             if user.teachers:
-                user_details.update({**user.teachers.to_dict(), "school_id": [x.id for x in user.teachers.schools]})
+                user_details.update({**user.teachers.to_dict(), "school_id": [x.id for x in user.teachers.schools], 'user_type': 'teacher'})
 
             if user.students:
-                user_details.update({**user.students.to_dict(), "school_id": user.students.school_id})
+                user_details.update({**user.students.to_dict(), "school_id": user.students.school_id, 'user_type': 'student'})
 
             if user.admins:
-                user_details.update(user.admins.to_dict())
+                user_details.update({**user.admins.to_dict(), 'user_type': 'admin'})
 
             if user.managers:
                 user_details.update(
                     {
                         **user.managers.to_dict(),
-                        "school_id": user.managers.school_id
+                        "school_id": user.managers.school_id,
+                        'user_type': 'school-admin'
                     })
 
             return return_json(

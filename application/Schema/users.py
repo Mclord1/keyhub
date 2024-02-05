@@ -31,6 +31,12 @@ class TeacherSchema(BaseModel):
     country: str
     state: str
     address: str
+    linkedin: str
+    years_of_experience: Optional[str] = None
+    has_bachelors_degree: Optional[bool] = None
+    early_years_education: Optional[bool] = None
+    how_you_heard_about_us: Optional[str] = None
+    purpose_using_the_app: Optional[str] = None
 
 
 class StudentSchema(BaseModel):
@@ -89,6 +95,7 @@ class ParentSchema(BaseModel):
     work_country: str
     work_state: str
     work_address: str
+    relationship_to_student: str
     school_id: int
     student: Optional[list] = None
 

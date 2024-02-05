@@ -62,6 +62,7 @@ class TeacherModel:
             new_teacher = User.CreateUser(req.email, req.msisdn, role)
 
             if new_teacher:
+
                 add_user = Teacher(
                     first_name=req.first_name,
                     last_name=req.last_name,
@@ -70,8 +71,15 @@ class TeacherModel:
                     user_id=new_teacher.id,
                     address=req.address,
                     gender=req.gender,
+                    years_of_experience=req.years_of_experience,
+                    has_bachelors_degree=req.has_bachelors_degree,
+                    early_years_education=req.early_years_education,
+                    linkedin=req.linkedin,
+                    how_you_heard_about_us=req.how_you_heard_about_us,
+                    purpose_using_the_app=req.purpose_using_the_app,
                     schools=[school]
                 )
+
                 add_user.save(refresh=True)
                 Audit.add_audit('Added Teacher', current_user, add_user.to_dict())
 
