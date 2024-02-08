@@ -25,6 +25,7 @@ class ParentModel:
                 "parents": [{
                     **(res.user.as_dict() if res.user else {}),
                     **res.to_dict(),
+                    "user_id": res.user.id,
                     "schools": [{"name": x.name} for x in res.schools],
                     "num_of_children": len(res.students) if res and res.students else 0,
                     "num_of_active_children": len([x for x in res.students if not x.user.isDeactivated]),
@@ -36,16 +37,24 @@ class ParentModel:
 
     @classmethod
     def update_information(cls, user_id, data):
-        _parent: Parent = Helper.get_user(Parent, user_id)
+
+        user: User = User.GetUser(user_id)
+
+        if not user.parents:
+            raise CustomException(message="Parent does not exist", status_code=404)
+
+        if not data:
+            raise CustomException(message="Please provide data to update", status_code=400)
+
         gender = data.get('gender')
         role = data.get('role')
         if role:
-            _parent.user.role_id = role
+            user.role_id = role
         if gender:
-            _parent.gender = gender
-        _parent.update_table(data)
-        Audit.add_audit('Updated Parent Information ', current_user, _parent.to_dict())
-        return _parent.to_dict()
+            user.admins.gender = gender
+        user.parents.update_table(data)
+        Audit.add_audit('Updated Parent Information ', current_user, user.parents.to_dict())
+        return {**user.parents.to_dict(), "user_id": user.id}
 
     @classmethod
     def add_parent(cls, data):
@@ -63,8 +72,8 @@ class ParentModel:
         if req.student:
 
             for std in req.student:
-
-                _student: Student = Student.GetStudent(std)
+                u_student: User = User.GetUser(std)
+                _student: Student = u_student.students.parents
 
                 if _student.parents:
                     raise CustomException(
@@ -75,7 +84,7 @@ class ParentModel:
             new_parent = User.CreateUser(req.email, req.msisdn, role)
 
             if new_parent:
-                students_list = [Student.GetStudent(x) for x in req.student] if req.student else []
+                students_list = [User.GetUser(x).students for x in req.student] if req.student else []
 
                 add_parent = Parent(
                     first_name=req.first_name,
@@ -94,7 +103,7 @@ class ParentModel:
                 add_parent.schools.append(_school)
                 add_parent.save(refresh=True)
                 Audit.add_audit('Added Parent', current_user, add_parent.to_dict())
-                return add_parent
+                return {**add_parent.to_dict(), "user_id": add_parent.user.id}
 
         except Exception:
             db.session.rollback()
@@ -102,49 +111,62 @@ class ParentModel:
 
     @classmethod
     def add_student(cls, student_id, parent_id):
-        _parent: Parent = Helper.get_user(Parent, parent_id)
-        _student: Student = Helper.get_user(Student, student_id)
 
-        if _student.schools not in [x for x in _parent.schools]:
+        u_student: User = User.GetUser(student_id)
+        u_parent: User = User.GetUser(parent_id)
+
+        if not u_student.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
+        if not u_parent.parents:
+            raise CustomException(message="Parent does not exist", status_code=404)
+
+        if u_student.students.schools not in [x for x in u_parent.parents.schools]:
             raise CustomException(message="Student must belong to same school as parent")
 
-        _parent.students.add(_student)
+        u_parent.parents.students.add(u_student.students)
         db.session.commit()
         return "Student has been added successfully"
 
     @classmethod
     def remove_student(cls, student_id, parent_id):
-        _parent: Parent = Helper.get_user(Parent, parent_id)
-        _student: Student = Helper.get_user(Student, student_id)
 
-        if _student not in [x for x in _parent.students]:
+        u_student: User = User.GetUser(student_id)
+        u_parent: User = User.GetUser(parent_id)
+
+        if not u_student.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
+        if not u_parent.parents:
+            raise CustomException(message="Parent does not exist", status_code=404)
+
+        if u_student.students not in [x for x in u_parent.parents.students]:
             raise CustomException(message="Student Not Found")
 
-        _parent.students.remove(_student)
+        u_parent.parents.students.remove(u_student.students)
         db.session.commit()
         return "Student has been removed successfully"
 
     @classmethod
     def reset_password(cls, user_id):
-        _parent: Parent = Helper.get_user(Parent, user_id)
 
-        if not _parent:
-            raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
+        user: User = User.GetUser(user_id)
 
-        _user: User = _parent.user
-        Audit.add_audit('Reset Parent Password ', current_user, _user.to_dict())
-        return Helper.send_otp(_user)
+        if not user.parents:
+            raise CustomException(message="Parent does not exist", status_code=404)
+
+        Audit.add_audit('Reset Parent Password ', current_user, user.to_dict())
+        return Helper.send_otp(user)
 
     @classmethod
     def deactivate_user(cls, user_id, reason):
-        _parent: Parent = Helper.get_user(Parent, user_id)
+        user: User = User.GetUser(user_id)
 
-        if not _parent:
-            raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
+        if not user.parents:
+            raise CustomException(message="Parent does not exist", status_code=404)
 
-        _user: User = _parent.user
-        Audit.add_audit('Changed Parent account status ', current_user, _user.to_dict())
-        return Helper.disable_account(_user, reason)
+        Audit.add_audit('Changed Parent account status ', current_user, user.to_dict())
+        return Helper.disable_account(user, reason)
 
     @classmethod
     def search_parents(cls, args):
@@ -152,14 +174,23 @@ class ParentModel:
 
     @classmethod
     def get_user(cls, user_id):
-        _user = Helper.get_user(Parent, user_id)
+
+        user: User = User.GetUser(user_id)
+
+        if not user.parents:
+            raise CustomException(message="Parent does not exist", status_code=404)
+
+        _user = Helper.get_user(Parent, user.parents.id)
+
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
+            "user_id": user.id,
             "students": [
                 {
                     **x.to_dict(),
                     "school": x.schools.name,
+                    "user_id": user.id,
                     "file_url": [FileHandler.get_file_url(x.file_path) for x in x.student_files]
                 }
                 for x in _user.students],

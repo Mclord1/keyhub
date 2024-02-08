@@ -25,6 +25,7 @@ class StudentModel:
                 "students": [{
                     **(res.user.as_dict() if res.user else {}),
                     **res.to_dict(),
+                    "user_id": res.user.id,
                     "project": [x.to_dict(add_filter=False) for x in res.projects],
                     "parent": {**(res.parents.to_dict() if res.parents else {}),
                                **(res.parents.user.as_dict() if res.parents else {})},
@@ -36,7 +37,10 @@ class StudentModel:
 
     @classmethod
     def update_information(cls, user_id, data):
-        _student: Student = Helper.get_user(Student, user_id)
+        user: User = User.GetUser(user_id)
+
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
 
         if not data:
             raise CustomException(message="Please provide data to update", status_code=400)
@@ -44,12 +48,12 @@ class StudentModel:
         gender = data.get('gender')
         role = data.get('role')
         if role:
-            _student.user.role_id = role
+            user.role_id = role
         if gender:
-            _student.gender = gender
-        _student.update_table(data)
-        Audit.add_audit('Updated Student Information', current_user, _student.to_dict())
-        return _student.to_dict()
+            user.students.gender = gender
+        user.students.update_table(data)
+        Audit.add_audit('Updated Student Information', current_user, user.to_dict())
+        return {**user.students.to_dict(), "user_id": user.id}
 
     @classmethod
     def add_student(cls, data):
@@ -75,10 +79,12 @@ class StudentModel:
 
         _parent = None
         if req.parent:
-            _parent = Parent.GetParent(req.parent)
+            u_parent: User = User.GetUser(req.parent)
 
-            if not _parent:
+            if not u_parent.parents:
                 raise CustomException(message="Parent not found", status_code=404)
+
+            _parent = u_parent.parents
 
         try:
             new_student = User.CreateUser(req.email, req.msisdn, role)
@@ -95,7 +101,7 @@ class StudentModel:
                 student_data.update({
                     'user_id': new_student.id,
                     'profile_image': profile_url,
-                    'parents': _parent,
+                    'parents': [_parent],
                     'schools': school,
                 })
 
@@ -107,7 +113,7 @@ class StudentModel:
                 add_user.save(refresh=True)
                 Audit.add_audit('Added Student', current_user, add_user.to_dict())
 
-                return add_user
+                return {**add_user.to_dict(), "user_id": add_user.user.id}
 
         except Exception:
             db.session.rollback()
@@ -115,25 +121,38 @@ class StudentModel:
 
     @classmethod
     def remove_parent(cls, student_id, parent_id):
-        _student: Student = Helper.get_user(Student, student_id)
-        _parent: Parent = Helper.get_user(Parent, parent_id)
 
-        if _student not in [x for x in _parent.students]:
+        u_student: User = User.GetUser(student_id)
+        u_parent: User = User.GetUser(parent_id)
+
+        if not u_student.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
+        if not u_parent.parents:
+            raise CustomException(message="Parent does not exist", status_code=404)
+
+        if u_student.students not in [x for x in u_parent.parents.students]:
             raise CustomException(message="Student Not Found")
 
-        _student.parents.remove(_parent)
+        u_student.students.parents.remove(u_parent.parents)
         db.session.commit()
         return "Parent has been successfully removed"
 
     @classmethod
     def add_parent(cls, student_id, parent_id):
-        _student: Student = Helper.get_user(Student, student_id)
-        _parent: Parent = Helper.get_user(Parent, parent_id)
+        u_student: User = User.GetUser(student_id)
+        u_parent: User = User.GetUser(parent_id)
 
-        if _student.schools not in [x for x in _parent.schools]:
+        if not u_student.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
+        if not u_parent.parents:
+            raise CustomException(message="Parent does not exist", status_code=404)
+
+        if u_student.students.schools not in [x for x in u_parent.parents.schools]:
             raise CustomException(message="Student must belong to same school as parent")
 
-        _student.parents.append(_parent)
+        u_student.students.parents.append(u_parent.parents)
         db.session.commit()
         return "Parent has been successfully added"
 
@@ -142,38 +161,39 @@ class StudentModel:
         if not profile_image:
             raise CustomException(message="User profile image is required")
 
-        _student: Student = Student.GetStudent(student_id)
+        user: User = User.GetUser(student_id)
 
-        file_path, file_name = FileFolder.student_profile(_student.schools.name, _student.user.email)
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
+        file_path, file_name = FileFolder.student_profile(user.students.schools.name, user.email)
 
         profile_url = FileHandler.upload_file(profile_image, file_path)
 
-        _student.profile_image = profile_url
+        user.students.profile_image = profile_url
         db.session.commit()
         return "Profile Image has been updated successfully"
 
     @classmethod
     def reset_password(cls, user_id):
-        _student: Student = Helper.get_user(Student, user_id)
+        user: User = User.GetUser(user_id)
 
-        if not _student:
-            raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
 
-        _user: User = _student.user
-        Audit.add_audit('Reset Student password', current_user, _user.to_dict())
-        return Helper.send_otp(_user)
+        Audit.add_audit('Reset Student password', current_user, user.to_dict())
+        return Helper.send_otp(user)
 
     @classmethod
     def deactivate_user(cls, user_id, reason):
-        _student: Student = Helper.get_user(Student, user_id)
+        user: User = User.GetUser(user_id)
 
-        if not _student:
-            raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
 
-        _user: User = _student.user
-        Audit.add_audit('Changed Student Account Status', current_user, _user.to_dict())
+        Audit.add_audit('Changed Student Account Status', current_user, user.to_dict())
 
-        return Helper.disable_account(_user, reason)
+        return Helper.disable_account(user, reason)
 
     @classmethod
     def search_students(cls, args):
@@ -181,10 +201,17 @@ class StudentModel:
 
     @classmethod
     def get_user(cls, user_id):
-        _user = Helper.get_user(Student, user_id)
+
+        user: User = User.GetUser(user_id)
+
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
+        _user = Helper.get_user(Student, user.students.id)
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
+            "user_id": user.id,
             "learning_groups": [{'name': x.name, 'id': x.id} for x in _user.learning_groups],
             "parent": [x.to_dict() for x in _user.parents],
             "projects": [{'name': x.name, 'id': x.id} for x in _user.projects]
@@ -192,25 +219,39 @@ class StudentModel:
 
     @classmethod
     def add_comment(cls, student_id, comment):
-        student = Student.GetStudent(student_id)
-        new_comment = StudentComment(student_id=student.id, user_id=current_user.id, comment=comment)
+
+        user: User = User.GetUser(student_id)
+
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
+        new_comment = StudentComment(student_id=user.students.id, user_id=current_user.id, comment=comment)
         new_comment.save(refresh=True)
         return "Comment has been added successfully"
 
     @classmethod
     def get_comments(cls, student_id):
-        student: Student = Student.GetStudent(student_id)
+        user: User = User.GetUser(student_id)
+
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
         return [
             {
                 **x.to_dict(add_filter=False),
                 "commented_by": x.user.to_dict(),
 
             }
-            for x in student.student_comments]
+            for x in user.students.student_comments]
 
     @classmethod
     def remove_comment(cls, student_id, comment_id):
-        comments: StudentComment = StudentComment.query.filter_by(student_id=student_id, id=comment_id).first()
+
+        user: User = User.GetUser(student_id)
+
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
+        comments: StudentComment = StudentComment.query.filter_by(student_id=user.students.id, id=comment_id).first()
         if not comments:
             raise CustomException(message="Comment not found", status_code=404)
 
@@ -223,20 +264,28 @@ class StudentModel:
 
     @classmethod
     def add_file(cls, student_id, file):
-        student = Student.GetStudent(student_id)
+        user: User = User.GetUser(student_id)
 
-        file_path, file_name = FileFolder.student_file(student.schools.name, student.user.email)
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
+        file_path, file_name = FileFolder.student_file(user.students.schools.name, user.email)
 
         profile_url = FileHandler.upload_file(file, file_path)
 
-        new_file = StudentFile(student_id=student.id, file_name=file_name, file_url=profile_url, file_path=file_path,
+        new_file = StudentFile(student_id=user.students.id, file_name=file_name, file_url=profile_url,
+                               file_path=file_path,
                                user_id=current_user.id)
         new_file.save()
         return "File has been added successfully"
 
     @classmethod
     def get_files(cls, student_id):
-        student: Student = Student.GetStudent(student_id)
+        user: User = User.GetUser(student_id)
+
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
         return [
             {
                 **x.to_dict(add_filter=False),
@@ -244,11 +293,18 @@ class StudentModel:
                 "file_url": FileHandler.get_file_url(x.file_path)
 
             }
-            for x in student.student_files]
+            for x in user.students.student_files]
 
     @classmethod
     def remove_file(cls, student_id, file_id):
-        _files: StudentFile = StudentFile.query.filter_by(project_id=student_id, id=file_id).first()
+
+        user: User = User.GetUser(student_id)
+
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
+        _files: StudentFile = StudentFile.query.filter_by(student_id=user.students.id, id=file_id).first()
+
         if not _files:
             raise CustomException(message="File not found", status_code=404)
 

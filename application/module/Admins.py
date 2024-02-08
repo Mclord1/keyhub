@@ -35,7 +35,7 @@ class SystemAdmins:
                 )
                 add_user.save(refresh=True)
                 Audit.add_audit('Added System Admin', current_user, add_user.to_dict())
-                return add_user.to_dict()
+                return {**add_user.to_dict(), "user_id": add_user.user.id}
 
         except Exception:
             db.session.rollback()
@@ -46,11 +46,14 @@ class SystemAdmins:
         if not profile_image:
             raise CustomException(message="User profile image is required")
 
-        _admin: Admin = Admin.GetAdmin(user_id)
+        user: User = User.GetUser(user_id)
 
-        profile_url, _ = FileHandler.upload_file(profile_image, FileFolder.admin_profile(_admin.user.email))
+        if not user.admins:
+            raise CustomException(message="Admin does not exist", status_code=404)
 
-        _admin.profile_image = profile_url
+        profile_url, _ = FileHandler.upload_file(profile_image, FileFolder.admin_profile(user.email))
+
+        user.admins.profile_image = profile_url
         db.session.commit()
         return "Profile Image has been updated successfully"
 
@@ -75,6 +78,7 @@ class SystemAdmins:
                 "num_of_admins": len(results),
                 "admins": [{
                     **res.to_dict(),
+                    "user_id": res.user.id,
                     **(res.user.as_dict() if res.user else {}),
                     "role_name": ' '.join(res.user.roles.name.split('_')) if res.user.roles else None
                 } for res in results]
@@ -84,41 +88,44 @@ class SystemAdmins:
 
     @classmethod
     def update_admin(cls, user_id, data):
-        _admin: Admin = Admin.GetAdmin(user_id)
+        user: User = User.GetUser(user_id)
+
+        if not user.admins:
+            raise CustomException(message="Admin does not exist", status_code=404)
+
         gender = data.get('gender')
         role = data.get('role')
         if role:
-            _admin.user.role_id = role
+            user.role_id = role
         if gender:
-            _admin.gender = gender
-        _admin.update_table(data)
-        Audit.add_audit('Updated System Admin Information', current_user, _admin.to_dict())
-        return _admin.to_dict()
+            user.admins.gender = gender
+        user.admins.update_table(data)
+        Audit.add_audit('Updated System Admin Information', current_user, user.admins.to_dict())
+        return {**user.admins.to_dict(), "user_id": user.id}
 
     @classmethod
     def reset_password(cls, user_id):
-        _admin: Admin = Admin.GetAdmin(user_id)
 
-        if not admin:
-            raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
+        user: User = User.GetUser(user_id)
 
-        _user: User = _admin.user
-        Audit.add_audit('Reset System Admin Password', current_user, _user.to_dict())
+        if not user.admins:
+            raise CustomException(message="Admin does not exist", status_code=404)
 
-        return Helper.send_otp(_user)
+        Audit.add_audit('Reset System Admin Password', current_user, user.to_dict())
+
+        return Helper.send_otp(user)
 
     @classmethod
     def deactivate_user(cls, user_id, reason):
-        _admin: Admin = Admin.GetAdmin(user_id)
 
-        if not admin:
-            raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
+        user: User = User.GetUser(user_id)
 
-        _user: User = _admin.user
+        if not user.admins:
+            raise CustomException(message="Admin does not exist", status_code=404)
 
-        Audit.add_audit('Changed System Admin Account Status ', current_user, _user.to_dict())
+        Audit.add_audit('Changed System Admin Account Status ', current_user, user.to_dict())
 
-        return Helper.disable_account(_user, reason)
+        return Helper.disable_account(user, reason)
 
     @classmethod
     def search_admin(cls, args):
@@ -126,10 +133,18 @@ class SystemAdmins:
 
     @classmethod
     def get_user(cls, user_id):
-        _user = Helper.get_user(Admin, user_id)
+
+        user: User = User.GetUser(user_id)
+
+        if not user.admins:
+            raise CustomException(message="Admin does not exist", status_code=404)
+
+        _user = Helper.get_user(Admin, user.admins.id)
+
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
+            "user_id": user.id,
             "role_name": _user.user.roles.name,
             "permissions": [x.name for x in _user.user.roles.permissions] if _user.user.roles else None
         }

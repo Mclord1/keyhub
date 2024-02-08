@@ -51,13 +51,16 @@ class Authentication:
 
             # Check and add user-related attributes if they are not None
             if user.parents:
-                user_details.update({**user.parents.to_dict(), "school_id": [x.id for x in user.parents.schools], 'user_type': 'parent'})
+                user_details.update({**user.parents.to_dict(), "school_id": [x.id for x in user.parents.schools],
+                                     'user_type': 'parent'})
 
             if user.teachers:
-                user_details.update({**user.teachers.to_dict(), "school_id": [x.id for x in user.teachers.schools], 'user_type': 'teacher'})
+                user_details.update({**user.teachers.to_dict(), "school_id": [x.id for x in user.teachers.schools],
+                                     'user_type': 'teacher'})
 
             if user.students:
-                user_details.update({**user.students.to_dict(), "school_id": user.students.school_id, 'user_type': 'student'})
+                user_details.update(
+                    {**user.students.to_dict(), "school_id": user.students.school_id, 'user_type': 'student'})
 
             if user.admins:
                 user_details.update({**user.admins.to_dict(), 'user_type': 'admin'})
@@ -70,8 +73,12 @@ class Authentication:
                         'user_type': 'school-admin'
                     })
 
+            user_details['user_id'] = user.id
+
             return return_json(
-                OutputObj(message="Login successful", data={"access_token": access_token, "refresh_token": refresh_token, 'expiration_in_minutes': 120, **user_details},
+                OutputObj(message="Login successful",
+                          data={"access_token": access_token, "refresh_token": refresh_token,
+                                'expiration_in_minutes': 120, **user_details},
                           code=200)
             )
 
@@ -81,7 +88,8 @@ class Authentication:
     @staticmethod
     def update_password(code: str, password):
         _user: User = User.GetUser(current_user.id)
-        confirm_code: ConfirmationCode = ConfirmationCode.query.filter(ConfirmationCode.code == code, ConfirmationCode.user_id == current_user.id).first()
+        confirm_code: ConfirmationCode = ConfirmationCode.query.filter(ConfirmationCode.code == code,
+                                                                       ConfirmationCode.user_id == current_user.id).first()
         current_time = datetime.datetime.now()
 
         if not confirm_code:

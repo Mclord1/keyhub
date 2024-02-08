@@ -245,7 +245,8 @@ class SchoolModel:
                     "email": x.user.email,
                     "isDeactivated": x.user.isDeactivated,
                     "msisdn": x.user.msisdn,
-                    **x.to_dict(add_filter=False)
+                    **x.to_dict(add_filter=False),
+                    "user_id": x.user.id
                 } for x in results]
             }
         }
@@ -276,7 +277,8 @@ class SchoolModel:
                     "msisdn": teacher.user.msisdn,
                     "num_of_projects": len([x for x in teacher.projects]),
                     "num_of_students": len([x for x in teacher.students]),
-                    **teacher.to_dict()
+                    **teacher.to_dict(),
+                    "user_id": teacher.user.id
                 } for teacher in results]
             }
         }
@@ -310,7 +312,8 @@ class SchoolModel:
                                                    student.school_id == school_id and not student.user.isDeactivated]),
                     "num_of_deactivated_children": len([student for student in parent.students if
                                                         student.school_id == school_id and student.user.isDeactivated]),
-                    **parent.to_dict()
+                    **parent.to_dict(),
+                    "user_id": parent.user.id
                 } for parent in results]
             }
         }
@@ -340,7 +343,8 @@ class SchoolModel:
                     "email": student.user.email,
                     "isDeactivated": student.user.isDeactivated,
                     "msisdn": student.user.msisdn,
-                    **student.to_dict()
+                    **student.to_dict(),
+                    "user_id": student.user.id
                 } for student in results]
             }
 

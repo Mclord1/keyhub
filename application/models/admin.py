@@ -17,8 +17,7 @@ class Admin(db.Model, GenericMixin):
     checklist = db.relationship("ChecklistQuestion", back_populates="admins")
 
     @classmethod
-    def GetAdmin(cls, user_id):
-        admin = Admin.query.filter_by(id=user_id).first()
-        if not admin:
+    def GetAdmin(cls, user):
+        if not user.admins:
             raise CustomException(message="Admin does not exist", status_code=404)
-        return admin
+        return user.admins

@@ -39,13 +39,19 @@ class Helper:
         if not current_user.admins and current_user.managers:
             query.filter(Model.school_id == current_user.managers.school_id)
 
-        result = [ x.user.to_dict() | x.to_dict() for x in query.all()]
+        result = []
+        for u in query.all():
+            result_dict = {
+                **u.to_dict(),
+                'email': u.user.email,
+                'user_id': u.user.id,
+                'msisdn': u.user.msisdn,
+                'isDeactivated': u.user.isDeactivated,
+                'deactivate_reason': u.user.deactivate_reason,
+            }
+            result.append(result_dict)
 
-        for item in result:
-            item.pop("password", None)
-            item.pop("id", None)
-
-        return result or []
+        return result
 
     @classmethod
     def disable_account(cls, user, reason):

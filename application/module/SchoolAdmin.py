@@ -38,8 +38,45 @@ class SchoolAdminModel:
             raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
+    def get_all_admin(cls, page, per_page, school_id):
+        page = int(page)
+        per_page = int(per_page)
+        _admin = SchoolManager.query.filter_by(SchoolManager.school_id == school_id).order_by(
+            desc(SchoolManager.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        total_items = _admin.total
+        results = [item for item in _admin.items]
+
+        total_pages = (total_items - 1) // per_page + 1
+
+        pagination_data = {
+            "page": page,
+            "size": per_page,
+            "total_pages": total_pages,
+            "total_items": total_items,
+            "results": {
+                "num_of_deactivated_admins": len([x for x in results if x.user.isDeactivated]),
+                "num_of_active_admins": len([x for x in results if not x.user.isDeactivated]),
+                "num_of_admins": len(results),
+                "admins": [{
+                    **res.to_dict(),
+                    "user_id": res.user.id,
+                    **(res.user.as_dict() if res.user else {}),
+                    "role_name": ' '.join(res.user.roles.name.split('_')) if res.user.roles else None
+                } for res in results]
+            }
+        }
+        return PaginationSchema(**pagination_data).model_dump()
+
+    @classmethod
     def update_school_admin(cls, user_id, school_id, data):
-        _admin: SchoolManager = SchoolManager.GetSchoolAdmin(user_id, school_id)
+
+        user: User = User.GetUser(user_id)
+
+        if not user.managers:
+            raise CustomException(message="School Admin does not exist", status_code=404)
+
+        _admin: SchoolManager = SchoolManager.GetSchoolAdmin(user.managers.id, school_id)
+
         gender = data.get('gender')
         role = data.get('role')
         if role:
@@ -48,29 +85,33 @@ class SchoolAdminModel:
             _admin.gender = gender
         _admin.update_table(data)
         Audit.add_audit('Updated School Admin Information', current_user, _admin.to_dict())
-        return _admin.to_dict()
+        return {**user.managers.to_dict(), "user_id": user.id}
 
     @classmethod
     def reset_school_password(cls, user_id, school_id):
-        _admin: SchoolManager = SchoolManager.GetSchoolAdmin(user_id, school_id)
 
-        if not admin:
-            raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
+        user: User = User.GetUser(user_id)
 
-        _user: User = _admin.user
-        Audit.add_audit('Reset School Admin password', current_user, _user.to_dict())
-        return Helper.send_otp(_user)
+        if not user.managers:
+            raise CustomException(message="School Admin does not exist", status_code=404)
+
+        _admin: SchoolManager = SchoolManager.GetSchoolAdmin(user.managers.id, school_id)
+
+        Audit.add_audit('Reset School Admin password', current_user, user.to_dict())
+        return Helper.send_otp(user)
 
     @classmethod
     def deactivate_school_user(cls, user_id, school_id, reason):
-        _admin: SchoolManager = SchoolManager.GetSchoolAdmin(user_id, school_id)
 
-        if not admin:
-            raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
+        user: User = User.GetUser(user_id)
 
-        _user: User = _admin.user
-        Audit.add_audit('Changed School Admin account status', current_user, _user.to_dict())
-        return Helper.disable_account(_user, reason)
+        if not user.managers:
+            raise CustomException(message="School Admin does not exist", status_code=404)
+
+        _admin: SchoolManager = SchoolManager.GetSchoolAdmin(user.managers.id, school_id)
+
+        Audit.add_audit('Changed School Admin account status', current_user, user.to_dict())
+        return Helper.disable_account(user, reason)
 
     @classmethod
     def search_school_admin(cls, args, school_id):
@@ -80,20 +121,34 @@ class SchoolAdminModel:
             | User.email.ilike(f'%{args}%')
         ).filter(SchoolManager.school_id == school_id)
 
-        result = [x.to_dict() | x.user.to_dict() for x in query.all()]
+        result = []
+        for manager in query.all():
+            result_dict = {
+                **manager.to_dict(),
+                'email': manager.user.email,
+                'user_id': manager.user.id,
+                'msisdn': manager.user.msisdn,
+                'isDeactivated': manager.user.isDeactivated,
+                'deactivate_reason': manager.user.deactivate_reason,
+            }
+            result.append(result_dict)
 
-        for item in result:
-            item.pop("password", None)
-            item.pop("id", None)
-
-        return result or []
+        return result
 
     @classmethod
     def get_user(cls, user_id, school_id):
-        _admin: SchoolManager = SchoolManager.GetSchoolAdmin(user_id, school_id)
+
+        user: User = User.GetUser(user_id)
+
+        if not user.managers:
+            raise CustomException(message="School Admin does not exist", status_code=404)
+
+        _admin: SchoolManager = SchoolManager.GetSchoolAdmin(user.managers.id, school_id)
+
         return {
             **_admin.to_dict(),
             **_admin.user.as_dict(),
+            "user_id": user.id,
             "role_name": _admin.school_roles.name if _admin.school_roles else None,
-            "permissions" : [x.name for x in _admin.school_roles.school_permissions] if _admin.school_roles else None
+            "permissions": [x.name for x in _admin.school_roles.school_permissions] if _admin.school_roles else None
         }

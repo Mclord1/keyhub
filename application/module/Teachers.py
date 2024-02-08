@@ -23,6 +23,7 @@ class TeacherModel:
                 "teachers": [{
                     **(res.user.as_dict() if res.user else {}),
                     **res.to_dict(),
+                    "user_id": res.user.id,
                     "school": [x.name for x in res.schools],
                     "total_projects": len([x for x in res.projects]) if res.projects else 0,
                     "total_students": len([x for x in res.students]) if res.students else 0,
@@ -33,17 +34,21 @@ class TeacherModel:
 
     @classmethod
     def update_information(cls, user_id, data):
-        _teacher: Teacher = Helper.get_user(Teacher, user_id)
+        user: User = User.GetUser(user_id)
+
+        if not user.teachers:
+            raise CustomException(message="Teacher does not exist", status_code=404)
+
         gender = data.get('gender')
         role = data.get('role')
         if role:
-            _teacher.user.role_id = role
+            user.role_id = role
         if gender:
-            _teacher.gender = gender
-        _teacher.update_table(data)
-        Audit.add_audit('Updated Teacher Information', current_user, _teacher.to_dict())
+            user.teachers.gender = gender
+        user.teachers.update_table(data)
+        Audit.add_audit('Updated Teacher Information', current_user, user.teachers.to_dict())
 
-        return _teacher.to_dict()
+        return {**user.teachers.to_dict(), "user_id": user.id}
 
     @classmethod
     def add_teacher(cls, data):
@@ -62,7 +67,6 @@ class TeacherModel:
             new_teacher = User.CreateUser(req.email, req.msisdn, role)
 
             if new_teacher:
-
                 add_user = Teacher(
                     first_name=req.first_name,
                     last_name=req.last_name,
@@ -83,7 +87,7 @@ class TeacherModel:
                 add_user.save(refresh=True)
                 Audit.add_audit('Added Teacher', current_user, add_user.to_dict())
 
-                return add_user
+                return {**add_user.to_dict(), "user_id": add_user.user.id}
 
         except Exception as e:
             print(e)
@@ -92,26 +96,25 @@ class TeacherModel:
 
     @classmethod
     def reset_password(cls, user_id):
-        _teacher: Teacher = Helper.get_user(Teacher, user_id)
-        if not _teacher:
-            raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
+        user: User = User.GetUser(user_id)
 
-        _user: User = _teacher.user
-        Audit.add_audit('Reset Teacher Password', current_user, _user.to_dict())
+        if not user.teachers:
+            raise CustomException(message="Teacher does not exist", status_code=404)
 
-        return Helper.send_otp(_user)
+        Audit.add_audit('Reset Teacher Password', current_user, user.to_dict())
+
+        return Helper.send_otp(user)
 
     @classmethod
     def deactivate_user(cls, user_id, reason):
-        _teacher: Teacher = Helper.get_user(Teacher, user_id)
+        user: User = User.GetUser(user_id)
 
-        if not _teacher:
-            raise CustomException(ExceptionCode.ACCOUNT_NOT_FOUND)
+        if not user.teachers:
+            raise CustomException(message="Teacher does not exist", status_code=404)
 
-        _user: User = _teacher.user
-        Audit.add_audit('Changed Teacher Account Status', current_user, _user.to_dict())
+        Audit.add_audit('Changed Teacher Account Status', current_user, user.to_dict())
 
-        return Helper.disable_account(_user, reason)
+        return Helper.disable_account(user, reason)
 
     @classmethod
     def search_teachers(cls, args):
@@ -119,10 +122,17 @@ class TeacherModel:
 
     @classmethod
     def get_user(cls, user_id):
-        _user: Teacher = Helper.get_user(Teacher, user_id)
+
+        user: User = User.GetUser(user_id)
+
+        if not user.teachers:
+            raise CustomException(message="Teacher does not exist", status_code=404)
+
+        _user: Teacher = Helper.get_user(Teacher, user.teachers.id)
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
+            "user_id": user.id,
             "total_projects": len([x for x in _user.projects]) if _user.projects else 0,
             "projects": [x.to_dict(add_filter=False) for x in _user.projects],
             "total_students": len([x for x in _user.students]) if _user.students else 0,
