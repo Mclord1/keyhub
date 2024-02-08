@@ -76,7 +76,8 @@ class StudentSchema(BaseModel):
     educational_needs: Optional[str] = None
     any_learning_delay: Optional[bool] = None
     learning_delay: Optional[str] = None
-    emergency_contact_name: Optional[str] = None
+    emergency_contact_first_name: Optional[str] = None
+    emergency_contact_last_name: Optional[str] = None
     emergency_contact_relationship: Optional[str] = None
     emergency_contact_msisdn: Optional[str] = None
     any_allergies: Optional[bool] = None

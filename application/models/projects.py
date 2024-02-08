@@ -27,7 +27,7 @@ class ProjectActivity(db.Model, GenericMixin):
     supporting_weblinks = db.Column(db.String(350), nullable=True)
     supporting_media = db.Column(db.String(350), nullable=True)
     ways_to_extend = db.Column(db.Text, nullable=True)
-    # status = db.Column(db.Boolean, default=False)
+    status = db.Column(db.Enum( 'open', 'completed', name='status'), nullable=True, default='open')
     projects = db.relationship("Project", back_populates="activities")
 
 
@@ -111,4 +111,3 @@ class Project(db.Model, GenericMixin):
         if not project:
             raise CustomException(message="Project does not exist", status_code=404)
         return project
-

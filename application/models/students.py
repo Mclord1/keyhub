@@ -69,7 +69,8 @@ class Student(db.Model, GenericMixin):
     educational_needs = db.Column(db.Text, nullable=True)
     any_learning_delay = db.Column(db.Boolean, default=False, nullable=True)
     learning_delay = db.Column(db.Text, nullable=True)
-    emergency_contact_name = db.Column(db.String(350), nullable=True)
+    emergency_contact_first_name = db.Column(db.String(350), nullable=True)
+    emergency_contact_last_name = db.Column(db.String(350), nullable=True)
     emergency_contact_msisdn = db.Column(db.String(350), nullable=True)
     emergency_contact_relationship = db.Column(db.String(350), nullable=True)
 
