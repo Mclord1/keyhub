@@ -44,7 +44,18 @@ def search_student():
 @authenticate(PermissionEnum.MODIFY_STUDENTS)
 def remove_parent():
     req = request.json
-    return return_json(OutputObj(code=200, message=Student.remove_parent(req['user_id'])))
+    student_id = req.get('student_id')
+    parent_id = req.get('parent_id')
+    return return_json(OutputObj(code=200, message=Student.remove_parent(student_id, parent_id)))
+
+
+@student_blueprint.route('/add-parent', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_STUDENTS)
+def add_parent():
+    req = request.json
+    student_id = req.get('student_id')
+    parent_id = req.get('parent_id')
+    return return_json(OutputObj(code=200, message=Student.add_parent(student_id, parent_id)))
 
 
 @student_blueprint.route('/reset-password', methods=['POST'])

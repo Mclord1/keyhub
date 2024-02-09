@@ -104,6 +104,10 @@ class ParentModel:
     def add_student(cls, student_id, parent_id):
         _parent: Parent = Helper.get_user(Parent, parent_id)
         _student: Student = Helper.get_user(Student, student_id)
+
+        if _student.schools not in [x for x in _parent.schools]:
+            raise CustomException(message="Student must belong to same school as parent")
+
         _parent.students.add(_student)
         db.session.commit()
         return "Student has been added successfully"
@@ -112,6 +116,10 @@ class ParentModel:
     def remove_student(cls, student_id, parent_id):
         _parent: Parent = Helper.get_user(Parent, parent_id)
         _student: Student = Helper.get_user(Student, student_id)
+
+        if _student not in [x for x in _parent.students]:
+            raise CustomException(message="Student Not Found")
+
         _parent.students.remove(_student)
         db.session.commit()
         return "Student has been removed successfully"
@@ -148,6 +156,12 @@ class ParentModel:
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
-            "students": [{**x.to_dict(), "school": x.schools.name} for x in _user.students],
+            "students": [
+                {
+                    **x.to_dict(),
+                    "school": x.schools.name,
+                    "file_url": [FileHandler.get_file_url(x.file_path) for x in x.student_files]
+                }
+                for x in _user.students],
             "schools": [x.to_dict(add_filter=False) for x in _user.schools]
         }

@@ -18,9 +18,14 @@ class Parent(db.Model, GenericMixin):
     work_address = db.Column(db.String(350), nullable=True)
     work_msisdn = db.Column(db.String(350), nullable=True)
 
-    # work_msisdn = db.Column(db.String(350), nullable=True)
+    current_school = db.Column(db.String(350), nullable=True)
+    date_to_join = db.Column(db.String(350), nullable=True)
+    languages_spoken_at_home = db.Column(db.Text, nullable=True)
+    child_first_language = db.Column(db.String(350), nullable=True)
+    has_emailed_child_kyc = db.Column(db.Boolean, nullable=True)
+    agree_with_terms = db.Column(db.Boolean, nullable=True)
 
-    students = db.relationship("Student", back_populates='parents')
+    students = db.relationship("Student", secondary='student_parent', back_populates='parents')
     schools = db.relationship("School", secondary='school_parent', back_populates='parents', passive_deletes=True)
 
     @property

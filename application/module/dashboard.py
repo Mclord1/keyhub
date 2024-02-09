@@ -86,7 +86,7 @@ class DashboardModel:
         } for x in _audit]
 
     def filter_revenue_by_month(month: int, year: int):
-        first_day_of_month = datetime(year, month, 1)
+        first_day_of_month = datetime.datetime(year, month, 1)
         last_day_of_month = (first_day_of_month + timedelta(days=31)).replace(day=1) - timedelta(days=1)
 
         # Calculate the number of weeks in the month

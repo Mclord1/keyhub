@@ -78,6 +78,14 @@ class StudentSchema(BaseModel):
     learning_delay: Optional[str] = None
     emergency_contact_name: Optional[str] = None
     emergency_contact_relationship: Optional[str] = None
+    emergency_contact_msisdn: Optional[str] = None
+    any_allergies: Optional[bool] = None
+    allergies: Optional[str] = None
+    any_special_dietary: Optional[bool] = None
+    special_dietary: Optional[str] = None
+    has_siblings: Optional[bool] = None
+    more_details_about_student: Optional[str] = None
+
 
 
 class ParentSchema(BaseModel):
@@ -98,6 +106,12 @@ class ParentSchema(BaseModel):
     relationship_to_student: str
     school_id: int
     student: Optional[list] = None
+    current_school: Optional[str] = None
+    date_to_join: str
+    languages_spoken_at_home: str
+    child_first_language: str
+    has_emailed_child_kyc: bool
+    agree_with_terms: bool
 
 
 class SubscriptionSchema(BaseModel):

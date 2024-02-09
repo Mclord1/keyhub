@@ -23,6 +23,12 @@ class StudentFile(db.Model, GenericMixin):
     user = db.relationship("User", back_populates="student_files")
 
 
+class StudentParent(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
+
+
 class Student(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(350), nullable=True)
@@ -64,9 +70,20 @@ class Student(db.Model, GenericMixin):
     any_learning_delay = db.Column(db.Boolean, default=False, nullable=True)
     learning_delay = db.Column(db.Text, nullable=True)
     emergency_contact_name = db.Column(db.String(350), nullable=True)
+    emergency_contact_msisdn = db.Column(db.String(350), nullable=True)
     emergency_contact_relationship = db.Column(db.String(350), nullable=True)
 
-    parents = db.relationship("Parent", back_populates='students')
+    any_allergies = db.Column(db.Boolean, default=False, nullable=True)
+    allergies = db.Column(db.Text, nullable=True)
+
+    any_special_dietary = db.Column(db.Boolean, default=False, nullable=True)
+    special_dietary = db.Column(db.Text, nullable=True)
+
+    has_siblings = db.Column(db.Boolean, default=False, nullable=True)
+
+    more_details_about_student = db.Column(db.Text, nullable=True)
+
+    parents = db.relationship("Parent", secondary='student_parent', back_populates='students')
     schools = db.relationship("School", back_populates='students')
     teachers = db.relationship("Teacher", secondary='teacher_student', back_populates='students')
     projects = db.relationship("Project", secondary='student_project', back_populates="students")

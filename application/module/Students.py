@@ -7,7 +7,8 @@ class StudentModel:
     def get_all_students(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _students = Student.query.order_by(desc(Student.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        _students = Student.query.order_by(desc(Student.created_at)).paginate(page=page, per_page=per_page,
+                                                                              error_out=False)
         total_items = _students.total
         results = [item for item in _students.items]
         total_pages = (total_items - 1) // per_page + 1
@@ -25,7 +26,8 @@ class StudentModel:
                     **(res.user.as_dict() if res.user else {}),
                     **res.to_dict(),
                     "project": [x.to_dict(add_filter=False) for x in res.projects],
-                    "parent": {**(res.parents.to_dict() if res.parents else {}), **(res.parents.user.as_dict() if res.parents else {})},
+                    "parent": {**(res.parents.to_dict() if res.parents else {}),
+                               **(res.parents.user.as_dict() if res.parents else {})},
                     "school": res.schools.name,
                 } for res in results]
             }
@@ -112,11 +114,28 @@ class StudentModel:
             raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
-    def remove_parent(cls, student_id):
+    def remove_parent(cls, student_id, parent_id):
         _student: Student = Helper.get_user(Student, student_id)
-        _student.parent_id = None
+        _parent: Parent = Helper.get_user(Parent, parent_id)
+
+        if _student not in [x for x in _parent.students]:
+            raise CustomException(message="Student Not Found")
+
+        _student.parents.remove(_parent)
         db.session.commit()
         return "Parent has been successfully removed"
+
+    @classmethod
+    def add_parent(cls, student_id, parent_id):
+        _student: Student = Helper.get_user(Student, student_id)
+        _parent: Parent = Helper.get_user(Parent, parent_id)
+
+        if _student.schools not in [x for x in _parent.schools]:
+            raise CustomException(message="Student must belong to same school as parent")
+
+        _student.parents.append(_parent)
+        db.session.commit()
+        return "Parent has been successfully added"
 
     @classmethod
     def change_student_profile_image(cls, profile_image, student_id):
@@ -167,7 +186,7 @@ class StudentModel:
             **_user.to_dict(),
             **_user.user.as_dict(),
             "learning_groups": [{'name': x.name, 'id': x.id} for x in _user.learning_groups],
-            "parent": _user.parents.to_dict() if _user.parents else {},
+            "parent": [x.to_dict() for x in _user.parents],
             "projects": [{'name': x.name, 'id': x.id} for x in _user.projects]
         }
 
@@ -210,7 +229,8 @@ class StudentModel:
 
         profile_url = FileHandler.upload_file(file, file_path)
 
-        new_file = StudentFile(student_id=student.id, file_name=file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id)
+        new_file = StudentFile(student_id=student.id, file_name=file_name, file_url=profile_url, file_path=file_path,
+                               user_id=current_user.id)
         new_file.save()
         return "File has been added successfully"
 
