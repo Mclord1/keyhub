@@ -354,3 +354,17 @@ class SchoolModel:
     @classmethod
     def get_profile_settings(cls, school_id):
         pass
+
+    @classmethod
+    def search_schools(cls, args):
+        query = School.query.filter(
+            (School.name.ilike(f'%{args}%'))
+        )
+        result = [
+            {
+                **x.to_dict(add_filter=False),
+            }
+
+            for x in query.all()
+        ]
+        return result

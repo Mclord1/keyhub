@@ -48,6 +48,14 @@ def list_school():
         OutputObj(code=200, message="school information", data=SchoolModel.list_all_schools(page, per_page)))
 
 
+@school_blueprint.route('/search', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_SCHOOL)
+def search_school():
+    query = request.args.get('query')
+    return return_json(
+        OutputObj(code=200, message="school information", data=SchoolModel.search_schools(query)))
+
+
 @school_blueprint.route('/<int:school_id>', methods=['GET'])
 @authenticate(PermissionEnum.VIEW_SCHOOL)
 @has_school_privilege
