@@ -66,9 +66,6 @@ class ParentModel:
 
         _school = School.GetSchool(req.school_id)
 
-        if not current_user.admins or (current_user.managers and current_user.managers.school_id != _school.id):
-            raise CustomException("You do not have privilege to access this school")
-
         if req.student:
 
             for std in req.student:
@@ -98,11 +95,12 @@ class ParentModel:
                     work_address=req.work_address,
                     relationship_to_student=req.relationship_to_student,
                     work_msisdn=req.work_msisdn,
+                    how_you_knew_about_us=req.how_you_knew_about_us,
+                    why_use_us=req.why_use_us,
                     students=students_list
                 )
                 add_parent.schools.append(_school)
                 add_parent.save(refresh=True)
-                Audit.add_audit('Added Parent', current_user, add_parent.to_dict())
                 return {**add_parent.to_dict(), "user_id": add_parent.user.id}
 
         except Exception:

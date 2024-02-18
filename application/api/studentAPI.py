@@ -26,7 +26,6 @@ def update_student():
 
 
 @student_blueprint.route('/add-student', methods=['POST'])
-@authenticate(PermissionEnum.ADD_STUDENTS)
 def add_student():
     req = request.json
     Student.add_student(req)

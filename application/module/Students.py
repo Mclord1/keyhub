@@ -27,7 +27,7 @@ class StudentModel:
                     **res.to_dict(),
                     "user_id": res.user.id,
                     "project": [x.to_dict(add_filter=False) for x in res.projects],
-                    "parent": [{**x.to_dict(), **x.user.as_dict(), 'user_id' : x.user.id} for x in res.parents],
+                    "parent": [{**x.to_dict(), **x.user.as_dict(), 'user_id': x.user.id} for x in res.parents],
                     "school": res.schools.name,
                 } for res in results]
             }
@@ -73,9 +73,6 @@ class StudentModel:
         else:
             profile_url = None
 
-        if not current_user.admins or (current_user.managers and current_user.managers.school_id != school.id):
-            raise CustomException("You do not have privilege to access this school")
-
         _parent = None
         if req.parent:
             u_parent: User = User.GetUser(req.parent)
@@ -110,7 +107,6 @@ class StudentModel:
 
                 add_user = Student(**student_data)
                 add_user.save(refresh=True)
-                Audit.add_audit('Added Student', current_user, add_user.to_dict())
 
                 return {**add_user.to_dict(), "user_id": add_user.user.id}
 

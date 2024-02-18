@@ -88,7 +88,6 @@ class StudentSchema(BaseModel):
     more_details_about_student: Optional[str] = None
 
 
-
 class ParentSchema(BaseModel):
     first_name: str
     last_name: str
@@ -113,6 +112,8 @@ class ParentSchema(BaseModel):
     child_first_language: str
     has_emailed_child_kyc: bool
     agree_with_terms: bool
+    how_you_knew_about_us: Optional[str] = None
+    why_use_us: Optional[str] = None
 
 
 class SubscriptionSchema(BaseModel):

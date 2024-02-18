@@ -26,7 +26,6 @@ def update_parent():
 
 
 @parent_blueprint.route('/add-parent', methods=['POST'])
-@authenticate(PermissionEnum.ADD_PARENTS)
 def add_parent():
     req = request.json
     Parent.add_parent(req)
