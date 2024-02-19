@@ -122,7 +122,7 @@ class SchoolLearningGroupsModel:
         new_comment.save(refresh=True)
 
         subscribed_users = [x.user_id for x in group.subscribed_groups]
-        Notification.send_push_notification(subscribed_users, new_comment, LearningGroup.__name__, {"id": new_comment.id})
+        Notification.send_push_notification(subscribed_users, new_comment.comment, LearningGroup.__name__, {"id": new_comment.id})
         return "Comment has been added successfully"
 
     @classmethod
