@@ -129,6 +129,7 @@ class TeacherModel:
             raise CustomException(message="Teacher does not exist", status_code=404)
 
         _user: Teacher = Helper.get_user(Teacher, user.teachers.id)
+
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),

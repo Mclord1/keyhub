@@ -162,7 +162,7 @@ class StudentModel:
         if not user.students:
             raise CustomException(message="Student does not exist", status_code=404)
 
-        file_path, file_name = FileFolder.student_profile(user.students.schools.name, user.email)
+        file_path = FileFolder.student_profile(user.students.schools.name, user.email)
 
         profile_url = FileHandler.upload_file(profile_image, file_path)
 
@@ -204,10 +204,13 @@ class StudentModel:
             raise CustomException(message="Student does not exist", status_code=404)
 
         _user: Student = Helper.get_user(Student, user.students.id)
+
+        file_path = FileFolder.student_profile(_user.schools.name, user.email)
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
             "user_id": user.id,
+            "profile_image": FileHandler.get_file_url(str(file_path)),
             "learning_groups": [{'name': x.name, 'id': x.id} for x in _user.learning_groups],
             "parent": [{**x.to_dict(), 'user_id': x.user.id} for x in _user.parents],
             "projects": [{'name': x.name, 'id': x.id} for x in _user.projects]

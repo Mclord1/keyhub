@@ -1,6 +1,7 @@
 import base64
 import uuid
 
+import botocore
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -18,7 +19,7 @@ class FileFolder:
 
     @classmethod
     def student_profile(cls, school_name, email):
-        return f"{school_name}/students/{email}/profile"
+        return f"{school_name}/students/{email}/file-ab5619e7"
 
     @classmethod
     def admin_profile(cls, email):
@@ -81,7 +82,7 @@ class FileHandler:
     @classmethod
     def get_file_url(cls, file_name):
         try:
-
+            # Generate a pre-signed URL for the file
             response = cls.s3.generate_presigned_url(
                 'get_object',
                 Params={
@@ -90,9 +91,12 @@ class FileHandler:
                 },
                 ExpiresIn=3600
             )
+
+            # Check if the file exists by sending a HEAD request
+            cls.s3.head_object(Bucket=cls.bucket_name, Key=file_name)
+
             return response
-        except ClientError as e:
-            print(f"Failed to generate URL: {e}")
+        except botocore.exceptions.ClientError as e:
             return None
 
     @classmethod

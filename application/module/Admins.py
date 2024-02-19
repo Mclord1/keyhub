@@ -140,11 +140,13 @@ class SystemAdmins:
             raise CustomException(message="Admin does not exist", status_code=404)
 
         _user = Helper.get_user(Admin, user.admins.id)
+        file_path = FileFolder.admin_profile(user.email)
 
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
             "user_id": user.id,
+            "profile_image": FileHandler.get_file_url(file_path),
             "role_name": _user.user.roles.name,
             "permissions": [x.name for x in _user.user.roles.permissions] if _user.user.roles else None
         }
