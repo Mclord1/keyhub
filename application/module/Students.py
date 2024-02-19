@@ -203,13 +203,13 @@ class StudentModel:
         if not user.students:
             raise CustomException(message="Student does not exist", status_code=404)
 
-        _user = Helper.get_user(Student, user.students.id)
+        _user: Student = Helper.get_user(Student, user.students.id)
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
             "user_id": user.id,
             "learning_groups": [{'name': x.name, 'id': x.id} for x in _user.learning_groups],
-            "parent": [{**x.to_dict(), 'user_id' : x.user.id} for x in _user.parents],
+            "parent": [{**x.to_dict(), 'user_id': x.user.id} for x in _user.parents],
             "projects": [{'name': x.name, 'id': x.id} for x in _user.projects]
         }
 
