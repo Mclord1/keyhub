@@ -51,7 +51,7 @@ class ParentModel:
         if role:
             user.role_id = role
         if gender:
-            user.admins.gender = gender
+            user.parents.gender = gender
         user.parents.update_table(data)
         Audit.add_audit('Updated Parent Information ', current_user, user.parents.to_dict())
         return {**user.parents.to_dict(), "user_id": user.id}
