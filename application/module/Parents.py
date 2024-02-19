@@ -175,6 +175,8 @@ class ParentModel:
 
         user: User = User.GetUser(user_id)
 
+        print(user)
+
         if not user.parents:
             raise CustomException(message="Parent does not exist", status_code=404)
 
@@ -188,7 +190,7 @@ class ParentModel:
                 {
                     **x.to_dict(),
                     "school": x.schools.name,
-                    "user_id": user.id,
+                    "user_id": x.user.id,
                     "file_url": [FileHandler.get_file_url(x.file_path) for x in x.student_files]
                 }
                 for x in _user.students],
