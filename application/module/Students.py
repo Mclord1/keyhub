@@ -209,7 +209,7 @@ class StudentModel:
             **_user.user.as_dict(),
             "user_id": user.id,
             "learning_groups": [{'name': x.name, 'id': x.id} for x in _user.learning_groups],
-            "parent": [x.to_dict() for x in _user.parents],
+            "parent": [{**x.to_dict(), 'user_id' : x.user.id} for x in _user.parents],
             "projects": [{'name': x.name, 'id': x.id} for x in _user.projects]
         }
 
