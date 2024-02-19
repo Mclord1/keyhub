@@ -3,10 +3,12 @@ import enum
 
 class SchoolPermissionEnum(enum.Enum):
     # View School Dashboard
-    VIEW_DASHBOARD = 'view_dashboard'
     SCHOOL_ADMIN = 'school_admin'
-    ACADEMIC_YEAR = 'academic_year'
-    ACADEMIC_TERMS = 'academic_terms'
+
+    # REPORT
+    REPORT_VIEW_DASHBOARD = 'report_view_dashboard'
+    REPORT_ACADEMIC_YEAR = 'report_academic_year'
+    REPORT_ACADEMIC_TERMS = 'report_academic_terms'
 
     # ROLES & PERMISSIONS
     ADD_ROLES = 'add_roles'

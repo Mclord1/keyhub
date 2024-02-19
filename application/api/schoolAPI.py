@@ -64,7 +64,7 @@ def view_school_info(school_id):
 
 
 @school_blueprint.route('/school-dashboard/<int:school_id>', methods=['GET'])
-@authenticate(SchoolPermissionEnum.VIEW_DASHBOARD)
+@authenticate(SchoolPermissionEnum.REPORT_VIEW_DASHBOARD)
 @has_school_privilege
 def view_school_dashboard(school_id):
     return return_json(OutputObj(code=200, message="school results", data=SchoolModel.view_school_info(school_id)))

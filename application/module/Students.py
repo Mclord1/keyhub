@@ -73,17 +73,18 @@ class StudentModel:
         else:
             profile_url = None
 
-        _parent = None
+        _parent = []
         if req.parent:
             u_parent: User = User.GetUser(req.parent)
 
             if not u_parent.parents:
                 raise CustomException(message="Parent not found", status_code=404)
 
-            _parent = u_parent.parents
+            _parent = [u_parent.parents]
+
+        new_student = User.CreateUser(req.email, req.msisdn, role)
 
         try:
-            new_student = User.CreateUser(req.email, req.msisdn, role)
 
             if new_student:
                 student_data = {
@@ -97,7 +98,7 @@ class StudentModel:
                 student_data.update({
                     'user_id': new_student.id,
                     'profile_image': profile_url,
-                    'parents': [_parent],
+                    'parents': _parent,
                     'schools': school,
                 })
 
