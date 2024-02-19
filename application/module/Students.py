@@ -235,7 +235,7 @@ class StudentModel:
             {
                 **x.to_dict(add_filter=False),
                 "commented_by": {
-                   **user.GetUserObject(x.user.id)
+                    **user.GetUserObject(x.user.id)
                 },
 
             }

@@ -324,8 +324,9 @@ class SchoolProjectModel:
         return [
             {
                 **x.to_dict(add_filter=False),
-                "commented_by": x.user.to_dict(),
-
+                "commented_by": {
+                    **User.GetUserObject(x.user.id)
+                },
             }
             for x in comments.project_comments]
 
