@@ -18,7 +18,7 @@ def create_checklist():
 
 
 @checklists_bp.route("/all", methods=["GET"])
-@authenticate(PermissionEnum.VIEW_CHECKLIST)
+@authenticate()
 def get_all_checklists():
     checklist_list = CheckListModel.get_all_checklist()
     return return_json(OutputObj(code=200, message="checklists fetched", data=checklist_list))

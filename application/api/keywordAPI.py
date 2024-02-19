@@ -18,7 +18,7 @@ def create_keyword():
 
 
 @keywords_bp.route("/all", methods=["GET"])
-@authenticate(PermissionEnum.VIEW_KEYWORD)
+@authenticate()
 def get_all_keywords():
     keyword_list = KeywordModel.get_all_keywords()
     return return_json(OutputObj(code=200, message="keywords fetched", data=keyword_list))
