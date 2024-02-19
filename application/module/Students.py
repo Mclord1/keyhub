@@ -234,7 +234,9 @@ class StudentModel:
         return [
             {
                 **x.to_dict(add_filter=False),
-                "commented_by": x.user.to_dict(),
+                "commented_by": {
+                   **user.GetUserObject(x.user.id)
+                },
 
             }
             for x in user.students.student_comments]
