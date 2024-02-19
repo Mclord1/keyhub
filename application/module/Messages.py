@@ -12,6 +12,20 @@ from exceptions.custom_exception import CustomException
 class Communication:
 
     @classmethod
+    def get_schools(cls, user_id):
+        schools = User.GetSchool(user_id)
+        return schools if isinstance(schools, list) else [schools] if schools else []
+
+    @classmethod
+    def check_school_matches(cls, sender_id, receiver_id):
+        sender_schools = cls.get_schools(sender_id)
+        receiver_schools = cls.get_schools(receiver_id)
+
+        if sender_schools and receiver_schools:
+            return any(sender_school.id == receiver_school.id for sender_school in sender_schools for receiver_school in receiver_schools)
+        return False
+
+    @classmethod
     def handle_user_2_user(cls, sender: User, receiver: User, content: str, content_type: str):
         last_message = Message.query.filter(
             or_(
@@ -20,7 +34,7 @@ class Communication:
             )
         ).order_by(Message.created_at.desc()).first()
 
-        school_matches = not sender.admins and User.GetSchool(sender.id).id == User.GetSchool(receiver.id).id
+        school_matches = not sender.admins and cls.check_school_matches(sender.id, receiver.id)
 
         if sender.admins or (school_matches or (last_message and last_message.request_accepted)):
             message = Message(
@@ -129,6 +143,3 @@ class Communication:
             }
             for chat in chats]
         return result
-
-
-
