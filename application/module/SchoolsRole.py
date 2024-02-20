@@ -67,7 +67,10 @@ class SchoolRoleModel:
             "permissions": [],
             "learning_groups": [],
             "sme": [],
-            "report": []
+            "report": [],
+            "school_manager": [],
+            "school": [],
+
         }
 
         for _permission in _permissions:

@@ -5,6 +5,16 @@ class SchoolPermissionEnum(enum.Enum):
     # View School Dashboard
     SCHOOL_ADMIN = 'school_admin'
 
+    VIEW_SCHOOL = 'view_school'
+    MODIFY_SCHOOL = 'modify_school'
+
+    # SCHOOL MANAGER
+    ADD_SCHOOL_MANAGERS = 'add_school_manager'
+    VIEW_SCHOOL_MANAGERS = 'view_school_manager'
+    DEACTIVATE_SCHOOL_MANAGERS = 'deactivate_school_manager'
+    MODIFY_SCHOOL_MANAGERS = 'modify_school_manager'
+    RESET_SCHOOL_MANAGERS_PASSWORD = 'reset_school_manager_password'
+
     # REPORT
     REPORT_VIEW_DASHBOARD = 'report_view_dashboard'
     REPORT_ACADEMIC_YEAR = 'report_academic_year'
