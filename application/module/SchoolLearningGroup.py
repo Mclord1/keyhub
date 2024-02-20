@@ -43,7 +43,7 @@ class SchoolLearningGroupsModel:
             'name': _group.name,
             'created_on': _group.created_at,
             'created_by': _group.user.email if _group.user else None,
-            'creator_name': f'{_group.user.admins.first_name} {_group.user.admins.last_name}' if _group.user else None,
+            'creator_name': f'{_group.user.admins.first_name} {_group.user.admins.last_name}' if _group.user  and _group.user.admins else None,
             'country': _group.user.admins.country if _group.user else None,
             'description': _group.description,
             'isDeactivated': _group.isDeactivated,
