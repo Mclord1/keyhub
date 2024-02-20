@@ -19,14 +19,16 @@ def authenticate(permission_name='Not-Set'):
                 if user.isDeactivated:
                     raise CustomException(message="Your account has been deactivated", status_code=400)
 
+                permission_names = permission_name if isinstance(permission_name, list) else [permission_name]
+
                 # Check if the user's role has the required permission if permission is provided
 
                 if permission_name and permission_name != 'Not-Set':
                     if user.managers and user.managers.school_roles:
-                        if permission_name.value in [
+                        if any(permission.value in [
                             school_permission.name for school_permission in user.managers.school_roles.school_permissions
                             if school_permission.active
-                        ]:
+                        ] for permission in permission_names):
                             func_response = f(*args, **kwargs)
                             db.session.close()
                             return func_response
@@ -34,7 +36,7 @@ def authenticate(permission_name='Not-Set'):
                             raise CustomException(ExceptionCode.PERMISSION_DENIED)
 
                     else:
-                        if permission_name.value in [permission.name for permission in user.roles.permissions if permission.active]:
+                        if any(permission.value in [permission.name for permission in user.roles.permissions if permission.active] for permission in permission_names):
                             func_response = f(*args, **kwargs)
                             db.session.close()
                             return func_response
@@ -42,7 +44,6 @@ def authenticate(permission_name='Not-Set'):
                             raise CustomException(ExceptionCode.PERMISSION_DENIED)
                 else:
                     return f(*args, **kwargs)
-
 
             except jwt.ExpiredSignatureError:
                 raise CustomException(ExceptionCode.EXPIRED_TOKEN)
@@ -66,7 +67,7 @@ def has_school_privilege(f):
         if not user.managers and not user.admins:
             raise CustomException(message="only Admin or school manager has privilege.", status_code=401)
 
-        if not user.admins and ( (user.managers and user.managers.schools.id != school_id) or user.managers.schools.isDeactivated):
+        if not user.admins and ((user.managers and user.managers.schools.id != school_id) or user.managers.schools.isDeactivated):
             raise CustomException(message="You don't have access to this school", status_code=401)
         return f(*args, **kwargs)
 

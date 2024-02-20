@@ -3,6 +3,7 @@ from flask import Blueprint, request
 from application.module.Teachers import TeacherModel as Teacher
 from application.utils.output import return_json, OutputObj
 from . import *
+from ..Enums.Permission import SchoolPermissionEnum
 
 teacher_blueprint = Blueprint('teacher', __name__)
 
@@ -59,6 +60,6 @@ def delete_teacher():
 
 
 @teacher_blueprint.route('/get-teacher/<int:id>', methods=['GET'])
-@authenticate(PermissionEnum.VIEW_TEACHERS)
+@authenticate([PermissionEnum.VIEW_TEACHERS, SchoolPermissionEnum.VIEW_TEACHERS])
 def get_teacher(id):
     return return_json(OutputObj(code=200, message="Student results", data=Teacher.get_user(id)))

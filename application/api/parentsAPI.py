@@ -3,6 +3,7 @@ from flask import Blueprint, request
 from application.module.Parents import ParentModel as Parent
 from application.utils.output import return_json, OutputObj
 from . import *
+from ..Enums.Permission import SchoolPermissionEnum
 
 parent_blueprint = Blueprint('parent', __name__)
 
@@ -75,6 +76,6 @@ def delete_parent():
 
 
 @parent_blueprint.route('/get-parent/<int:id>', methods=['GET'])
-@authenticate(PermissionEnum.VIEW_PARENTS)
+@authenticate([PermissionEnum.VIEW_PARENTS,  SchoolPermissionEnum.VIEW_TEACHERS])
 def get_parent(id):
     return return_json(OutputObj(code=200, message="Parent results", data=Parent.get_user(id)))

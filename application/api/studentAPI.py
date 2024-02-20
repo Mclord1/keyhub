@@ -3,6 +3,7 @@ from flask import Blueprint, request
 from application.module.Students import StudentModel as Student
 from application.utils.output import return_json, OutputObj
 from . import *
+from ..Enums.Permission import SchoolPermissionEnum
 
 student_blueprint = Blueprint('student', __name__)
 
@@ -86,7 +87,7 @@ def update_student_profile_image():
 
 
 @student_blueprint.route('/get-student/<int:id>', methods=['GET'])
-@authenticate(PermissionEnum.VIEW_STUDENTS)
+@authenticate([PermissionEnum.VIEW_STUDENTS, SchoolPermissionEnum.VIEW_STUDENTS])
 def get_student(id):
     return return_json(OutputObj(code=200, message="Student results", data=Student.get_user(id)))
 
