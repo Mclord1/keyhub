@@ -24,7 +24,7 @@ class SchoolRoleModel:
                     **res.to_dict(add_filter=False),
                     "permissions": [x.to_dict(add_filter=False) for x in res.school_permissions],
                     "created_by": created_by(res.admin_id).email if res.admin_id and created_by(res.admin_id) else None,
-                    "creator_name": f'{created_by(res.admin_id).admins.first_name if created_by(res.admin_id) else None} {created_by(res.admin_id).admins.last_name if created_by(res.admin_id) else None}' if res.admin_id else None
+                    "creator_name": f'{created_by(res.admin_id).admins.first_name if created_by(res.admin_id) and created_by(res.admin_id).admins else None} {created_by(res.admin_id).admins.last_name if created_by(res.admin_id) and created_by(res.admin_id).admins else None}' if res.admin_id else None
                 }
                 for res in results
             ]
