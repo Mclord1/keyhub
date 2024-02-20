@@ -25,7 +25,7 @@ class SchoolLearningGroupsModel:
                 "groups": [{
                     **res.to_dict(add_filter=False),
                     "created_by": res.user.email if res.user else None,
-                    "creator_name": f'{res.user.admins.first_name} {res.user.admins.last_name}' if res.user else None,
+                    "creator_name": f'{res.user.admins.first_name} {res.user.admins.last_name}' if res.user and res.user.admins else None,
                     'students': [x.to_dict() for x in res.students],
                     'teachers': [x.to_dict() for x in res.teachers],
                     'projects': [x.to_dict(add_filter=False) for x in res.projects],
