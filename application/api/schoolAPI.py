@@ -418,8 +418,7 @@ def remove_school_permission_from_role(school_id):
     if not role_id or not permission_id or not role_id.isdigit() or not permission_id.isdigit():
         raise CustomException(message="Please pass a correct role id or permission id")
     return return_json(OutputObj(code=200, message="Permission has been successfully removed from school role",
-                                 data=SchoolRoleModel.remove_permission_from_school_role(school_id, role_id,
-                                                                                         permission_id)))
+                                 data=SchoolRoleModel.remove_permission_from_school_role(school_id, role_id, permission_id)))
 
 
 # ===================================== SCHOOL LEARNING GROUP =====================================
