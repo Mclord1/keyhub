@@ -60,7 +60,7 @@ class TeacherModel:
 
         school = School.GetSchool(req.school_id)
 
-        if not current_user.admins or (current_user.managers and current_user.managers.school_id != school.id):
+        if not current_user.admins and (current_user.managers and current_user.managers.school_id != school.id):
             raise CustomException(message="You do not have privilege to access this school")
 
         try:
