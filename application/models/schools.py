@@ -31,8 +31,8 @@ class SchoolRole(db.Model, GenericMixin):
     )
 
     @staticmethod
-    def GetSchoolRole(id, school_id):
-        role = SchoolRole.query.filter_by(id=id, school_id=school_id).first()
+    def GetSchoolRole(role_id, school_id):
+        role = SchoolRole.query.filter_by(id=int(role_id), school_id=int(school_id)).first()
         if not role:
             raise CustomException(message="The provided role does not exist")
         return role

@@ -357,7 +357,7 @@ def list_school_permissions():
 @authenticate(PermissionEnum.VIEW_ROLES)
 @has_school_privilege
 def get_school_role_detail(school_id, role_id):
-    return return_json(OutputObj(code=200, message=SchoolRoleModel.get_role_details(school_id, role_id)))
+    return return_json(OutputObj(code=200, message=SchoolRoleModel.get_role_details(school_id=school_id, role_id=role_id)))
 
 
 @school_blueprint.route('/<int:school_id>/roles', methods=['POST'])
