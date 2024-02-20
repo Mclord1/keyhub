@@ -3,7 +3,7 @@ import random
 import string
 
 from application import db
-from application.models import ConfirmationCode, User
+from application.models import ConfirmationCode, User, Parent, SchoolParent, Teacher, SchoolTeacher
 from application.module import current_user
 from exceptions.custom_exception import CustomException, ExceptionCode
 
@@ -29,7 +29,7 @@ class Helper:
     def look_up_account(cls, Model, User, args):
 
         if not current_user.admins and not current_user.managers:
-            raise CustomException("Only school manager or admin has the privilege")
+            raise CustomException(message="Only school manager or admin has the privilege")
 
         query = Model.query.join(User).filter(
             (Model.first_name.ilike(f'%{args}%') | Model.last_name.ilike(f'%{args}%'))
@@ -37,7 +37,12 @@ class Helper:
         )
 
         if not current_user.admins and current_user.managers:
-            query.filter(Model.school_id == current_user.managers.school_id)
+            if Model == Parent:
+                query.filter(SchoolParent.school_id == current_user.managers.school_id)
+            elif Model == Teacher:
+                query.filter(SchoolTeacher.school_id == current_user.managers.school_id)
+            else:
+                query.filter(Model.school_id == current_user.managers.school_id)
 
         result = []
         for u in query.all():
