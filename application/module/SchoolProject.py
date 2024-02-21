@@ -219,17 +219,17 @@ class SchoolProjectModel:
                         _learning_group.teachers.append(_teacher)
 
                     if req.teacher_type.lower() == "lead_teacher":
-                        _project.lead_teacher = _teacher.id
+                        _project.lead_teacher = _teacher.user.id
 
                     if req.teacher_type.lower() == "support_teacher":
 
                         if _project.supporting_teachers:
                             new_member = ast.literal_eval(_project.supporting_teachers)
                             if _teacher.id not in new_member:
-                                new_member.append(_teacher.id)
+                                new_member.append(_teacher.user.id)
 
                         else:
-                            new_member = [_teacher.id]
+                            new_member = [_teacher.user.id]
 
                         _project.supporting_teachers = str(new_member)
 
