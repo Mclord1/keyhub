@@ -49,7 +49,9 @@ class RolePermission:
             "roles": [],
             "permissions": [],
             "keyword": [],
-            "sme": []
+            "sme": [],
+            "report": []
+
         }
 
         for _permission in _permissions:
