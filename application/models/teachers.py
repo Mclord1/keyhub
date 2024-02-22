@@ -44,7 +44,7 @@ class Teacher(db.Model, GenericMixin):
 
     @classmethod
     def GetTeacher(cls, user_id):
-        teacher = Teacher.query.filter_by(id=user_id).first()
+        teacher = Teacher.query.filter_by(user_id=user_id).first()
         if not teacher:
             raise CustomException(message="Teacher does not exist", status_code=404)
         return teacher

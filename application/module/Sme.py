@@ -34,7 +34,7 @@ class SmeModel:
             )
             db.session.add(sme_model)
             db.session.commit()
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
             raise CustomException(message="An SME with that name or company_name already exists", status_code=400)
         except Exception as e:
