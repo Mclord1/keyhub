@@ -3,7 +3,7 @@ import random
 import string
 
 from application import db
-from application.models import ConfirmationCode, User, Parent, SchoolParent, Teacher, SchoolTeacher
+from application.models import ConfirmationCode, User, Parent, SchoolParent, Teacher, SchoolTeacher, Student
 from application.module import current_user
 from exceptions.custom_exception import CustomException, ExceptionCode
 
@@ -95,7 +95,11 @@ class Helper:
         if not _user:
             raise CustomException(message=f"{Model.__name__} does not exist", status_code=404)
 
-        if not current_user.admins and (current_user.managers and current_user.managers.school_id != _user.school_id):
-            raise CustomException(message="You do not have privilege to access this user", status_code=400)
+        if Model == Teacher or Model == Parent:
+            if not current_user.admins and (current_user.managers and current_user.managers.school_id not in [x.id for x in _user.schools]):
+                raise CustomException(message="You do not have privilege to access this user", status_code=400)
+        else:
+            if not current_user.admins and (current_user.managers and current_user.managers.school_id != _user.school_id):
+                raise CustomException(message="You do not have privilege to access this user", status_code=400)
 
         return _user
