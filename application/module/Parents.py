@@ -66,22 +66,27 @@ class ParentModel:
 
         _school = School.GetSchool(req.school_id)
 
-        if req.student:
-
-            for std in req.student:
-                u_student: User = User.GetUser(std)
-                _student: Student = u_student.students.parents
-
-                if _student.parents:
-                    raise CustomException(
-                        message=f"A Parent has already been assigned to {_student.first_name} {_student.last_name}",
-                        status_code=400)
+        # if req.student:
+        #
+        #     for std in req.student:
+        #         u_student: User = User.GetUser(std)
+        #         _student: Student = u_student.students
+        #
+        #         if _student.parents:
+        #             raise CustomException(
+        #                 message=f"A Parent has already been assigned to {_student.first_name} {_student.last_name}",
+        #                 status_code=400)
 
         try:
-            new_parent = User.CreateUser(req.email, req.msisdn, role)
 
-            if new_parent:
-                students_list = [User.GetUser(x).students for x in req.student] if req.student else []
+            students_list = [User.GetUser(x).students for x in req.student] if req.student else []
+
+            if req.student and None in students_list:
+                raise CustomException(message="Please ensure the student passed already exist")
+
+            else:
+
+                new_parent = User.CreateUser(req.email, req.msisdn, role)
 
                 add_parent = Parent(
                     first_name=req.first_name,
@@ -103,9 +108,9 @@ class ParentModel:
                 add_parent.save(refresh=True)
                 return {**add_parent.to_dict(), "user_id": add_parent.user.id}
 
-        except Exception:
+        except Exception as e:
             db.session.rollback()
-            raise CustomException(ExceptionCode.DATABASE_ERROR)
+            raise e
 
     @classmethod
     def add_student(cls, student_id, parent_id):
