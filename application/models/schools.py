@@ -37,6 +37,13 @@ class SchoolRole(db.Model, GenericMixin):
             raise CustomException(message="The provided role does not exist")
         return role
 
+    @staticmethod
+    def GetSchoolRoleByName(name):
+        role = SchoolRole.query.filter(SchoolRole.name == name).first()
+        if not role:
+            raise CustomException(message="The provided role does not exist")
+        return role
+
 
 class SchoolRolePermission(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)

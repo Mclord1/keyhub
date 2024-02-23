@@ -64,8 +64,8 @@ def has_school_privilege(f):
         if not school_id:
             raise CustomException(message="School Id param must be passed in the URL", status_code=400)
 
-        if not user.managers and not user.admins:
-            raise CustomException(message="only Admin or school manager has privilege.", status_code=401)
+        # if not user.managers and not user.admins:
+        #     raise CustomException(message="only Admin or school manager has privilege.", status_code=401)
 
         if not user.admins and ((user.managers and user.managers.schools.id != school_id) or user.managers.schools.isDeactivated):
             raise CustomException(message="You don't have access to this school", status_code=401)

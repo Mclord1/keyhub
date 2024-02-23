@@ -28,8 +28,6 @@ class Seed:
                 db.session.rollback()
         print("Role Model has been added")
 
-
-
     @staticmethod
     def AddPermission():
 
@@ -45,6 +43,58 @@ class Seed:
             except IntegrityError:
                 db.session.rollback()
         print("Permission has been added successfully")
+
+    @staticmethod
+    def AddTeacherPermission():
+
+        perms: list[Permission] = Permission.query.all()
+
+        perms_to_add = [
+            "report_view_dashboard",
+            "report_academic_year",
+            "report_academic_terms",
+            "add_learning_groups",
+            "update_learning_groups",
+            "view_learning_groups",
+            "deactivate_learning_groups",
+            "view_teacher",
+            "modify_teacher",
+            "add_teacher",
+            "deactivate_teacher",
+            "reset_teacher_password",
+            "view_parents",
+            "modify_parents",
+            "add_parents",
+            "deactivate_parents",
+            "reset_parents_password",
+            "view_students",
+            "modify_students",
+            "add_students",
+            "deactivate_students",
+            "reset_student_password",
+            "view_projects",
+            "modify_projects",
+            "add_projects",
+            "deactivate_projects",
+            "add_sme",
+            "update_sme",
+            "view_sme",
+            "delete_sme",
+            "add_keywords",
+            "update_keywords",
+            "view_keywords",
+            "deactivate_keywords",
+        ]
+
+        teacher_role: Role = Role.GetRoleByName(BasicRoles.TEACHER.value)
+        for permissions in perms:
+            try:
+                if permissions.name in perms_to_add:
+                    teacher_role.permissions.append(permissions)
+                    db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+        print("Teacher Permission has been added successfully")
 
     @staticmethod
     def AddSchoolPermission():
@@ -138,8 +188,9 @@ class Seed:
         """
         self.AddRole()
         self.AddPermission()
+        self.AddTeacherPermission()
         self.AddSchoolPermission()
-        # self.AddAdmin()
+        self.AddAdmin()
         # self.populate_country()
         # self.populate_states()
 
