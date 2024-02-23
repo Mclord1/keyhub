@@ -27,9 +27,9 @@ class Helper:
 
     @classmethod
     def look_up_account(cls, Model, User, args):
-
-        if not current_user.admins and not current_user.managers:
-            raise CustomException(message="Only school manager or admin has the privilege")
+        #
+        # if not current_user.admins and not current_user.managers:
+        #     raise CustomException(message="Only school manager or admin has the privilege")
 
         query = Model.query.join(User).filter(
             (Model.first_name.ilike(f'%{args}%') | Model.last_name.ilike(f'%{args}%'))
@@ -87,8 +87,8 @@ class Helper:
     @classmethod
     def get_user(cls, Model, user_id):
 
-        if not current_user.admins and not current_user.managers:
-            raise CustomException(message="Only school manager or admin has the privilege", status_code=400)
+        # if not current_user.admins and not current_user.managers:
+        #     raise CustomException(message="Only school manager or admin has the privilege", status_code=400)
 
         _user = Model.query.filter_by(id=user_id).first()
 
