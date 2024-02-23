@@ -61,14 +61,22 @@ def has_school_privilege(f):
         verify_jwt_in_request()
         user = get_current_user()
         school_id = int(request.view_args.get('school_id'))
+
         if not school_id:
             raise CustomException(message="School Id param must be passed in the URL", status_code=400)
 
-        # if not user.managers and not user.admins:
-        #     raise CustomException(message="only Admin or school manager has privilege.", status_code=401)
-
-        if not user.admins and ((user.managers and user.managers.schools.id != school_id) or user.managers.schools.isDeactivated):
+        if not user.admins and (
+                (user.managers and user.managers.schools.id != school_id) or (user.managers and user.managers.schools.isDeactivated)):
             raise CustomException(message="You don't have access to this school", status_code=401)
+
+        if not user.admins and (
+                (user.teachers and school_id not in [x.id for x in user.teachers.schools]) or (user.teachers and any([x.isDeactivated for x in user.teachers.schools if x.id == school_id]))):
+            raise CustomException(message="You don't have access to this school", status_code=401)
+
+        if not user.admins and (
+                (user.parents and school_id not in [x.id for x in user.parents.schools]) or (user.parents and any([x.isDeactivated for x in user.parents.schools if x.id == school_id]))):
+            raise CustomException(message="You don't have access to this school", status_code=401)
+
         return f(*args, **kwargs)
 
     return decorated_func
