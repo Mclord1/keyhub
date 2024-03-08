@@ -108,6 +108,7 @@ class StudentModel:
 
                 add_user = Student(**student_data)
                 add_user.save(refresh=True)
+                EmailHandler.welcome_mail(new_student.email, add_user.first_name)
 
                 return {**add_user.to_dict(), "user_id": add_user.user.id}
 

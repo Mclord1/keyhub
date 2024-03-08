@@ -1,6 +1,8 @@
 import os
 
-from application import app, jwt
+from flask import send_from_directory
+
+from application import app, jwt, socketio
 from application.api import *
 from application.models import User
 
@@ -20,6 +22,7 @@ app.register_blueprint(transaction_blueprint, url_prefix='/transaction')
 app.register_blueprint(audit_blueprint, url_prefix='/audit')
 app.register_blueprint(sme_bp, url_prefix='/sme')
 app.register_blueprint(keywords_bp, url_prefix='/keywords')
+app.register_blueprint(curriculum_bp, url_prefix='/curriculums')
 app.register_blueprint(dashboard_blueprint, url_prefix='/dashboard')
 app.register_blueprint(report_blueprint, url_prefix='/reports')
 app.register_blueprint(notification_blueprint, url_prefix='/notification')
@@ -36,5 +39,6 @@ def _user_lookup_callback(_jwt_header, jwt_data):
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, debug=True)
+    socketio.run(app, host='0.0.0.0', port=8000, debug=True)
+    # app.run(host='0.0.0.0', port=8000, debug=True)
     # app.run(port=5000, debug=True)

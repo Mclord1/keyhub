@@ -11,7 +11,7 @@ from application.models.reports import Report
 from application.models.roles import Role
 from application.models.school_manager import SchoolManager
 from application.models.schools import SchoolRole, School, SchoolTeacher, SchoolParent, SchoolRolePermission, Term, AcademicYear, FAQ
-from application.models.smeModel import SME, Keywords
+from application.models.smeModel import SME, Keywords, Curriculums
 from application.models.state import State
 from application.models.students import Student, StudentFile, StudentComment
 from application.models.subscription import Subscription, SubcriptionPlan

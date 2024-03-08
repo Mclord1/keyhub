@@ -1,7 +1,7 @@
 import binascii
 from dotenv import load_dotenv
-# from flask import Flask
-from flask_lambda import FlaskLambda
+from flask import Flask, send_from_directory
+from flask_socketio import SocketIO
 
 load_dotenv()
 import os
@@ -20,7 +20,8 @@ from config.DBConfig import DB_SETUP
 from exceptions.custom_exception import CustomException
 from flask_cors import CORS
 
-app = FlaskLambda(__name__)
+app = Flask(__name__)
+socketio = SocketIO(app)
 CORS(app, origins="*")
 app.app_context().push()
 SECRET_KEY = os.environ.get('SECRET_KEY')
@@ -75,6 +76,16 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{username}:{password}@{ho
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db: SQLAlchemy = SQLAlchemy(app)
 metadata = db.metadata
+
+
+@app.route('/images/<path:filename>')
+def serve_image(filename):
+    return send_from_directory('utils/images', filename)
+
+
+@app.route('/fonts/<path:filename>')
+def serve_fonts(filename):
+    return send_from_directory('utils/fonts', filename)
 
 
 @app.errorhandler(Exception)

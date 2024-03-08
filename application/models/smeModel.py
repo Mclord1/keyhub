@@ -22,3 +22,8 @@ class SME(db.Model, GenericMixin):
 class Keywords(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(300), nullable=False)
+
+
+class Curriculums(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(300), nullable=False)

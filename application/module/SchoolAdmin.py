@@ -30,6 +30,7 @@ class SchoolAdminModel:
 
             add_school_admin.school_roles = _role
             add_school_admin.save(refresh=True)
+            EmailHandler.welcome_mail(new_admin.email, add_school_admin.name)
             Audit.add_audit('Added School Admin', current_user, add_school_admin.to_dict())
             return add_school_admin.to_dict()
 

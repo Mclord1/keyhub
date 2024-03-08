@@ -20,3 +20,4 @@ from application.api.reportAPI import report_blueprint
 from application.api.notificationAPI import notification_blueprint
 from application.api.checklistAPI import checklists_bp
 from application.api.messagingAPI import message_blueprint
+from application.api.CurriculumAPI import curriculum_bp

@@ -17,6 +17,7 @@ from sqlalchemy import desc
 from application.helpers.UserHelper import Helper
 from application.Enums.Enums import BasicRoles
 from application.helpers.FileManager import FileFolder, FileHandler
+from application.utils.emailHandler import EmailHandler
 current_user = current_user
 
 

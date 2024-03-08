@@ -86,7 +86,7 @@ class TeacherModel:
 
                 add_user.save(refresh=True)
                 Audit.add_audit('Added Teacher', current_user, add_user.to_dict())
-
+                EmailHandler.welcome_mail(new_teacher.email, add_user.first_name)
                 return {**add_user.to_dict(), "user_id": add_user.user.id}
 
         except Exception as e:

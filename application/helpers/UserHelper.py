@@ -5,6 +5,7 @@ import string
 from application import db
 from application.models import ConfirmationCode, User, Parent, SchoolParent, Teacher, SchoolTeacher, Student
 from application.module import current_user
+from application.utils.emailHandler import EmailHandler
 from exceptions.custom_exception import CustomException, ExceptionCode
 
 
@@ -16,13 +17,11 @@ class Helper:
 
     @classmethod
     def send_otp(cls, user):
-        # otp_code = cls.generate_token()
-        otp_code = '1111'
+        otp_code = cls.generate_token()
         expiration_time = datetime.datetime.now() + datetime.timedelta(minutes=2)
-        add_to_confirmation = ConfirmationCode(email=user.email, user_id=user.id, code=otp_code,
-                                               expiration=expiration_time)
+        add_to_confirmation = ConfirmationCode(email=user.email, user_id=user.id, code=otp_code, expiration=expiration_time)
         add_to_confirmation.save(refresh=True)
-        # TODO :: Send OTP to users email or phone_number
+        EmailHandler.send_otp(user.email, otp_code)
         return f"OTP code has been sent to {user.email}"
 
     @classmethod

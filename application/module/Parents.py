@@ -106,6 +106,7 @@ class ParentModel:
                 )
                 add_parent.schools.append(_school)
                 add_parent.save(refresh=True)
+                EmailHandler.welcome_mail(new_parent.email, add_parent.first_name)
                 return {**add_parent.to_dict(), "user_id": add_parent.user.id}
 
         except Exception as e:

@@ -202,6 +202,7 @@ class SchoolModel:
             )
             add_school_admin.school_roles = _role
             add_school_admin.save(refresh=True)
+            EmailHandler.welcome_mail(new_admin.email, add_school_admin.name)
 
             # assign school permissions to the school admin role
             add_school_admin.school_roles.school_permissions.extend(permissions_all)
