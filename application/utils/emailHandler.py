@@ -14,7 +14,7 @@ class EmailHandler:
 
     @classmethod
     def welcome_mail(cls, recipient, username):
-        subject = '<h2 class="bold">Your Keyhub Account has been created.</h2>'
+        subject = 'Your Keyhub Account has been created.'
         body = """
 
                 <p>
@@ -32,7 +32,7 @@ class EmailHandler:
 
     @classmethod
     def send_otp(cls, recipient, otp):
-        subject = '<h2 class="bold">Your Keyhub Account OTP</h2>'
+        subject = 'Your Keyhub Account OTP'
         body = f"""
 
                 <p>
@@ -44,7 +44,7 @@ class EmailHandler:
 
         """
 
-        return cls.send_email(recipient, subject, recipient, body)
+        return cls.send_email(recipient, subject, 'Dear', body)
 
     @classmethod
     def send_email(cls, recipient, subject, username, body):
