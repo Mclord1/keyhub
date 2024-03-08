@@ -206,6 +206,7 @@ class StudentModel:
         _user: Student = Helper.get_user(Student, user.students.id)
 
         file_path = FileFolder.student_profile(_user.schools.name, user.email)
+
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),

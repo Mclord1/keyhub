@@ -57,7 +57,7 @@ class FileHandler:
 
         try:
             # Check if the prefix 'data:image/jpeg;base64,' exists in the string
-            if file.startswith("data:image/jpeg;base64,"):
+            if file.startswith("data:image/jpeg;base64,") or file.startswith("data:image/png;base64,") or file.startswith("data:image/jpg;base64,"):
                 image_type = file.split(';')[0].split(':')[1]
                 base64_encoded_data = file.split(',', 1)[1]
             else:

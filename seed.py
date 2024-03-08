@@ -50,7 +50,7 @@ class Seed:
         perms: list[Permission] = Permission.query.all()
 
         perms_to_add = [
-            "view_school"
+            "view_school",
             "report_view_dashboard",
             "report_academic_year",
             "report_academic_terms",
@@ -192,7 +192,7 @@ class Seed:
         self.AddTeacherPermission()
         self.AddSchoolPermission()
         self.AddAdmin()
-        self.populate_country()
+        # self.populate_country()
         # self.populate_states()
 
 
