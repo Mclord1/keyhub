@@ -101,7 +101,7 @@ class TeacherModel:
                 if req.learning_group_id:
                     _learning_group: LearningGroup = LearningGroup.GetLearningGroupID(req.school_id, req.learning_group_id)
 
-                    _learning_group.students.append(add_user)
+                    _learning_group.teachers.append(add_user)
 
                 add_user.save(refresh=True)
                 Audit.add_audit('Added Teacher', current_user, add_user.to_dict())
