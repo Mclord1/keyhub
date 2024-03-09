@@ -30,7 +30,8 @@ def update_password():
     req = request.json
     code = req.get('otp')
     password = req.get('password')
-    return authenticationModel.update_password(code, password)
+    email = req.get('email')
+    return authenticationModel.update_password(email, code, password)
 
 
 @auth_blueprint.route('/set-password', methods=['POST'])
