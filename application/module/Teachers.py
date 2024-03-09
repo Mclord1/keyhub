@@ -63,6 +63,14 @@ class TeacherModel:
         if not current_user.admins and (current_user.managers and current_user.managers.school_id != school.id):
             raise CustomException(message="You do not have privilege to access this school")
 
+        if req.profile_image:
+
+            file_path = FileFolder.teacher_profile(school.name, req.email)
+
+            profile_url = FileHandler.upload_file(req.profile_image, file_path)
+        else:
+            profile_url = None
+
         try:
             new_teacher = User.CreateUser(req.email, req.msisdn, role)
 
@@ -75,6 +83,7 @@ class TeacherModel:
                     user_id=new_teacher.id,
                     address=req.address,
                     gender=req.gender,
+                    profile_image=profile_url,
                     years_of_experience=req.years_of_experience,
                     has_bachelors_degree=req.has_bachelors_degree,
                     early_years_education=req.early_years_education,
@@ -93,6 +102,24 @@ class TeacherModel:
             print(e)
             db.session.rollback()
             raise CustomException(ExceptionCode.DATABASE_ERROR)
+
+    @classmethod
+    def change_teacher_profile_image(cls, profile_image, teacher_id):
+        if not profile_image:
+            raise CustomException(message="User profile image is required")
+
+        user: User = User.GetUser(teacher_id)
+
+        if not user.teachers:
+            raise CustomException(message="Teacher does not exist", status_code=404)
+
+        file_path = FileFolder.teacher_profile(user.teachers.schools[0].name, user.email)
+
+        profile_url = FileHandler.upload_file(profile_image, file_path)
+
+        user.teachers.profile_image = profile_url
+        db.session.commit()
+        return "Profile Image has been updated successfully"
 
     @classmethod
     def reset_password(cls, user_id):

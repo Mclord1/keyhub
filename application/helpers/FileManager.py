@@ -20,6 +20,9 @@ class FileFolder:
     @classmethod
     def student_profile(cls, school_name, email):
         return f"{school_name}/students/{email}/file-ab5619e7"
+    @classmethod
+    def teacher_profile(cls, school_name, email):
+        return f"{school_name}/teachers/{email}/file-ab5619e7"
 
     @classmethod
     def admin_profile(cls, email):

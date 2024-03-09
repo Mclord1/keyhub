@@ -32,6 +32,7 @@ class TeacherSchema(BaseModel):
     state: str
     address: str
     linkedin: str
+    profile_image: Optional[str] = None
     years_of_experience: Optional[str] = None
     has_bachelors_degree: Optional[bool] = None
     early_years_education: Optional[bool] = None

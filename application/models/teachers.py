@@ -17,6 +17,7 @@ class Teacher(db.Model, GenericMixin):
     user = db.relationship("User", back_populates='teachers')
     _gender = db.Column(db.String(250), nullable=True)
     country = db.Column(db.String(350), nullable=True)
+    profile_image = db.Column(db.Text, nullable=True)
 
     state = db.Column(db.String(350), nullable=True)
     years_of_experience = db.Column(db.String(350), nullable=True)
