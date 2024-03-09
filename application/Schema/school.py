@@ -30,7 +30,7 @@ class SchoolSchema(BaseModel):
     state: str
     address: str
     primary_contact: PrimaryContact
-    profile_image : str
+    logo : str
 
 
 class SubscribeSchema(BaseModel):
@@ -46,6 +46,7 @@ class UpdateSchoolSchema(BaseModel):
     country: Optional[str] = None
     state: Optional[str] = None
     address: Optional[str] = None
+    logo : Optional[str] = None
 
 
 class ProjectSchema(BaseModel):

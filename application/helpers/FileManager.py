@@ -64,6 +64,10 @@ class FileHandler:
                 image_type = 'image/jpeg'
                 base64_encoded_data = file
 
+            missing_padding = len(base64_encoded_data) % 4
+            if missing_padding != 0:
+                base64_encoded_data += '=' * (4 - missing_padding)
+
             decoded_image_data = base64.b64decode(base64_encoded_data)
             cls.s3.put_object(
                 Bucket=cls.bucket_name,
@@ -77,7 +81,7 @@ class FileHandler:
             return image_url
         except Exception as e:
             print(f"Failed to upload image: {e}")
-            return None
+            raise f"Image Error {e}"
 
     @classmethod
     def get_file_url(cls, file_name):

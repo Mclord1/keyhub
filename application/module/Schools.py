@@ -102,7 +102,7 @@ class SchoolModel:
 
     @classmethod
     def update_school(cls, school_id, data):
-        req_school = validator.validate_data(UpdateSchoolSchema, data)
+        req_school: UpdateSchoolSchema = validator.validate_data(UpdateSchoolSchema, data)
 
         school: School = School.query.filter_by(id=school_id).first()
 
@@ -131,6 +131,10 @@ class SchoolModel:
             raise CustomException(message=f"School attributes already exist: {', '.join(existing_values)}",
                                   status_code=403)
 
+        if req_school.logo:
+            profile_url = FileHandler.upload_file(req_school.logo, FileFolder.school(school.name))
+            data['logo'] = profile_url
+
         school.update_table(data)
         Audit.add_audit('Updated School Information', current_user, school.to_dict(add_filter=False))
 
@@ -140,7 +144,7 @@ class SchoolModel:
     def add_school(cls, data):
         req_schema: SchoolSchema = validator.validate_data(SchoolSchema, data)
 
-        profile_url = FileHandler.upload_file(req_schema.profile_image, FileFolder.school(req_schema.name))
+        profile_url = FileHandler.upload_file(req_schema.logo, FileFolder.school(req_schema.name))
 
         name = req_schema.name
         email = req_schema.email
@@ -179,7 +183,7 @@ class SchoolModel:
 
             # Add school details to school model
             add_school = School(name=name, email=email, msisdn=msisdn, reg_number=reg_number, country=country,
-                                state=state, address=address, logo=str(profile_url))
+                                state=state, address=address, logo=profile_url)
             add_school.save(refresh=True)
 
             # create school role for school_admin
