@@ -66,16 +66,6 @@ class ParentModel:
 
         _school = School.GetSchool(req.school_id)
 
-        # if req.student:
-        #
-        #     for std in req.student:
-        #         u_student: User = User.GetUser(std)
-        #         _student: Student = u_student.students
-        #
-        #         if _student.parents:
-        #             raise CustomException(
-        #                 message=f"A Parent has already been assigned to {_student.first_name} {_student.last_name}",
-        #                 status_code=400)
 
         try:
 
@@ -102,8 +92,14 @@ class ParentModel:
                     work_msisdn=req.work_msisdn,
                     how_you_knew_about_us=req.how_you_knew_about_us,
                     why_use_us=req.why_use_us,
-                    students=students_list
+                    current_school=req.current_school,
+                    date_to_join=req.date_to_join,
+                    languages_spoken_at_home=req.languages_spoken_at_home,
+                    child_first_language=req.child_first_language,
+                    has_emailed_child_kyc=req.has_emailed_child_kyc,
+                    agree_with_terms=req.agree_with_terms
                 )
+
                 add_parent.schools.append(_school)
                 add_parent.save(refresh=True)
                 EmailHandler.welcome_mail(new_parent.email, add_parent.first_name)
