@@ -1,3 +1,7 @@
+import ast
+
+from sqlalchemy import or_
+
 from . import *
 
 
@@ -157,12 +161,21 @@ class TeacherModel:
 
         _user: Teacher = Helper.get_user(Teacher, user.teachers.id)
 
+        _user_id = _user.user.id
+
+        _projects = Project.query.filter(
+            or_(
+                Project.lead_teacher == _user_id,
+                Project.supporting_teachers.contains(str(_user_id))
+            )
+        ).all()
+
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),
             "user_id": user.id,
-            "total_projects": len([x for x in _user.projects]) if _user.projects else 0,
-            "projects": [x.to_dict(add_filter=False) for x in _user.projects],
+            "total_projects": len(_projects) if _projects else 0,
+            "projects": [x.to_dict(add_filter=False) for x in _projects],
             "total_students": len([x for x in _user.students]) if _user.students else 0,
             "students": [x.to_dict() for x in _user.students],
             "schools": [x.name for x in _user.schools]
