@@ -25,7 +25,7 @@ class RolePermission:
                     "created_by": created_by(res.admin_id).email if res.admin_id and created_by(res.admin_id) else None,
                     "creator_name": f'{created_by(res.admin_id).admins.first_name if created_by(res.admin_id) else None} {created_by(res.admin_id).admins.last_name if created_by(res.admin_id) else None}' if res.admin_id else None
                 }
-                for res in results if res.name not in [x.value for x in BasicRoles.__members__.values()]
+                for res in results if res.name
             ]
         }
         return PaginationSchema(**pagination_data).model_dump()
