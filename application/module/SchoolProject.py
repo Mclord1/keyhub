@@ -32,8 +32,8 @@ class SchoolProjectModel:
                     "school": project.schools.name,
                     "activities": [activity.to_dict(add_filter=False) for activity in project.activities],
                     **project.to_dict(add_filter=False),
-                    "lead_teacher": Teacher.GetTeacher(project.lead_teacher).to_dict() if project.lead_teacher else None,
-                    "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
+                    "lead_teacher": {**Teacher.GetTeacher(project.lead_teacher).to_dict(), "user_id": Teacher.GetTeacher(project.lead_teacher).user.id} if project.lead_teacher else None,
+                    "supporting_teachers": [{**Teacher.GetTeacher(x).to_dict(), "user_id": Teacher.GetTeacher(x).user.id} for x in
                                             ast.literal_eval(project.supporting_teachers)] if project.supporting_teachers is not None else None,
                 } for project in results]
             }
@@ -55,8 +55,8 @@ class SchoolProjectModel:
                 "school": x.schools.name,
                 "students": [x.to_dict() for x in x.students],
                 "activities": [activity.to_dict(add_filter=False) for activity in x.activities],
-                "lead_teacher": Teacher.GetTeacher(x.lead_teacher).to_dict() if x.lead_teacher else None,
-                "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
+                "lead_teacher": {**Teacher.GetTeacher(x.lead_teacher).to_dict(), "user_id": Teacher.GetTeacher(x.lead_teacher).user.id} if x.lead_teacher else None,
+                "supporting_teachers": [{**Teacher.GetTeacher(x).to_dict(), "user_id": Teacher.GetTeacher(x).user.id} for x in
                                         ast.literal_eval(x.supporting_teachers)] if x.supporting_teachers is not None else None,
             }
 
@@ -81,8 +81,8 @@ class SchoolProjectModel:
                 "school": x.schools.name,
                 "students": [x.to_dict() for x in x.students],
                 "activities": [activity.to_dict(add_filter=False) for activity in x.activities],
-                "lead_teacher": Teacher.GetTeacher(x.lead_teacher).to_dict() if x.lead_teacher else None,
-                "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
+                "lead_teacher": {**Teacher.GetTeacher(x.lead_teacher).to_dict(), "user_id": Teacher.GetTeacher(x.lead_teacher).user.id} if x.lead_teacher else None,
+                "supporting_teachers": [{**Teacher.GetTeacher(x).to_dict(), "user_id": Teacher.GetTeacher(x).user.id} for x in
                                         ast.literal_eval(x.supporting_teachers)] if x.supporting_teachers is not None else None,
             }
 
@@ -182,8 +182,8 @@ class SchoolProjectModel:
             "learning_groups": [x.to_dict(add_filter=False) for x in _project.learning_groups],
             **_project.to_dict(add_filter=False),
             "learning_goals": list(_project.learning_goals) if _project.learning_goals else [],
-            "lead_teacher": Teacher.GetTeacher(_project.lead_teacher).to_dict() if _project.lead_teacher else None,
-            "supporting_teachers": [Teacher.GetTeacher(x).to_dict() for x in
+            "lead_teacher": {**Teacher.GetTeacher(_project.lead_teacher).to_dict(), "user_id": Teacher.GetTeacher(_project.lead_teacher).user.id} if _project.lead_teacher else None,
+            "supporting_teachers": [{**Teacher.GetTeacher(x).to_dict(), "user_id": Teacher.GetTeacher(x).user.id} for x in
                                     ast.literal_eval(_project.supporting_teachers)] if _project.supporting_teachers is not None else None,
         }
 
@@ -375,7 +375,7 @@ class SchoolProjectModel:
         return [
             {
                 **x.to_dict(add_filter=False),
-                "uploaded_by":  x.user.to_dict() | User.GetUserObject(x.user.id),
+                "uploaded_by": x.user.to_dict() | User.GetUserObject(x.user.id),
                 "file_url": FileHandler.get_file_url(x.file_path)
             }
             for x in _files.project_files]
