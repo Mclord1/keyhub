@@ -30,6 +30,7 @@ class TeacherModel:
                     "user_id": res.user.id,
                     "school": [x.name for x in res.schools],
                     "total_projects": len([x for x in res.projects]) if res.projects else 0,
+                    "learning_groups": [{'name': x.name, 'id': x.id} for x in res.learning_groups],
                     "total_students": len([x for x in res.students]) if res.students else 0,
                 } for res in results]
             }
@@ -182,6 +183,7 @@ class TeacherModel:
             **_user.user.as_dict(),
             "user_id": user.id,
             "total_projects": len(_projects) if _projects else 0,
+            "learning_groups": [{'name': x.name, 'id': x.id} for x in _user.learning_groups],
             "projects": [x.to_dict(add_filter=False) for x in _projects],
             "total_students": len([x for x in _user.students]) if _user.students else 0,
             "students": [x.to_dict() for x in _user.students],
