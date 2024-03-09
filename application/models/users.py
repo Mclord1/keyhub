@@ -156,9 +156,9 @@ class User(db.Model, GenericMixin):
             db.session.commit()
             db.session.refresh(user)
             return user
-        except Exception:
+        except Exception as e:
             db.session.rollback()
-            raise CustomException(ExceptionCode.DATABASE_ERROR)
+            raise e
 
     def UpdatePassword(self, password):
         try:

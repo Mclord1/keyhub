@@ -38,6 +38,7 @@ class TeacherSchema(BaseModel):
     early_years_education: Optional[bool] = None
     how_you_heard_about_us: Optional[str] = None
     purpose_using_the_app: Optional[str] = None
+    learning_group_id : Optional[int] = None
 
 
 class StudentSchema(BaseModel):
@@ -87,6 +88,7 @@ class StudentSchema(BaseModel):
     special_dietary: Optional[str] = None
     has_siblings: Optional[bool] = None
     more_details_about_student: Optional[str] = None
+    learning_group_id : Optional[int] = None
 
 
 class ParentSchema(BaseModel):

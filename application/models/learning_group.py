@@ -86,5 +86,5 @@ class LearningGroup(db.Model, GenericMixin):
     def GetLearningGroupID(cls, school_id, group_id):
         l_group = LearningGroup.query.filter_by(id=group_id, school_id=school_id).first()
         if not l_group:
-            raise CustomException(message="Learning Group does not exist", status_code=404)
+            raise CustomException(message="Learning Group does not exist in the School Id Passed", status_code=404)
         return l_group

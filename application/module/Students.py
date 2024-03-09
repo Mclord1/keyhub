@@ -82,7 +82,11 @@ class StudentModel:
 
             _parent = [u_parent.parents]
 
-        new_student = User.CreateUser(req.email, req.msisdn, role)
+        new_student = User(email=req.email, msisdn=req.msisdn, password=None)
+        new_student.roles = role
+        db.session.add(new_student)
+        db.session.commit()
+        db.session.refresh(new_student)
 
         try:
 
@@ -105,16 +109,26 @@ class StudentModel:
                 # remove this as it is already added in user table
                 del student_data['email']
                 del student_data['msisdn']
+                del student_data['learning_group_id']
 
                 add_user = Student(**student_data)
+
+                if req.learning_group_id:
+                    _learning_group: LearningGroup = LearningGroup.GetLearningGroupID(req.school_id, req.learning_group_id)
+
+                    _learning_group.students.append(add_user)
+
                 add_user.save(refresh=True)
                 EmailHandler.welcome_mail(new_student.email, add_user.first_name)
 
                 return {**add_user.to_dict(), "user_id": add_user.user.id}
 
-        except Exception:
+        except Exception as e:
             db.session.rollback()
-            raise CustomException(ExceptionCode.DATABASE_ERROR)
+            # Delete the new_student instance
+            if new_student:
+                db.session.delete(new_student)
+            raise e
 
     @classmethod
     def remove_parent(cls, student_id, parent_id):

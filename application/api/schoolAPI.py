@@ -439,6 +439,14 @@ def get_school_group_detail(school_id, group_id):
     return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.get_group_detail(school_id, group_id)))
 
 
+@school_blueprint.route('/<int:school_id>/learning-groups/search', methods=['GET'])
+@authenticate(PermissionEnum.VIEW_LEARNING_GROUPS)
+@has_school_privilege
+def school_group_search(school_id):
+    query = request.args.get('query')
+    return return_json(OutputObj(code=200, message="Learning groups results", data=SchoolLearningGroupsModel.search_learning_group(query, school_id)))
+
+
 @school_blueprint.route('/<int:school_id>/learning-groups', methods=['POST'])
 @authenticate(PermissionEnum.ADD_LEARNING_GROUPS)
 @has_school_privilege

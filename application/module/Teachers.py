@@ -75,8 +75,9 @@ class TeacherModel:
         else:
             profile_url = None
 
+        new_teacher = User.CreateUser(req.email, req.msisdn, role)
+
         try:
-            new_teacher = User.CreateUser(req.email, req.msisdn, role)
 
             if new_teacher:
                 add_user = Teacher(
@@ -97,15 +98,21 @@ class TeacherModel:
                     schools=[school]
                 )
 
+                if req.learning_group_id:
+                    _learning_group: LearningGroup = LearningGroup.GetLearningGroupID(req.school_id, req.learning_group_id)
+
+                    _learning_group.students.append(add_user)
+
                 add_user.save(refresh=True)
                 Audit.add_audit('Added Teacher', current_user, add_user.to_dict())
                 EmailHandler.welcome_mail(new_teacher.email, add_user.first_name)
                 return {**add_user.to_dict(), "user_id": add_user.user.id}
 
         except Exception as e:
-            print(e)
+            if new_teacher:
+                db.session.delete(new_teacher)
             db.session.rollback()
-            raise CustomException(ExceptionCode.DATABASE_ERROR)
+            raise e
 
     @classmethod
     def change_teacher_profile_image(cls, profile_image, teacher_id):

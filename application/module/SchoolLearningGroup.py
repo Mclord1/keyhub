@@ -42,7 +42,7 @@ class SchoolLearningGroupsModel:
             'name': _group.name,
             'created_on': _group.created_at,
             'created_by': _group.user.email if _group.user else None,
-            'creator_name': f'{_group.user.admins.first_name} {_group.user.admins.last_name}' if _group.user  and _group.user.admins else None,
+            'creator_name': f'{_group.user.admins.first_name} {_group.user.admins.last_name}' if _group.user and _group.user.admins else None,
             'country': _group.user.admins.country if _group.user and _group.user.admins else None,
             'description': _group.description,
             'isDeactivated': _group.isDeactivated,
@@ -50,6 +50,30 @@ class SchoolLearningGroupsModel:
             'teachers': [x.to_dict() for x in _group.teachers],
             'projects': [x.to_dict(add_filter=False) for x in _group.projects],
         }
+        return result
+
+    @classmethod
+    def search_learning_group(cls, args, school_id):
+        query = LearningGroup.query.filter(LearningGroup.school_id == int(school_id)).filter(
+            (LearningGroup.name.ilike(f'%{args}%'))
+        )
+
+        result = [
+            {
+                'id': _group.id,
+                'name': _group.name,
+                'created_on': _group.created_at,
+                'created_by': _group.user.email if _group.user else None,
+                'creator_name': f'{_group.user.admins.first_name} {_group.user.admins.last_name}' if _group.user and _group.user.admins else None,
+                'country': _group.user.admins.country if _group.user and _group.user.admins else None,
+                'description': _group.description,
+                'isDeactivated': _group.isDeactivated,
+                'students': [x.to_dict() for x in _group.students],
+                'teachers': [x.to_dict() for x in _group.teachers],
+                'projects': [x.to_dict(add_filter=False) for x in _group.projects],
+            }
+
+            for _group in query.all()]
         return result
 
     @classmethod
@@ -190,7 +214,7 @@ class SchoolLearningGroupsModel:
         return [
             {
                 **x.to_dict(add_filter=False),
-                "uploaded_by":  x.user.to_dict() | User.GetUserObject(x.user.id),
+                "uploaded_by": x.user.to_dict() | User.GetUserObject(x.user.id),
                 "file_url": FileHandler.get_file_url(x.file_path)
             }
             for x in group.learning_group_files]
