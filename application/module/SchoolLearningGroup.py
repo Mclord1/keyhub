@@ -38,8 +38,7 @@ class SchoolLearningGroupsModel:
     @classmethod
     def get_group_detail(cls, school_id, group_id):
         _group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, group_id)
-
-        return {
+        result = {
             'name': _group.name,
             'created_on': _group.created_at,
             'created_by': _group.user.email if _group.user else None,
@@ -51,6 +50,7 @@ class SchoolLearningGroupsModel:
             'teachers': [x.to_dict() for x in _group.teachers],
             'projects': [x.to_dict(add_filter=False) for x in _group.projects],
         }
+        return result
 
     @classmethod
     def create_learning_group(cls, data, school_id):

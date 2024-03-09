@@ -110,7 +110,7 @@ class SchoolProjectModel:
                 _learning_group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, group)
 
                 student_list = data.get('student_id', [])
-                _students = Student.query.filter(Student.id.in_(student_list)).all()
+                _students = Student.query.filter(Student.user_id.in_(student_list)).all()
 
                 _learning_group.students.extend(_students)
                 add_project.students.extend(_students)
