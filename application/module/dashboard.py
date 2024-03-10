@@ -12,30 +12,44 @@ class DashboardModel:
         _user: User = User.query.filter_by(id=current_user.id).first()
         if not _user:
             raise CustomException(message="User not found")
-        _students: List[Student] = _user.parents.students if _user.parents else _user.teachers.students if _user.teachers else None
-        groups: List[LearningGroup] = [x.learning_groups for x in _students] if _students else None
-        all_learning_groups = [group for sublist in groups for group in sublist] if groups else None
-        comments = []
-        files = []
-        if all_learning_groups:
-            for l_groups in all_learning_groups:
-                comments.extend([
-                    {
-                        **x.to_dict(add_filter=False),
-                        "commented_by": x.user.to_dict(),
-                    }
-                    for x in l_groups.learning_group_comments])
+        _parents: List[Student] = _user.parents.students if _user.parents else None
+        _teachers: Teacher = _user.teachers if _user.teachers else None
 
-                files.extend([
-                    {
-                        **x.to_dict(add_filter=False),
-                        "uploaded_by": x.user.email,
-                        "file_url": FileHandler.get_file_url(x.file_path)
+        groups = []
 
-                    }
-                    for x in l_groups.learning_group_files])
+        if _parents:
+            groups: List[LearningGroup] = [x.learning_groups for x in _parents]
 
-            return {'comments': comments, 'files': files}
+        if _teachers:
+            groups: List[LearningGroup] = [x for x in _teachers.learning_groups]
+
+        if groups:
+
+            all_learning_groups = [group for sublist in groups for group in sublist] if _parents else groups
+
+            comments = []
+            files = []
+            if all_learning_groups:
+                for l_groups in all_learning_groups:
+                    comments.extend([
+                        {
+                            **x.to_dict(add_filter=False),
+                            "commented_by": x.user.to_dict(),
+                        }
+                        for x in l_groups.learning_group_comments])
+
+                    files.extend([
+                        {
+                            **x.to_dict(add_filter=False),
+                            "uploaded_by": x.user.email,
+                            "file_url": FileHandler.get_file_url(x.file_path)
+
+                        }
+                        for x in l_groups.learning_group_files])
+
+                return {'comments': comments, 'files': files}
+            else:
+                return "No groups found"
         else:
             return "No groups found"
 
