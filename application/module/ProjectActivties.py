@@ -69,7 +69,7 @@ class ProjectActivityModel:
 
     @classmethod
     def update_project_activity(cls, activity_id, school_id, data):
-        activity = ProjectActivity.query.filter_by(id=activity_id).first()
+        activity : ProjectActivity = ProjectActivity.query.filter_by(id=activity_id).first()
 
         if activity and activity.projects.school_id != int(school_id):
             raise CustomException(message="Activity not found", status_code=404)
@@ -78,6 +78,11 @@ class ProjectActivityModel:
             raise CustomException(message="Activity not found", status_code=404)
 
         try:
+
+            if status := data.get('status'):
+                if status.lower() not in ['open', 'completed']:
+                    raise CustomException(message="Status can only be open or completed", status_code=400)
+
             activity.update_table(data)
             db.session.commit()
             return True

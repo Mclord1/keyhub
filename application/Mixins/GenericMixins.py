@@ -39,9 +39,9 @@ class GenericMixin(object):
 
             db.session.commit()
             return valid_updates
-        except Exception:
+        except Exception as e:
             db.session.rollback()
-            raise CustomException(ExceptionCode.DATABASE_ERROR)
+            raise e
 
     def save(cls, refresh: bool = False):
         db.session.add(cls)
