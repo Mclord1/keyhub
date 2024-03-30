@@ -177,7 +177,6 @@ class SchoolProjectModel:
             "msisdn": _project.user.msisdn,
             "school": _project.schools.name,
             "students": [x.to_dict() for x in _project.students],
-            "sme": [x.to_dict(add_filter=False) for x in _project.subject_matter],
             "activities": [x.to_dict(add_filter=False) for x in _project.activities],
             "learning_groups": [x.to_dict(add_filter=False) for x in _project.learning_groups],
             **_project.to_dict(add_filter=False),
