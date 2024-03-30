@@ -30,6 +30,9 @@ class LearningGroupComment(db.Model, GenericMixin):
     user = db.relationship("User", back_populates="learning_group_comments")
 
 
+
+
+
 class LearningGroupFile(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     learning_group_id = db.Column(db.Integer, db.ForeignKey('learning_group.id', ondelete='CASCADE'), nullable=False)

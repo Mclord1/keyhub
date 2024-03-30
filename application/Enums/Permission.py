@@ -84,8 +84,6 @@ class SchoolPermissionEnum(enum.Enum):
     VIEW_KEYWORD = 'view_keywords'
     DEACTIVATE_KEYWORD = 'deactivate_keywords'
 
-
-
     # PLAN
     VIEW_PLAN = 'view_plan'
 
@@ -191,8 +189,8 @@ class PermissionEnum(enum.Enum):
     VIEW_PLAN = 'view_plan'
     DELETE_PLAN = 'delete_plan'
 
-
     # REPORT
     REPORT_VIEW_DASHBOARD = 'report_view_dashboard'
     REPORT_ACADEMIC_YEAR = 'report_academic_year'
     REPORT_ACADEMIC_TERMS = 'report_academic_terms'
+

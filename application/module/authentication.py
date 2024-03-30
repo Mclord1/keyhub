@@ -110,3 +110,12 @@ class Authentication:
         _user.UpdatePassword(password)
 
         return return_json(OutputObj(message="Password has been set successfully.", code=200))
+
+    @staticmethod
+    def reset_password(user_id):
+        user: User = User.GetUser(user_id)
+
+        if not user.students:
+            raise CustomException(message="user does not exist", status_code=404)
+
+        return Helper.send_otp(user)

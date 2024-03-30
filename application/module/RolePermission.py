@@ -50,7 +50,8 @@ class RolePermission:
             "permissions": [],
             "keyword": [],
             "sme": [],
-            "report": []
+            "report": [],
+            "learning_groups" : []
 
         }
 
