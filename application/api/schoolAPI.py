@@ -257,9 +257,15 @@ def update_school_project_comment(school_id, project_id, comment_id):
 def add_school_project_file(school_id, project_id):
     data = request.json
     file = data.get('file')
+    file_name = data.get('file_name')
+
     if not file:
         raise CustomException(message="Please provide comment", status_code=400)
-    return return_json(OutputObj(code=200, message=SchoolProjectModel.add_file(school_id, project_id, file)))
+
+    if not file_name:
+        raise CustomException(message="Please provide file_name", status_code=400)
+
+    return return_json(OutputObj(code=200, message=SchoolProjectModel.add_file(school_id, project_id, file, file_name)))
 
 
 @school_blueprint.route('/<int:school_id>/projects/<int:project_id>/file', methods=['GET'])
@@ -570,9 +576,12 @@ def update_learning_group_child_comment(comment_id):
 def add_school_group_file(school_id, group_id):
     data = request.json
     file = data.get('file')
+    file_name = data.get('file_name')
     if not file:
         raise CustomException(message="Please provide comment", status_code=400)
-    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.add_file(school_id, group_id, file)))
+    if not file_name:
+        raise CustomException(message="Please provide file_name", status_code=400)
+    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.add_file(school_id, group_id, file, file_name)))
 
 
 @school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/file', methods=['GET'])

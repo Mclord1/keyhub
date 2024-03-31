@@ -20,6 +20,7 @@ class FileFolder:
     @classmethod
     def student_profile(cls, school_name, email):
         return f"{school_name}/students/{email}/file-ab5619e7"
+
     @classmethod
     def teacher_profile(cls, school_name, email):
         return f"{school_name}/teachers/{email}/file-ab5619e7"
@@ -29,18 +30,15 @@ class FileFolder:
         return f"admins/{email}"
 
     @classmethod
-    def student_file(cls, school_name, email):
-        file_name = f"file-{str(uuid.uuid4())[:8]}"
+    def student_file(cls, school_name, email, file_name):
         return f"{school_name}/students/{email}/{file_name}", file_name
 
     @classmethod
-    def project_file(cls, school_name, project_name):
-        file_name = f"project-{str(uuid.uuid4())[:8]}"
+    def project_file(cls, school_name, project_name, file_name):
         return f"{school_name}/projects/{project_name}/{file_name}", file_name
 
     @classmethod
-    def learning_group_file(cls, school_name, learning_group_name):
-        file_name = f"learning_group-{str(uuid.uuid4())[:8]}"
+    def learning_group_file(cls, school_name, learning_group_name, file_name):
         return f"{school_name}/learning_group/{learning_group_name}/{file_name}", file_name
 
 

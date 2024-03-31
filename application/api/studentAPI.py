@@ -114,14 +114,27 @@ def remove_student_comment(id, comment_id):
     return return_json(OutputObj(code=200, message=Student.remove_comment(id, comment_id)))
 
 
+@student_blueprint.route('/<int:id>/comment/<int:comment_id>', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_STUDENTS)
+def edit_student_comment(id, comment_id):
+    data = request.json
+    comment = data.get('comment')
+    if not comment:
+        raise CustomException(message="Please provide comment", status_code=400)
+    return return_json(OutputObj(code=200, message=Student.edit_comments(id, comment_id, comment)))
+
+
 @student_blueprint.route('/<int:id>/file', methods=['POST'])
 @authenticate(PermissionEnum.MODIFY_STUDENTS)
 def add_student_file(id):
     data = request.json
     file = data.get('file')
+    file_name = data.get('file_name')
     if not file:
         raise CustomException(message="Please provide file", status_code=400)
-    return return_json(OutputObj(code=200, message=Student.add_file(id, file)))
+    if not file_name:
+        raise CustomException(message="Please provide file_name", status_code=400)
+    return return_json(OutputObj(code=200, message=Student.add_file(id, file, file_name)))
 
 
 @student_blueprint.route('/<int:id>/file', methods=['GET'])

@@ -359,15 +359,17 @@ class SchoolProjectModel:
         return "Comment has been deleted successfully"
 
     @classmethod
-    def add_file(cls, school_id, project_id, file):
+    def add_file(cls, school_id, project_id, file, file_name):
+
         project: Project = Project.GetProject(school_id, project_id)
 
-        file_path, file_name = FileFolder.project_file(project.schools.name, project.name)
+        file_path, stored_file_name = FileFolder.project_file(project.schools.name, project.name, file_name)
 
         profile_url = FileHandler.upload_file(file, file_path)
 
-        new_file = ProjectFile(project_id=project.id, file_name=file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id)
+        new_file = ProjectFile(project_id=project.id, file_name=stored_file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id)
         new_file.save()
+
         return "File has been added successfully"
 
     @classmethod

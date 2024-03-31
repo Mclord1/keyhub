@@ -261,6 +261,27 @@ class StudentModel:
             for x in user.students.student_comments]
 
     @classmethod
+    def edit_comments(cls, student_id, comment_id, new_comment):
+
+        user: User = User.GetUser(student_id)
+
+        if not user.students:
+            raise CustomException(message="Student does not exist", status_code=404)
+
+        comments: StudentComment = StudentComment.query.filter_by(student_id=user.students.id, id=comment_id).first()
+
+        if not comments:
+            raise CustomException(message="Comment not found", status_code=404)
+
+        if not current_user.managers or current_user.id != comments.user_id:
+            if not current_user.admins:
+                raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
+
+        comments.comment = new_comment
+        db.session.commit()
+        return "Comment has been updated successfully"
+
+    @classmethod
     def remove_comment(cls, student_id, comment_id):
 
         user: User = User.GetUser(student_id)
@@ -280,17 +301,17 @@ class StudentModel:
         return "Comment has been deleted successfully"
 
     @classmethod
-    def add_file(cls, student_id, file):
+    def add_file(cls, student_id, file, file_name):
         user: User = User.GetUser(student_id)
 
         if not user.students:
             raise CustomException(message="Student does not exist", status_code=404)
 
-        file_path, file_name = FileFolder.student_file(user.students.schools.name, user.email)
+        file_path, stored_file_name = FileFolder.student_file(user.students.schools.name, user.email, file_name)
 
         profile_url = FileHandler.upload_file(file, file_path)
 
-        new_file = StudentFile(student_id=user.students.id, file_name=file_name, file_url=profile_url,
+        new_file = StudentFile(student_id=user.students.id, file_name=stored_file_name, file_url=profile_url,
                                file_path=file_path,
                                user_id=current_user.id)
         new_file.save()
