@@ -19,6 +19,10 @@ class SME(db.Model, GenericMixin):
     schools = db.relationship("School", back_populates="smes")
 
 
+
+
+
+
 class Keywords(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(300), nullable=False)

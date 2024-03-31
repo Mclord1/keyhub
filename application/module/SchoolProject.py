@@ -180,6 +180,7 @@ class SchoolProjectModel:
             "activities": [x.to_dict(add_filter=False) for x in _project.activities],
             "learning_groups": [x.to_dict(add_filter=False) for x in _project.learning_groups],
             **_project.to_dict(add_filter=False),
+            "subject_matter": [SME.query.get(x).to_dict(add_filter=False) for x in _project.subject_matter],
             "learning_goals": list(_project.learning_goals) if _project.learning_goals else [],
             "lead_teacher": {**Teacher.GetTeacher(_project.lead_teacher).to_dict(), "user_id": Teacher.GetTeacher(_project.lead_teacher).user.id} if _project.lead_teacher else None,
             "supporting_teachers": [{**Teacher.GetTeacher(x).to_dict(), "user_id": Teacher.GetTeacher(x).user.id} for x in
