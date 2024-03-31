@@ -532,7 +532,7 @@ def update_school_group_comment(school_id, group_id, comment_id):
     return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.edit_comments(group_id, comment_id, comment)))
 
 
-@school_blueprint.route('/<int:comment_id>/child-comment', methods=['POST'])
+@school_blueprint.route('/learning-group-comment/<int:comment_id>', methods=['POST'])
 @authenticate()
 def add_learning_group_child_comment(comment_id):
     data = request.json
@@ -542,19 +542,19 @@ def add_learning_group_child_comment(comment_id):
     return return_json(OutputObj(code=200, message=ChildComment.add_comment(comment_id, comment)))
 
 
-@school_blueprint.route('/<int:comment_id>/child-comment', methods=['GET'])
+@school_blueprint.route('/learning-group-comment/<int:comment_id>', methods=['GET'])
 @authenticate()
 def get_learning_group_child_comment(comment_id):
     return return_json(OutputObj(code=200, message="comment fetched", data=ChildComment.get_comments(comment_id)))
 
 
-@school_blueprint.route('/<int:comment_id>/child-comment', methods=['DELETE'])
+@school_blueprint.route('/learning-group-comment/child-comment/<int:comment_id>', methods=['DELETE'])
 @authenticate()
 def remove_learning_group_child_comment(comment_id):
     return return_json(OutputObj(code=200, message=ChildComment.remove_comment(comment_id)))
 
 
-@school_blueprint.route('/<int:comment_id>/child-comment', methods=['PUT'])
+@school_blueprint.route('/learning-group-comment/child-comment/<int:comment_id>', methods=['PUT'])
 @authenticate()
 def update_learning_group_child_comment(comment_id):
     data = request.json
