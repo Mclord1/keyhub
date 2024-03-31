@@ -275,12 +275,13 @@ class SchoolProjectModel:
 
         try:
             if model == "teacher":
+
                 for _user in req.users:
 
                     _teacher: Teacher = Teacher.GetTeacher(_user)
 
                     if len(_teacher.projects) == 1:
-                        _learning_group.teachers.append(_teacher)
+                        _learning_group.teachers.remove(_teacher)
 
                     if _teacher not in project.teachers:
                         raise CustomException(message="Teacher doesn't exist in this group", status_code=404)
@@ -290,6 +291,7 @@ class SchoolProjectModel:
                     Audit.add_audit('Removed Teacher from School Project', current_user, project.to_dict(add_filter=False))
 
             if model == "student":
+
                 for _user in req.users:
 
                     _student: Student = Student.GetStudent(_user)

@@ -34,14 +34,17 @@ class DashboardModel:
                     comments.extend([
                         {
                             **x.to_dict(add_filter=False),
-                            "commented_by": x.user.to_dict(),
+                            "commented_by": {
+                                **x.user.to_dict(),
+                                **User.GetUserObject(x.user.id)
+                            },
                         }
                         for x in l_groups.learning_group_comments])
 
                     files.extend([
                         {
                             **x.to_dict(add_filter=False),
-                            "uploaded_by": x.user.email,
+                            "uploaded_by": {'email': x.user.email, **User.GetUserObject(x.user.id)},
                             "file_url": FileHandler.get_file_url(x.file_path)
 
                         }

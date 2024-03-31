@@ -47,7 +47,7 @@ class SchoolLearningGroupsModel:
             'description': _group.description,
             'isDeactivated': _group.isDeactivated,
             'students': [x.to_dict() for x in _group.students],
-            'teachers': [x.to_dict() for x in _group.teachers],
+            'teachers': [x.to_dict() for x in _group.projects],
             'projects': [x.to_dict(add_filter=False) for x in _group.projects],
         }
         return result
@@ -262,3 +262,62 @@ class SchoolLearningGroupsModel:
 
         group.delete()
         return "You have been removed from the learning group."
+
+
+class ChildComment:
+
+    @classmethod
+    def add_comment(cls, comment_id, comment):
+        group_comment: LearningGroupComment = LearningGroupComment.query.filter_by(id=comment_id).first()
+
+        if not group_comment:
+            raise CustomException(message="Comment not found", status_code=404)
+
+        new_comment = LearningGroupChildComment(learning_group_comment_id=group_comment.id, user_id=current_user.id, comment=comment)
+        new_comment.save(refresh=True)
+
+        subscribed_users = [x.user_id for x in group_comment.learning_groups.subscribed_groups]
+        Notification.send_push_notification(subscribed_users, new_comment.comment, LearningGroup.__name__, {"id": new_comment.id})
+        return "Comment has been added successfully"
+
+    @classmethod
+    def get_comments(cls, comment_id):
+        group_comment: [LearningGroupChildComment] = LearningGroupChildComment.query.filter_by(learning_group_comment_id=comment_id).all()
+        return [
+            {
+                **x.to_dict(add_filter=False),
+                "commented_by": {
+                    **User.GetUserObject(x.user.id)
+                },
+            }
+            for x in group_comment]
+
+    @classmethod
+    def edit_comments(cls, comment_id, new_comment):
+        group_comment: LearningGroupChildComment = LearningGroupChildComment.query.filter_by(id=int(comment_id)).first()
+        if not group_comment:
+            raise CustomException(message="Comment not found", status_code=404)
+
+        if not current_user.managers or current_user.id != group_comment.user_id:
+            if not current_user.admins:
+                raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
+
+        group_comment.comment = new_comment
+        db.session.commit()
+        return "Comment has been updated successfully"
+
+    @classmethod
+    def remove_comment(cls, comment_id):
+        group_comment: LearningGroupChildComment = LearningGroupChildComment.query.filter_by(id=comment_id).first()
+        if not group_comment:
+            raise CustomException(message="Comment not found", status_code=404)
+
+        if not current_user.managers or current_user.id != group_comment.user_id:
+            if not current_user.admins:
+                raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
+
+        group_comment.delete()
+
+        subscribed_users = [x.user_id for x in group_comment.learning_group_comment.learning_group.subscribed_groups]
+        Notification.send_push_notification(subscribed_users, f"{current_user.email} has removed a comment", LearningGroup.__name__)
+        return "Comment has been deleted successfully"

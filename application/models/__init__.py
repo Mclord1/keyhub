@@ -2,7 +2,7 @@ from application.models.admin import Admin
 from application.models.audit import Audit
 from application.models.confirmation_code import ConfirmationCode
 from application.models.country import Country
-from application.models.learning_group import LearningGroupTeachers, LearningGroupStudents, LearningGroupProjects, LearningGroup, LearningGroupFile, LearningGroupComment, LearningGroupSubscription
+from application.models.learning_group import LearningGroupTeachers, LearningGroupStudents, LearningGroupProjects, LearningGroup, LearningGroupFile, LearningGroupComment, LearningGroupSubscription, LearningGroupChildComment
 from application.models.parents import Parent
 from application.models.permission import RolePermission, Permission
 from application.models.permission import RolePermission, Permission, SchoolPermission

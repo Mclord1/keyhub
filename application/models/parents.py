@@ -41,7 +41,7 @@ class Parent(db.Model, GenericMixin):
 
     @classmethod
     def GetParent(cls, user_id):
-        parent = Parent.query.filter_by(id=user_id).first()
+        parent = Parent.query.filter_by(user_id=user_id).first()
         if not parent:
             raise CustomException(message="Parent does not exist", status_code=404)
         return parent

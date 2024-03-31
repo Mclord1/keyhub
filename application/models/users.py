@@ -43,6 +43,7 @@ class User(db.Model, GenericMixin):
     learning_group_files = db.relationship("LearningGroupFile", back_populates="user", cascade="all, delete-orphan")
     learning_group_comments = db.relationship("LearningGroupComment", back_populates="user", cascade="all, delete-orphan")
     subscribed_groups = db.relationship("LearningGroupSubscription", back_populates='user', cascade="all, delete-orphan")
+    learning_group_child_comment = db.relationship("LearningGroupChildComment", back_populates='user', cascade="all, delete-orphan")
 
     notifications = db.relationship("Notification", back_populates='user', cascade="all, delete-orphan")
     sent_messages = db.relationship('Message', foreign_keys=[Message.sender_id], back_populates='sender')

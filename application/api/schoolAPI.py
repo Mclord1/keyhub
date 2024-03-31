@@ -4,7 +4,7 @@ from application.module.ProjectActivties import ProjectActivityModel
 from application.module.SchoolAcademic import SchoolAcademicModel
 from application.module.SchoolAdmin import SchoolAdminModel
 from application.module.SchoolFAQ import FAQModel
-from application.module.SchoolLearningGroup import SchoolLearningGroupsModel
+from application.module.SchoolLearningGroup import SchoolLearningGroupsModel, ChildComment
 from application.module.SchoolProject import SchoolProjectModel
 from application.module.SchoolTerms import SchoolTermsModel
 from application.module.Schools import SchoolModel
@@ -530,6 +530,38 @@ def update_school_group_comment(school_id, group_id, comment_id):
     if not comment:
         raise CustomException(message="Please provide comment", status_code=400)
     return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.edit_comments(group_id, comment_id, comment)))
+
+
+@school_blueprint.route('/<int:comment_id>/child-comment', methods=['POST'])
+@authenticate()
+def add_learning_group_child_comment(comment_id):
+    data = request.json
+    comment = data.get('comment')
+    if not comment:
+        raise CustomException(message="Please provide comment", status_code=400)
+    return return_json(OutputObj(code=200, message=ChildComment.add_comment(comment_id, comment)))
+
+
+@school_blueprint.route('/<int:comment_id>/child-comment', methods=['GET'])
+@authenticate()
+def get_learning_group_child_comment(comment_id):
+    return return_json(OutputObj(code=200, message="comment fetched", data=ChildComment.get_comments(comment_id)))
+
+
+@school_blueprint.route('/<int:comment_id>/child-comment', methods=['DELETE'])
+@authenticate()
+def remove_learning_group_child_comment(comment_id):
+    return return_json(OutputObj(code=200, message=ChildComment.remove_comment(comment_id)))
+
+
+@school_blueprint.route('/<int:comment_id>/child-comment', methods=['PUT'])
+@authenticate()
+def update_learning_group_child_comment(comment_id):
+    data = request.json
+    comment = data.get('comment')
+    if not comment:
+        raise CustomException(message="Please provide comment", status_code=400)
+    return return_json(OutputObj(code=200, message=ChildComment.edit_comments(comment_id, comment)))
 
 
 @school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/file', methods=['POST'])

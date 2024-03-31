@@ -27,10 +27,17 @@ class LearningGroupComment(db.Model, GenericMixin):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=False)
     comment = db.Column(db.Text, nullable=False)
     learning_groups = db.relationship("LearningGroup", back_populates="learning_group_comments")
+    learning_group_child_comment = db.relationship("LearningGroupChildComment", back_populates="learning_group_comment")
     user = db.relationship("User", back_populates="learning_group_comments")
 
 
-
+class LearningGroupChildComment(db.Model, GenericMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    comment = db.Column(db.Text, nullable=False)
+    learning_group_comment_id = db.Column(db.Integer, db.ForeignKey('learning_group_comment.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
+    user = db.relationship("User", back_populates="learning_group_child_comment")
+    learning_group_comment = db.relationship("LearningGroupComment", back_populates="learning_group_child_comment")
 
 
 class LearningGroupFile(db.Model, GenericMixin):

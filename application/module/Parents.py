@@ -48,10 +48,16 @@ class ParentModel:
 
         gender = data.get('gender')
         role = data.get('role')
+        phone_number = data.get('phone_number')
+
+        if phone_number:
+            user.msisdn = phone_number
+
         if role:
             user.role_id = role
         if gender:
             user.parents.gender = gender
+
         user.parents.update_table(data)
         Audit.add_audit('Updated Parent Information ', current_user, user.parents.to_dict())
         return {**user.parents.to_dict(), "user_id": user.id}
@@ -65,7 +71,6 @@ class ParentModel:
         role = Role.GetRoleByName(BasicRoles.PARENT.value)
 
         _school = School.GetSchool(req.school_id)
-
 
         try:
 
@@ -171,6 +176,31 @@ class ParentModel:
     @classmethod
     def search_parents(cls, args):
         return Helper.look_up_account(Parent, User, args)
+
+    @classmethod
+    def list_children(cls):
+        parent: Parent = Parent.GetParent(current_user.id)
+        if not parent:
+            raise CustomException(message="Parent does not exist", status_code=404)
+
+        return [
+            {
+                **x.to_dict(),
+                "school": x.schools.name,
+                "user_id": x.user.id,
+                "file_url": [FileHandler.get_file_url(x.file_path) for x in x.student_files]
+            }
+            for x in parent.students]
+
+    @classmethod
+    def get_learning_group(cls):
+        parent: Parent = Parent.GetParent(current_user.id)
+
+        if not parent:
+            raise CustomException(message="Parent does not exist", status_code=404)
+        groups = [x.learning_groups for x in parent.students]
+        nested = list(set(sum(groups, []))) if groups else []
+        return [x.to_dict(add_filter=False) for x in nested] if nested else []
 
     @classmethod
     def get_user(cls, user_id):

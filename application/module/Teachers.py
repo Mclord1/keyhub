@@ -46,6 +46,12 @@ class TeacherModel:
 
         gender = data.get('gender')
         role = data.get('role')
+
+        phone_number = data.get('phone_number')
+
+        if phone_number:
+            user.msisdn = phone_number
+
         if role:
             user.role_id = role
         if gender:

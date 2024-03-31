@@ -40,6 +40,18 @@ def search_parent():
     return return_json(OutputObj(code=200, message="Parent results", data=Parent.search_parents(query)))
 
 
+@parent_blueprint.route('/list-children', methods=['GET'])
+@authenticate()
+def list_children():
+    return return_json(OutputObj(code=200, message="Children results", data=Parent.list_children()))
+
+
+@parent_blueprint.route('/groups', methods=['GET'])
+@authenticate()
+def list_learning_groups():
+    return return_json(OutputObj(code=200, message="Learning group results", data=Parent.get_learning_group()))
+
+
 @parent_blueprint.route('/reset-password', methods=['POST'])
 @authenticate(PermissionEnum.RESET_PARENTS_PASSWORD)
 def reset_password():
@@ -76,6 +88,6 @@ def delete_parent():
 
 
 @parent_blueprint.route('/get-parent/<int:id>', methods=['GET'])
-@authenticate([PermissionEnum.VIEW_PARENTS,  SchoolPermissionEnum.VIEW_TEACHERS])
+@authenticate([PermissionEnum.VIEW_PARENTS, SchoolPermissionEnum.VIEW_TEACHERS])
 def get_parent(id):
     return return_json(OutputObj(code=200, message="Parent results", data=Parent.get_user(id)))
