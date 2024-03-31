@@ -306,7 +306,7 @@ class StudentModel:
         return [
             {
                 **x.to_dict(add_filter=False),
-                "commented_by": x.user.to_dict() | User.GetUserObject(x.user.id),
+                "uploaded_by": x.user.to_dict() | User.GetUserObject(x.user.id),
                 "file_url": FileHandler.get_file_url(x.file_path)
 
             }
