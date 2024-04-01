@@ -1,4 +1,5 @@
 import base64
+import mimetypes
 import uuid
 
 import botocore
@@ -59,10 +60,15 @@ class FileHandler:
         try:
             # Check if the prefix 'data:image/jpeg;base64,' exists in the string
             if file.startswith("data:image/jpeg;base64,") or file.startswith("data:image/png;base64,") or file.startswith("data:image/jpg;base64,"):
-                image_type = file.split(';')[0].split(':')[1]
+                content_type = file.split(';')[0].split(':')[1]
                 base64_encoded_data = file.split(',', 1)[1]
             else:
-                image_type = 'image/jpeg'
+                content_type, _ = mimetypes.guess_type(file)
+
+                if not content_type:
+                    content_type = 'binary/octet-stream'
+                else:
+                    content_type = content_type
                 base64_encoded_data = file
 
             missing_padding = len(base64_encoded_data) % 4
@@ -74,7 +80,7 @@ class FileHandler:
                 Bucket=cls.bucket_name,
                 Key=file_path,
                 Body=decoded_image_data,
-                ContentType=str(image_type)  # Specify the content type as needed
+                ContentType=str(content_type)  # Specify the content type as needed
             )
 
             # Generate a pre-signed URL for the uploaded image
@@ -120,3 +126,6 @@ class FileHandler:
             return cls.upload_file(file, file_name)
         else:
             return False
+
+
+
