@@ -334,7 +334,9 @@ class SchoolProjectModel:
 
     @classmethod
     def edit_comment(cls, project_id, comment_id, new_comment):
+
         comments: ProjectComment = ProjectComment.query.filter_by(project_id=project_id, id=comment_id).first()
+        
         if not comments:
             raise CustomException(message="Comment not found", status_code=404)
 
