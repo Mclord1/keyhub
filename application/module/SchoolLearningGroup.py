@@ -47,7 +47,7 @@ class SchoolLearningGroupsModel:
             'description': _group.description,
             'isDeactivated': _group.isDeactivated,
             'students': [x.to_dict() for x in _group.students],
-            'teachers': [x.to_dict() for x in _group.projects],
+            'teachers': [x.to_dict() for x in _group.teachers],
             'projects': [x.to_dict(add_filter=False) for x in _group.projects],
         }
         return result
