@@ -9,9 +9,12 @@ class DashboardModel:
 
     @classmethod
     def news_feed(cls):
+
         _user: User = User.query.filter_by(id=current_user.id).first()
+
         if not _user:
             raise CustomException(message="User not found")
+
         _parents: List[Student] = _user.parents.students if _user.parents else None
         _teachers: Teacher = _user.teachers if _user.teachers else None
 
@@ -24,8 +27,8 @@ class DashboardModel:
             groups: List[LearningGroup] = [x for x in _teachers.learning_groups]
 
         if groups:
-
             all_learning_groups = [group for sublist in groups for group in sublist] if _parents else groups
+            all_learning_groups = list(set(all_learning_groups))
 
             comments = []
             files = []
@@ -39,7 +42,8 @@ class DashboardModel:
                                 **User.GetUserObject(x.user.id)
                             },
                         }
-                        for x in l_groups.learning_group_comments])
+                        for x in l_groups.learning_group_comments]
+                    )
 
                     files.extend([
                         {
@@ -48,7 +52,8 @@ class DashboardModel:
                             "file_url": FileHandler.get_file_url(x.file_path)
 
                         }
-                        for x in l_groups.learning_group_files])
+                        for x in l_groups.learning_group_files]
+                    )
 
                 return {'comments': comments, 'files': files}
             else:
