@@ -120,3 +120,7 @@ class Authentication:
 
         res = Helper.send_otp(user)
         return return_json(OutputObj(message=res, code=200))
+
+    @staticmethod
+    def invite_link(email):
+        pass

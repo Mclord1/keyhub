@@ -294,11 +294,13 @@ class ChildComment:
 
     @classmethod
     def edit_comments(cls, comment_id, new_comment):
+
         group_comment: LearningGroupChildComment = LearningGroupChildComment.query.filter_by(id=int(comment_id)).first()
+
         if not group_comment:
             raise CustomException(message="Comment not found", status_code=404)
 
-        if not current_user.managers or current_user.id != group_comment.user_id:
+        if not current_user.managers and (int(current_user.id) != int(group_comment.user_id)):
             if not current_user.admins:
                 raise CustomException(message="Only comment author or admin can edit this comment", status_code=400)
 
@@ -312,7 +314,7 @@ class ChildComment:
         if not group_comment:
             raise CustomException(message="Comment not found", status_code=404)
 
-        if not current_user.managers or current_user.id != group_comment.user_id:
+        if not current_user.managers and current_user.id != group_comment.user_id:
             if not current_user.admins:
                 raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
 
