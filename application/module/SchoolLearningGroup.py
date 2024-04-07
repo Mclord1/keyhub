@@ -316,9 +316,8 @@ class ChildComment:
             if not current_user.admins:
                 raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
 
-
-        group_comment.delete()
+        db.session.delete(group_comment)
         subscribed_users = [x.user_id for x in group_comment.learning_group_comment.learning_groups.subscribed_groups]
         Notification.send_push_notification(subscribed_users, f"{current_user.email} has removed a comment", LearningGroup.__name__)
-
+        db.session.commit()
         return "Comment has been deleted successfully"
