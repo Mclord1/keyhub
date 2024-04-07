@@ -268,7 +268,7 @@ class ChildComment:
 
     @classmethod
     def add_comment(cls, comment_id, comment):
-        group_comment: LearningGroupComment = LearningGroupComment.query.filter_by(id=comment_id).first()
+        group_comment: LearningGroupComment = LearningGroupComment.query.filter_by(id=int(comment_id)).first()
 
         if not group_comment:
             raise CustomException(message="Comment not found", status_code=404)
@@ -300,7 +300,7 @@ class ChildComment:
 
         if not current_user.managers or current_user.id != group_comment.user_id:
             if not current_user.admins:
-                raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
+                raise CustomException(message="Only comment author or admin can edit this comment", status_code=400)
 
         group_comment.comment = new_comment
         db.session.commit()
@@ -316,8 +316,9 @@ class ChildComment:
             if not current_user.admins:
                 raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
 
-        group_comment.delete()
 
-        subscribed_users = [x.user_id for x in group_comment.learning_group_comment.learning_group.subscribed_groups]
+        group_comment.delete()
+        subscribed_users = [x.user_id for x in group_comment.learning_group_comment.learning_groups.subscribed_groups]
         Notification.send_push_notification(subscribed_users, f"{current_user.email} has removed a comment", LearningGroup.__name__)
+
         return "Comment has been deleted successfully"
