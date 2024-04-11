@@ -49,6 +49,15 @@ def reset_password():
     return authenticationModel.reset_password(email)
 
 
+@auth_blueprint.route('/invite-link', methods=['POST'])
+@jwt_required()
+def invite_user():
+    req = request.json
+    email = req.get('email')
+    type = req.get('type')
+    return authenticationModel.invite_link(email, type)
+
+
 @auth_blueprint.route('/ping', methods=['GET'])
 def ping():
     return return_json(OutputObj(message="pong!!"))

@@ -13,6 +13,23 @@ base_url = "http://3.145.101.11:5000/"
 class EmailHandler:
 
     @classmethod
+    def send_invite_email(cls, recipient, school_name, role, link):
+        subject = f'You have been invited to join {school_name}'
+        body = f"""
+
+                <p>
+                    You have been invited to join {school_name} as a {role}, click the button below to set up your profile. Once you're done, you can then login with your email and password.
+                    if you have any questions, feel free to reach out to the school admin.
+                </p>
+
+                
+                <a href="{link}" class="mb-20">Set up profile</a>
+
+        """
+
+        return cls.send_email(recipient, subject, '', body)
+
+    @classmethod
     def welcome_mail(cls, recipient, username):
         subject = 'Your Keyhub Account has been created.'
         body = """
@@ -31,7 +48,7 @@ class EmailHandler:
         return cls.send_email(recipient, subject, username, body)
 
     @classmethod
-    def send_otp(cls, recipient, otp):
+    def send_otp(cls, recipient, otp, token):
         subject = 'Your Keyhub Account OTP'
         body = f"""
 
@@ -40,7 +57,7 @@ class EmailHandler:
                 </p>
 
                 <!-- Add your reset password link -->
-                <a href="#" class="mb-20">Reset Password</a>
+                <a href="https://keyhub-frontend.vercel.app/password-setup?token={token}&email={recipient}" class="mb-20">Reset Password</a>
 
         """
 
@@ -120,7 +137,7 @@ class EmailHandler:
                         display: inline-block;
                         padding: 20px 30px;
                         background-color: #007BFF;
-                        color: #fff;
+                        color: white !important;
                         text-decoration: none;
                         border-radius: 5px;
                     }}
@@ -167,7 +184,7 @@ class EmailHandler:
                             {body}
     
                             <p>
-                                Best Regards, <br>The Keyhub Academy Team
+                                Best Regards, <br>The Key Academy Team
                             </p>
     
                         </td>
@@ -176,9 +193,7 @@ class EmailHandler:
     
                 <!-- Footer -->
                 <footer>
-                    <p>&copy; KeyHub, <span id="currentYear"></span>. All Rights Reserved</p>
-                    <p>123 Main St, City</p>
-                    <p class="mb-20">Lagos, Nigeria</p>
+                    <p>&copy; Key, <span id="currentYear"></span>. All Rights Reserved</p>
                     <img src="{base_url}images/old_logo.png" alt="Logo">
                 </footer>
             </div>

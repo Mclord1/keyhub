@@ -122,5 +122,28 @@ class Authentication:
         return return_json(OutputObj(message=res, code=200))
 
     @staticmethod
-    def invite_link(email):
-        pass
+    def invite_link(email, type):
+
+        if not email or not type:
+            raise CustomException(message="Email and type are required", status_code=400)
+
+        user: User = User.query.filter_by(id=current_user.id).first()
+        if not user:
+            raise CustomException(message="user does not exist", status_code=404)
+
+        if type not in ['teacher', 'parent']:
+            raise CustomException(message="Type must be teacher|parent", status_code=400)
+
+        school = User.GetSchool(user.id)
+        school_id = school[0].id if isinstance(school, list) else school.id
+        school_name = school[0].name if isinstance(school, list) else school.name
+
+        if type == 'teacher':
+            role = "teacher"
+            link = f"https://keyhub-frontend.vercel.app/school/{school_id}/teacher/sign-up"
+        else:
+            role = "parent"
+            link = f"https://keyhub-frontend.vercel.app/school/{school_id}/parent/sign-up"
+
+        EmailHandler.send_invite_email(email, school_name, role, link)
+        return return_json(OutputObj(message=f"Invite link has been successfully sent to {email}", code=200))

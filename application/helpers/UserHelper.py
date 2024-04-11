@@ -2,6 +2,8 @@ import datetime
 import random
 import string
 
+from flask import request
+
 from application import db
 from application.models import ConfirmationCode, User, Parent, SchoolParent, Teacher, SchoolTeacher, Student
 from application.module import current_user
@@ -17,11 +19,12 @@ class Helper:
 
     @classmethod
     def send_otp(cls, user):
+        token = request.headers.get('Authorization').split()[1]
         otp_code = cls.generate_token()
         expiration_time = datetime.datetime.now() + datetime.timedelta(minutes=2)
         add_to_confirmation = ConfirmationCode(email=user.email, user_id=user.id, code=otp_code, expiration=expiration_time)
         add_to_confirmation.save(refresh=True)
-        EmailHandler.send_otp(user.email, otp_code)
+        EmailHandler.send_otp(user.email, otp_code, token)
         return f"OTP code has been sent to {user.email}"
 
     @classmethod
