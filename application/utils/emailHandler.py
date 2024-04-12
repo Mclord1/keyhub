@@ -1,3 +1,5 @@
+import datetime
+
 from dotenv import load_dotenv
 import base64
 from pathlib import Path
@@ -41,7 +43,7 @@ class EmailHandler:
                 </p>
 
                 <!-- Add your reset password link -->
-                <a href="#" class="mb-20">Reset Password</a>
+                <a href="https://keyhub-frontend.vercel.app/auth/new-user/password-setup" class="mb-20">Reset Password</a>
 
         """
 
@@ -57,14 +59,15 @@ class EmailHandler:
                 </p>
 
                 <!-- Add your reset password link -->
-                <a href="https://keyhub-frontend.vercel.app/password-setup?token={token}&email={recipient}" class="mb-20">Reset Password</a>
+                <a href="https://keyhub-frontend.vercel.app/auth/password-setup?token={token}&email={recipient}" class="mb-20">Reset Password</a>
 
         """
 
-        return cls.send_email(recipient, subject, 'Dear', body)
+        return cls.send_email(recipient, subject, '', body)
 
     @classmethod
     def send_email(cls, recipient, subject, username, body):
+        current_year = datetime.datetime.now().year
         mail = mt.Mail(
             sender=mt.Address(email="mailtrap@axetechinnovations.com", name="Key Academy"),
             to=[mt.Address(email=recipient, name="clair")],
@@ -98,15 +101,19 @@ class EmailHandler:
                     }}
     
                     .container {{
-                        max-width: 50%;
+                        max-width: 90%;
                         margin: auto;
                     }}
+                    
+
     
                     .header-container {{
-                        height: 400px; /* Adjust the height as needed */
+                        width : 100%;
+                        height : 400px;
                         background-image: url('{base_url}images/login_image.png');
-                        background-size: contain;
-                        background-position: center;
+                        background-size: cover;
+                        background-position: top;
+                        background-repeat: no-repeat;
                     }}
     
                     .bold {{
@@ -121,6 +128,7 @@ class EmailHandler:
                     img {{
                         width: 100%;
                         height: auto;
+                        
                     }}
     
                     td {{
@@ -166,12 +174,9 @@ class EmailHandler:
                     .mb-20 {{
                         margin-bottom: 20px !important;
                     }}
-                    @media (max-width : 767px){{
-                        .container {{
-                            max-width: 90%;
-                            margin : auto;
-                        }}
-                    }}
+                    
+
+                    
                 </style>
             </head>
             <body>
@@ -185,7 +190,7 @@ class EmailHandler:
                         <td>
                             <h2 class="bold">{subject}</h2>
     
-                            <p>Hello <span class="bold">{username}</span>,</p>
+                            <p>Hello<span class="bold">{username}</span>,</p>
                             
                             {body}
     
@@ -199,15 +204,12 @@ class EmailHandler:
     
                 <!-- Footer -->
                 <footer>
-                    <p>&copy; Key Academy, <span id="currentYear"></span>. All Rights Reserved</p>
+                    <p>&copy; Key Academy. <span id="currentYear">{current_year}</span>. All Rights Reserved</p>
                     <img src="{base_url}images/old_logo.png" alt="Logo">
                 </footer>
             </div>
     
-            <!-- JavaScript to get and display the current year -->
-            <script>
-                document.getElementById('currentYear').innerHTML = new Date().getFullYear();
-            </script>
+
             </body>
             </html>
     

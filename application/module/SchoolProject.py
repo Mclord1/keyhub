@@ -66,9 +66,6 @@ class SchoolProjectModel:
     @classmethod
     def search_all_school_projects(cls, args):
 
-        if not current_user.admins:
-            raise CustomException(message="You don't have permission to access this service.")
-
         query = Project.query.filter(
             (Project.name.ilike(f'%{args}%'))
         ).filter(Project.is_private.is_(False), Project.status == 'approved')
