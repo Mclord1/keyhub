@@ -54,6 +54,7 @@ class ProjectFile(db.Model, GenericMixin):
 class ChecklistQuestion(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.Text, nullable=False)
+    error = db.Column(db.Text, nullable=False)
     is_private = db.Column(db.Boolean, default=False)
     created_by = db.Column(db.Integer, db.ForeignKey('admin.id', ondelete='SET NULL'))
     admins = db.relationship("Admin", back_populates="checklist")
