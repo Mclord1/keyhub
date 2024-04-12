@@ -137,9 +137,9 @@ class Authentication:
         school = User.GetSchool(user.id)
         school_id = school[0].id if isinstance(school, list) else school.id
         school_name = school[0].name if isinstance(school, list) else school.name
-
+        
         if type == 'teacher':
-            role = "teacher"
+            role = "colearner"
             link = f"https://keyhub-frontend.vercel.app/school/{school_id}/teacher/sign-up"
         else:
             role = "parent"

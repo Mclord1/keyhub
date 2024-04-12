@@ -117,6 +117,7 @@ class ParentSchema(BaseModel):
     agree_with_terms: bool
     how_you_knew_about_us: Optional[str] = None
     why_use_us: Optional[str] = None
+    token : str
 
 
 class SubscriptionSchema(BaseModel):

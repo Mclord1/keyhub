@@ -188,7 +188,8 @@ class ParentModel:
                 **x.to_dict(),
                 "school": x.schools.name,
                 "user_id": x.user.id,
-                "file_url": [FileHandler.get_file_url(x.file_path) for x in x.student_files]
+                "file_url": [FileHandler.get_file_url(x.file_path) for x in x.student_files],
+                "projects": [x.to_dict(add_filter=False) for x in x.projects]
             }
             for x in parent.students]
 

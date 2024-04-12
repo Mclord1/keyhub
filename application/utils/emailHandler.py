@@ -166,6 +166,12 @@ class EmailHandler:
                     .mb-20 {{
                         margin-bottom: 20px !important;
                     }}
+                    @media (max-width : 767px){{
+                        .container {{
+                            max-width: 90%;
+                            margin : auto;
+                        }}
+                    }}
                 </style>
             </head>
             <body>
