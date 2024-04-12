@@ -31,7 +31,7 @@ class EmailHandler:
 
     @classmethod
     def welcome_mail(cls, recipient, username):
-        subject = 'Your Keyhub Account has been created.'
+        subject = 'Your Key Academy Account has been created.'
         body = """
 
                 <p>
@@ -49,7 +49,7 @@ class EmailHandler:
 
     @classmethod
     def send_otp(cls, recipient, otp, token):
-        subject = 'Your Keyhub Account OTP'
+        subject = 'Your Key Academy Account OTP'
         body = f"""
 
                 <p>
@@ -66,7 +66,7 @@ class EmailHandler:
     @classmethod
     def send_email(cls, recipient, subject, username, body):
         mail = mt.Mail(
-            sender=mt.Address(email="mailtrap@axetechinnovations.com", name="Keyhub"),
+            sender=mt.Address(email="mailtrap@axetechinnovations.com", name="Key Academy"),
             to=[mt.Address(email=recipient, name="clair")],
             subject=subject,
             html=f"""
@@ -199,7 +199,7 @@ class EmailHandler:
     
                 <!-- Footer -->
                 <footer>
-                    <p>&copy; Key, <span id="currentYear"></span>. All Rights Reserved</p>
+                    <p>&copy; Key Academy, <span id="currentYear"></span>. All Rights Reserved</p>
                     <img src="{base_url}images/old_logo.png" alt="Logo">
                 </footer>
             </div>
