@@ -39,6 +39,8 @@ class TeacherSchema(BaseModel):
     how_you_heard_about_us: Optional[str] = None
     purpose_using_the_app: Optional[str] = None
     learning_group_id : Optional[int] = None
+    token : str
+
 
 
 class StudentSchema(BaseModel):

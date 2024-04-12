@@ -28,7 +28,6 @@ def update_teacher():
 
 
 @teacher_blueprint.route('/add-teacher', methods=['POST'])
-@authenticate(PermissionEnum.ADD_TEACHER)
 def add_teacher():
     req = request.json
     Teacher.add_teacher(req)

@@ -65,13 +65,16 @@ class TeacherModel:
     def add_teacher(cls, data):
         req: TeacherSchema = validator.validate_data(TeacherSchema, data)
 
+        if str(req.token).lower() != 'keyhub_invite':
+            raise CustomException(message="Invalid token", status_code=401)
+
         Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
 
         role = Role.GetRoleByName(BasicRoles.TEACHER.value)
 
         school = School.GetSchool(req.school_id)
 
-        if not current_user.admins and (current_user.managers and current_user.managers.school_id != school.id):
+        if current_user and (not current_user.admins and (current_user.managers and current_user.managers.school_id != school.id)):
             raise CustomException(message="You do not have privilege to access this school")
 
         if req.profile_image:
@@ -111,7 +114,8 @@ class TeacherModel:
                     _learning_group.teachers.append(add_user)
 
                 add_user.save(refresh=True)
-                Audit.add_audit('Added Teacher', current_user, add_user.to_dict())
+                current_u = current_user if current_user else add_user
+                Audit.add_audit('Added Teacher', current_u, add_user.to_dict())
                 EmailHandler.welcome_mail(new_teacher.email, add_user.first_name)
                 return {**add_user.to_dict(), "user_id": add_user.user.id}
 

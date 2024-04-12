@@ -66,6 +66,9 @@ class ParentModel:
     def add_parent(cls, data):
         req: ParentSchema = validator.validate_data(ParentSchema, data)
 
+        if str(req.token).lower() != 'keyhub_invite':
+            raise CustomException(message="Invalid token", status_code=401)
+
         Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
 
         role = Role.GetRoleByName(BasicRoles.PARENT.value)
@@ -82,7 +85,6 @@ class ParentModel:
             else:
 
                 new_parent = User.CreateUser(req.email, req.msisdn, role)
-
                 add_parent = Parent(
                     first_name=req.first_name,
                     last_name=req.last_name,
