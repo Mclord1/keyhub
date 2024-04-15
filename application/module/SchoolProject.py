@@ -381,7 +381,8 @@ class SchoolProjectModel:
                 "uploaded_by": x.user.to_dict() | User.GetUserObject(x.user.id),
                 "file_url": FileHandler.get_file_url(x.file_path)
             }
-            for x in _files.project_files]
+            for x in _files.project_files
+        ]
 
     @classmethod
     def remove_file(cls, project_id, file_id):
