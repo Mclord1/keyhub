@@ -81,7 +81,7 @@ class TeacherModel:
 
             file_path = FileFolder.teacher_profile(school.name, req.email)
 
-            profile_url = FileHandler.upload_file(req.profile_image, file_path)
+            profile_url, _ = FileHandler.upload_file(req.profile_image, file_path)
         else:
             profile_url = None
 
@@ -137,7 +137,7 @@ class TeacherModel:
 
         file_path = FileFolder.teacher_profile(user.teachers.schools[0].name, user.email)
 
-        profile_url = FileHandler.upload_file(profile_image, file_path)
+        profile_url, _ = FileHandler.upload_file(profile_image, file_path)
 
         user.teachers.profile_image = profile_url
         db.session.commit()

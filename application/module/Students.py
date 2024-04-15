@@ -68,7 +68,7 @@ class StudentModel:
 
             file_path = FileFolder.student_profile(school.name, req.email)
 
-            profile_url = FileHandler.upload_file(req.profile_image, file_path)
+            profile_url, _ = FileHandler.upload_file(req.profile_image, file_path)
         else:
             profile_url = None
 
@@ -178,7 +178,7 @@ class StudentModel:
 
         file_path = FileFolder.student_profile(user.students.schools.name, user.email)
 
-        profile_url = FileHandler.upload_file(profile_image, file_path)
+        profile_url, _ = FileHandler.upload_file(profile_image, file_path)
 
         user.students.profile_image = profile_url
         db.session.commit()
@@ -308,11 +308,11 @@ class StudentModel:
 
         file_path, stored_file_name = FileFolder.student_file(user.students.schools.name, user.email, file_name)
 
-        profile_url = FileHandler.upload_file(file, file_path)
+        profile_url, content_type = FileHandler.upload_file(file, file_path)
 
         new_file = StudentFile(student_id=user.students.id, file_name=stored_file_name, file_url=profile_url,
                                file_path=file_path,
-                               user_id=current_user.id)
+                               user_id=current_user.id, content_type=content_type)
         new_file.save()
         return "File has been added successfully"
 

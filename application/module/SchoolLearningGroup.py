@@ -199,9 +199,9 @@ class SchoolLearningGroupsModel:
 
         file_path, stored_file_name = FileFolder.learning_group_file(group.schools.name, group.name, file_name)
 
-        profile_url = FileHandler.upload_file(file, file_path)
+        profile_url, content_type = FileHandler.upload_file(file, file_path)
 
-        new_file = LearningGroupFile(learning_group_id=group.id, file_name=stored_file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id)
+        new_file = LearningGroupFile(learning_group_id=group.id, file_name=stored_file_name, file_url=profile_url, file_path=file_path, user_id=current_user.id, content_type=content_type)
         new_file.save(refresh=True)
 
         subscribed_users = [x.user_id for x in group.subscribed_groups]

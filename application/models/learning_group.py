@@ -47,6 +47,7 @@ class LearningGroupFile(db.Model, GenericMixin):
     file_name = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.Text, nullable=False)
     file_url = db.Column(db.Text, nullable=False)
+    content_type = db.Column(db.Text, nullable=True)
     learning_groups = db.relationship("LearningGroup", back_populates="learning_group_files")
     user = db.relationship("User", back_populates="learning_group_files")
 

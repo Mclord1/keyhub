@@ -47,6 +47,7 @@ class ProjectFile(db.Model, GenericMixin):
     file_name = db.Column(db.Text, nullable=False)
     file_path = db.Column(db.Text, nullable=False)
     file_url = db.Column(db.Text, nullable=False)
+    content_type = db.Column(db.Text, nullable=True)
     projects = db.relationship("Project", back_populates="project_files")
     user = db.relationship("User", back_populates="project_files")
 
@@ -54,7 +55,7 @@ class ProjectFile(db.Model, GenericMixin):
 class ChecklistQuestion(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.Text, nullable=False)
-    error = db.Column(db.Text, nullable=False)
+    error = db.Column(db.Text, nullable=True)
     is_private = db.Column(db.Boolean, default=False)
     created_by = db.Column(db.Integer, db.ForeignKey('admin.id', ondelete='SET NULL'))
     admins = db.relationship("Admin", back_populates="checklist")

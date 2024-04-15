@@ -19,6 +19,7 @@ class StudentFile(db.Model, GenericMixin):
     file_name = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.Text, nullable=False)
     file_url = db.Column(db.Text, nullable=False)
+    content_type = db.Column(db.Text, nullable=True)
     students = db.relationship("Student", back_populates="student_files")
     user = db.relationship("User", back_populates="student_files")
 

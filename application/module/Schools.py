@@ -132,7 +132,7 @@ class SchoolModel:
                                   status_code=403)
 
         if req_school.logo:
-            profile_url = FileHandler.upload_file(req_school.logo, FileFolder.school(school.name))
+            profile_url, _ = FileHandler.upload_file(req_school.logo, FileFolder.school(school.name))
             data['logo'] = profile_url
 
         school.update_table(data)
@@ -144,7 +144,7 @@ class SchoolModel:
     def add_school(cls, data):
         req_schema: SchoolSchema = validator.validate_data(SchoolSchema, data)
 
-        profile_url = FileHandler.upload_file(req_schema.logo, FileFolder.school(req_schema.name))
+        profile_url, _ = FileHandler.upload_file(req_schema.logo, FileFolder.school(req_schema.name))
 
         name = req_schema.name
         email = req_schema.email

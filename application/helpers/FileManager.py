@@ -1,15 +1,11 @@
-import base64
-import mimetypes
-import uuid
-
-import botocore
-from dotenv import load_dotenv
-
-load_dotenv()
-
 import boto3
 import os
+import base64
 from botocore.exceptions import ClientError
+import imghdr
+import botocore
+from dotenv import load_dotenv
+load_dotenv()
 
 
 class FileFolder:
@@ -54,27 +50,28 @@ class FileHandler:
         region_name='us-east-2',
     )
 
+    @staticmethod
+    def extract_base64_data(file):
+        if file.startswith("data:image/jpeg;base64,") or file.startswith("data:image/png;base64,") or file.startswith("data:image/jpg;base64,"):
+            content_type = file.split(';')[0].split(':')[1]
+            base64_encoded_data = file.split(',', 1)[1]
+        else:
+            base64_encoded_data = file
+            decoded_data = base64.b64decode(base64_encoded_data)
+            content_type = imghdr.what(None, h=decoded_data) or 'binary/octet-stream'
+
+        # Ensure base64 data length is a multiple of 4
+        missing_padding = len(base64_encoded_data) % 4
+        if missing_padding != 0:
+            base64_encoded_data += '=' * (4 - missing_padding)
+
+        return content_type, base64_encoded_data
+
     @classmethod
     def upload_file(cls, file, file_path):
 
         try:
-            # Check if the prefix 'data:image/jpeg;base64,' exists in the string
-            if file.startswith("data:image/jpeg;base64,") or file.startswith("data:image/png;base64,") or file.startswith("data:image/jpg;base64,"):
-                content_type = file.split(';')[0].split(':')[1]
-                base64_encoded_data = file.split(',', 1)[1]
-            else:
-                content_type, _ = mimetypes.guess_type(file)
-
-                if not content_type:
-                    content_type = 'binary/octet-stream'
-                else:
-                    content_type = content_type
-                base64_encoded_data = file
-
-            missing_padding = len(base64_encoded_data) % 4
-            if missing_padding != 0:
-                base64_encoded_data += '=' * (4 - missing_padding)
-
+            content_type, base64_encoded_data = cls.extract_base64_data(file)
             decoded_image_data = base64.b64decode(base64_encoded_data)
             cls.s3.put_object(
                 Bucket=cls.bucket_name,
@@ -126,5 +123,3 @@ class FileHandler:
             return cls.upload_file(file, file_name)
         else:
             return False
-
-
