@@ -82,7 +82,7 @@ class FileHandler:
 
             # Generate a pre-signed URL for the uploaded image
             image_url = cls.get_file_url(str(file_path))
-            return image_url
+            return image_url, content_type
         except Exception as e:
             print(f"Failed to upload image: {e}")
             raise f"Image Error {e}"
