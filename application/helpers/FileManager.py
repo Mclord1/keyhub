@@ -97,7 +97,7 @@ class FileHandler:
                     'Bucket': cls.bucket_name,
                     'Key': file_name,
                 },
-                ExpiresIn=3600
+                ExpiresIn=None
             )
 
             # Check if the file exists by sending a HEAD request
