@@ -19,7 +19,7 @@ class Helper:
 
     @classmethod
     def send_otp(cls, user):
-        token = request.headers.get('Authorization').split()[1]
+        token = request.headers.get('Authorization').split()[1] if request.headers.get('Authorization') else ''
         otp_code = cls.generate_token()
         expiration_time = datetime.datetime.now() + datetime.timedelta(minutes=2)
         add_to_confirmation = ConfirmationCode(email=user.email, user_id=user.id, code=otp_code, expiration=expiration_time)
