@@ -15,6 +15,9 @@ class FileFolder:
         return f"{name}/profile"
 
     @classmethod
+    def parent_profile(cls, school_name, email):
+        return f"{school_name}/parents/{email}/file-ab5619e7"
+    @classmethod
     def student_profile(cls, school_name, email):
         return f"{school_name}/students/{email}/file-ab5619e7"
 

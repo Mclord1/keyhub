@@ -68,6 +68,18 @@ def add_student():
     return return_json(OutputObj(code=200, message=Parent.add_student(student_id, parent_id)))
 
 
+@parent_blueprint.route('/change-profile-image', methods=['PUT'])
+@authenticate(PermissionEnum.MODIFY_PARENTS)
+def update_parents_profile_image():
+    user_id = request.args.get('user_id', None)
+    if not user_id or not user_id.isdigit():
+        raise CustomException(message="You need to pass user id as query parameter", status_code=400)
+
+    args = request.json
+    profile_image = args.get("profile_image", None)
+    return return_json(OutputObj(code=200, message="", data=Parent.change_parents_profile_image(profile_image, user_id)))
+
+
 @parent_blueprint.route('/remove-student', methods=['PUT'])
 @authenticate(PermissionEnum.MODIFY_PARENTS)
 def remove_student():

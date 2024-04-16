@@ -17,6 +17,7 @@ class Parent(db.Model, GenericMixin):
     work_email = db.Column(db.String(350), nullable=True)
     work_address = db.Column(db.String(350), nullable=True)
     work_msisdn = db.Column(db.String(350), nullable=True)
+    profile_image = db.Column(db.Text, nullable=True)
 
     current_school = db.Column(db.String(350), nullable=True)
     date_to_join = db.Column(db.String(350), nullable=True)

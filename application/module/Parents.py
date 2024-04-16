@@ -75,6 +75,14 @@ class ParentModel:
 
         _school = School.GetSchool(req.school_id)
 
+        if req.profile_image:
+
+            file_path = FileFolder.parent_profile(_school.name, req.email)
+
+            profile_url, _ = FileHandler.upload_file(req.profile_image, file_path)
+        else:
+            profile_url = None
+
         try:
 
             students_list = [User.GetUser(x).students for x in req.student] if req.student else []
@@ -92,6 +100,7 @@ class ParentModel:
                     state=req.state,
                     user_id=new_parent.id,
                     address=req.address,
+                    profile_image=profile_url,
                     gender=req.gender,
                     work_email=req.work_email,
                     work_address=req.work_address,
@@ -115,6 +124,27 @@ class ParentModel:
         except Exception as e:
             db.session.rollback()
             raise e
+
+    @classmethod
+    def change_parents_profile_image(cls, profile_image, parent_id):
+
+        if not profile_image:
+            raise CustomException(message="User profile image is required")
+
+        user: User = User.GetUser(parent_id)
+
+        if not user.parents:
+            raise CustomException(message="Parent does not exist", status_code=404)
+
+        school_name = user.parents.schools[0].name if isinstance(user.parents.schools, list) else user.parents.schools.name
+
+        file_path = FileFolder.parent_profile(school_name, user.email)
+
+        profile_url, _ = FileHandler.upload_file(profile_image, file_path)
+
+        user.parents.profile_image = profile_url
+        db.session.commit()
+        return "Profile Image has been updated successfully"
 
     @classmethod
     def add_student(cls, student_id, parent_id):
