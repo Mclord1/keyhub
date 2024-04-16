@@ -25,7 +25,6 @@ def login():
 
 
 @auth_blueprint.route('/update-password', methods=['POST'])
-@jwt_required()
 def update_password():
     req = request.json
     code = req.get('otp')

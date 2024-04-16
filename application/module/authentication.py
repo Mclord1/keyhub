@@ -86,7 +86,7 @@ class Authentication:
         if not _user:
             raise CustomException(message="User does not exist", status_code=404)
 
-        confirm_code: ConfirmationCode = ConfirmationCode.query.filter(ConfirmationCode.code == code, ConfirmationCode.user_id == current_user.id).first()
+        confirm_code: ConfirmationCode = ConfirmationCode.query.filter(ConfirmationCode.code == code, ConfirmationCode.user_id == _user.id).first()
         current_time = datetime.datetime.now()
 
         if not confirm_code:
