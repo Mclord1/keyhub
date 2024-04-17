@@ -46,6 +46,7 @@ class FileHandler:
     aws_access_key = os.environ.get("AWS_ACCESS_KEY")
     aws_secret_key = os.environ.get("AWS_SECRET_ACCESS")
     bucket_name = "keyhub-folder"
+    cloudfront_url = "https://d1xhar4wn7l1cd.cloudfront.net/"
     s3 = boto3.client(
         's3',
         aws_access_key_id=aws_access_key,
@@ -94,21 +95,10 @@ class FileHandler:
     def get_file_url(cls, file_name):
         try:
             # Generate a pre-signed URL for the file
-            response = cls.s3.generate_presigned_url(
-                'get_object',
-                Params={
-                    'Bucket': cls.bucket_name,
-                    'Key': file_name,
-                },
-                ExpiresIn=3600
-            )
-
-            # Check if the file exists by sending a HEAD request
-            cls.s3.head_object(Bucket=cls.bucket_name, Key=file_name)
-
+            response = cls.cloudfront_url + file_name
             return response
-        except botocore.exceptions.ClientError as e:
-            return None
+        except Exception as e:
+            raise e
 
     @classmethod
     def delete_file(cls, file_name):
