@@ -507,10 +507,12 @@ def unsubscribe_school_group(group_id):
 @has_school_privilege
 def add_school_group_comment(school_id, group_id):
     data = request.json
-    comment = data.get('comment')
+    comment = data.get('comment', None)
+    file = data.get('file', None)
+    file_name = data.get('file_name', None)
     if not comment:
         raise CustomException(message="Please provide comment", status_code=400)
-    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.add_comment(school_id, group_id, comment)))
+    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.add_comment(school_id, group_id, comment, file, file_name)))
 
 
 @school_blueprint.route('/<int:school_id>/learning-groups/<int:group_id>/comment', methods=['GET'])
@@ -533,9 +535,11 @@ def remove_school_group_comment(school_id, group_id, comment_id):
 def update_school_group_comment(school_id, group_id, comment_id):
     data = request.json
     comment = data.get('comment')
+    file = data.get('file', None)
+    file_name = data.get('file_name', None)
     if not comment:
         raise CustomException(message="Please provide comment", status_code=400)
-    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.edit_comments(group_id, comment_id, comment)))
+    return return_json(OutputObj(code=200, message=SchoolLearningGroupsModel.edit_comments(group_id, comment_id, comment, file, file_name)))
 
 
 @school_blueprint.route('/learning-group-comment/<int:comment_id>', methods=['POST'])

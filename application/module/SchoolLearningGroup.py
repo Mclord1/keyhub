@@ -140,9 +140,28 @@ class SchoolLearningGroupsModel:
             raise CustomException(ExceptionCode.DATABASE_ERROR)
 
     @classmethod
-    def add_comment(cls, school_id, group_id, comment):
+    def add_comment(cls, school_id, group_id, comment, file, file_name):
+
         group: LearningGroup = LearningGroup.GetLearningGroupID(school_id, group_id)
-        new_comment = LearningGroupComment(learning_group_id=group.id, user_id=current_user.id, comment=comment)
+
+        stored_file_name, profile_url, file_path, content_type = None, None, None, None
+
+        comment = comment if comment else None
+
+        if file:
+            file_path, stored_file_name = FileFolder.learning_group_file(group.schools.name, group.name, file_name)
+            profile_url, content_type = FileHandler.upload_file(file, file_path)
+
+        new_comment = LearningGroupComment(
+            learning_group_id=group.id,
+            user_id=current_user.id,
+            comment=comment,
+            file_name=stored_file_name,
+            file_url=profile_url,
+            file_path=file_path,
+            content_type=content_type
+        )
+
         new_comment.save(refresh=True)
 
         subscribed_users = [x.user_id for x in group.subscribed_groups]
@@ -162,8 +181,9 @@ class SchoolLearningGroupsModel:
             for x in group.learning_group_comments]
 
     @classmethod
-    def edit_comments(cls, group_id, comment_id, new_comment):
+    def edit_comments(cls, group_id, comment_id, new_comment, new_file, new_file_name):
         comments: LearningGroupComment = LearningGroupComment.query.filter_by(learning_group_id=group_id, id=comment_id).first()
+
         if not comments:
             raise CustomException(message="Comment not found", status_code=404)
 
@@ -171,7 +191,20 @@ class SchoolLearningGroupsModel:
             if not current_user.admins:
                 raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
 
-        comments.comment = new_comment
+        group: LearningGroup = LearningGroup.query.filter_by(id=group_id).first()
+
+        if new_file:
+            new_file_name = new_file_name if new_file_name else comments.file_name
+            file_path, stored_file_name = FileFolder.learning_group_file(group.schools.name, group.name, new_file_name)
+            profile_url, content_type = FileHandler.update_file(new_file, file_path)
+            comments.content_type = content_type
+            comments.file_path = file_path
+            comments.file_name = stored_file_name
+            comments.file_url = profile_url
+
+        if new_comment:
+            comments.comment = new_comment
+
         db.session.commit()
         return "Comment has been updated successfully"
 
@@ -185,6 +218,7 @@ class SchoolLearningGroupsModel:
             if not current_user.admins:
                 raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
 
+        FileHandler.delete_file(comments.file_name)
         comments.delete()
 
         group: LearningGroup = LearningGroup.query.filter_by(id=group_id).first()

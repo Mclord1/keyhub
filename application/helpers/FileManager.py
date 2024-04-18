@@ -47,6 +47,7 @@ class FileHandler:
     aws_secret_key = os.environ.get("AWS_SECRET_ACCESS")
     bucket_name = "keyhub-folder"
     cloudfront_url = "https://d1xhar4wn7l1cd.cloudfront.net/"
+
     s3 = boto3.client(
         's3',
         aws_access_key_id=aws_access_key,
@@ -112,7 +113,9 @@ class FileHandler:
     @classmethod
     def update_file(cls, file, file_name):
         # Deleting the old file and uploading the updated one
-        if cls.delete_file(file_name):
+        try:
+            cls.delete_file(file_name)
             return cls.upload_file(file, file_name)
-        else:
-            return False
+        except Exception as e:
+            print("failed to upload file :: {}".format(e))
+            raise e

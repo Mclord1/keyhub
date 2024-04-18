@@ -25,16 +25,23 @@ class LearningGroupComment(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     learning_group_id = db.Column(db.Integer, db.ForeignKey('learning_group.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=False)
-    comment = db.Column(db.Text, nullable=False)
+
+    comment = db.Column(db.Text, nullable=True)
+
+    file_name = db.Column(db.String(255), nullable=True)
+    file_path = db.Column(db.Text, nullable=True)
+    file_url = db.Column(db.Text, nullable=True)
+    content_type = db.Column(db.Text, nullable=True)
+
+    user = db.relationship("User", back_populates="learning_group_comments")
     learning_groups = db.relationship("LearningGroup", back_populates="learning_group_comments")
     learning_group_child_comment = db.relationship("LearningGroupChildComment", back_populates="learning_group_comment")
-    user = db.relationship("User", back_populates="learning_group_comments")
 
 
 class LearningGroupChildComment(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     comment = db.Column(db.Text, nullable=False)
-    learning_group_comment_id = db.Column(db.Integer, db.ForeignKey('learning_group_comment.id'), nullable=False)
+    learning_group_comment_id = db.Column(db.Integer, db.ForeignKey('learning_group_comment.id', ondelete='cascade'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='CASCADE'), nullable=False)
     user = db.relationship("User", back_populates="learning_group_child_comment")
     learning_group_comment = db.relationship("LearningGroupComment", back_populates="learning_group_child_comment")
@@ -44,6 +51,7 @@ class LearningGroupFile(db.Model, GenericMixin):
     id = db.Column(db.Integer, primary_key=True)
     learning_group_id = db.Column(db.Integer, db.ForeignKey('learning_group.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete='SET NULL'), nullable=False)
+    # description = db.Column(db.Text, nullable=True)
     file_name = db.Column(db.String(255), nullable=False)
     file_path = db.Column(db.Text, nullable=False)
     file_url = db.Column(db.Text, nullable=False)
