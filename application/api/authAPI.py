@@ -38,7 +38,8 @@ def set_password():
     req = request.json
     email = req.get('email')
     password = req.get('password')
-    return authenticationModel.set_up_password(email, password)
+    token = req.get('token')
+    return authenticationModel.set_up_password(email, password, token)
 
 
 @auth_blueprint.route('/reset-password', methods=['POST'])

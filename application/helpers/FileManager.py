@@ -106,6 +106,7 @@ class FileHandler:
             response = url
             return response
         except Exception as e:
+            print(f"Failed to upload file url: {e}")
             raise e
 
     @classmethod

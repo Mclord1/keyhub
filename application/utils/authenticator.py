@@ -1,3 +1,4 @@
+
 from functools import wraps
 
 import jwt
@@ -80,3 +81,5 @@ def has_school_privilege(f):
         return f(*args, **kwargs)
 
     return decorated_func
+
+

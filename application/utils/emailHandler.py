@@ -1,10 +1,13 @@
 import datetime
+import uuid
 
 from dotenv import load_dotenv
 import base64
 from pathlib import Path
 import os
 import mailtrap as mt
+
+from application import SECRET_KEY, jwt
 
 load_dotenv()
 
@@ -13,6 +16,17 @@ base_url = "http://3.145.101.11:5000/"
 
 
 class EmailHandler:
+
+    @staticmethod
+    def generate_password_token():
+        token_id = str(uuid.uuid4())
+
+        payload = {
+            'token_id': token_id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=24)
+        }
+        _token = jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+        return _token
 
     @classmethod
     def send_invite_email(cls, recipient, school_name, role, link):
@@ -34,7 +48,8 @@ class EmailHandler:
     @classmethod
     def welcome_mail(cls, recipient, username):
         subject = 'Your Key Academy Account has been created.'
-        body = """
+        _token = cls.generate_password_token()
+        body = f"""
 
                 <p>
                     Now that your account has been created, click the button below to setup your password so that you
@@ -43,7 +58,7 @@ class EmailHandler:
                 </p>
 
                 <!-- Add your reset password link -->
-                <a href="https://keyhub-frontend.vercel.app/auth/new-user/password-setup" class="mb-20">Reset Password</a>
+                <a href="https://keyhub-frontend.vercel.app/auth/new-user/password-setup?email={recipient}&token={_token}" class="mb-20">Reset Password</a>
 
         """
 

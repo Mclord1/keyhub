@@ -177,7 +177,6 @@ class StudentModel:
             raise CustomException(message="Student does not exist", status_code=404)
 
         file_path = FileFolder.student_profile(user.students.schools.name, user.email)
-
         profile_url, _ = FileHandler.update_file(profile_image, file_path)
 
         user.students.profile_image = profile_url

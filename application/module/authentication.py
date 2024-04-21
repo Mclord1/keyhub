@@ -1,6 +1,11 @@
+import uuid
+from datetime import timedelta
+
+import jwt
 from flask_jwt_extended import create_access_token, create_refresh_token
 
 from . import *
+from application import SECRET_KEY
 
 
 class Authentication:
@@ -99,9 +104,12 @@ class Authentication:
 
         return return_json(OutputObj(message="Password has been set successfully. Please login again.", code=200))
 
-    @staticmethod
-    def set_up_password(email, password):
+    def set_up_password(self, email, password, token):
 
+        if not email or not password or not token:
+            raise CustomException(message="email or password or token is empty", status_code=400)
+
+        self.is_valid_token(token)
         _user: User = User.query.filter_by(email=email).first()
 
         if not _user:
@@ -137,7 +145,7 @@ class Authentication:
         school = User.GetSchool(user.id)
         school_id = school[0].id if isinstance(school, list) else school.id
         school_name = school[0].name if isinstance(school, list) else school.name
-        
+
         if type == 'teacher':
             role = "colearner"
             link = f"https://keyhub-frontend.vercel.app/school/{school_id}/teacher/sign-up"
@@ -147,3 +155,14 @@ class Authentication:
 
         EmailHandler.send_invite_email(email, school_name, role, link)
         return return_json(OutputObj(message=f"Invite link has been successfully sent to {email}", code=200))
+
+    @staticmethod
+    def is_valid_token(token):
+        try:
+            jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            return True
+        except jwt.ExpiredSignatureError:
+            raise CustomException(message="Password expired", status_code=401)
+        except jwt.InvalidTokenError:
+            # If the token is invalid or tampered with, return False
+            raise CustomException(message="Invalid token", status_code=401)
