@@ -214,7 +214,7 @@ class SchoolLearningGroupsModel:
         if not comments:
             raise CustomException(message="Comment not found", status_code=404)
 
-        if not current_user.managers or current_user.id != comments.user_id:
+        if (not current_user.managers) or (current_user.id != comments.user_id):
             if not current_user.admins:
                 raise CustomException(message="Only comment author or admin can delete this comment", status_code=400)
 

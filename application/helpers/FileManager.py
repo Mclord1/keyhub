@@ -1,3 +1,6 @@
+import time
+import uuid
+
 import boto3
 import os
 import base64
@@ -5,6 +8,7 @@ from botocore.exceptions import ClientError
 import imghdr
 import botocore
 from dotenv import load_dotenv
+
 load_dotenv()
 
 
@@ -17,6 +21,7 @@ class FileFolder:
     @classmethod
     def parent_profile(cls, school_name, email):
         return f"{school_name}/parents/{email}/file-ab5619e7"
+
     @classmethod
     def student_profile(cls, school_name, email):
         return f"{school_name}/students/{email}/file-ab5619e7"
@@ -45,6 +50,7 @@ class FileFolder:
 class FileHandler:
     aws_access_key = os.environ.get("AWS_ACCESS_KEY")
     aws_secret_key = os.environ.get("AWS_SECRET_ACCESS")
+    aws_cloudfront_distribution_id = os.environ.get("AWS_CLOUDFRONT_DISTRIBUTION_ID")
     bucket_name = "keyhub-folder"
     cloudfront_url = "https://d1xhar4wn7l1cd.cloudfront.net/"
 
@@ -96,7 +102,8 @@ class FileHandler:
     def get_file_url(cls, file_name):
         try:
             # Generate a pre-signed URL for the file
-            response = cls.cloudfront_url + file_name
+            url = f"https://keyhub-folder.s3.us-east-2.amazonaws.com/{file_name}"
+            response = url
             return response
         except Exception as e:
             raise e
@@ -114,8 +121,8 @@ class FileHandler:
     def update_file(cls, file, file_name):
         # Deleting the old file and uploading the updated one
         try:
-            cls.delete_file(file_name)
-            return cls.upload_file(file, file_name)
+            if cls.delete_file(file_name):
+                return cls.upload_file(file, file_name)
         except Exception as e:
             print("failed to upload file :: {}".format(e))
             raise e

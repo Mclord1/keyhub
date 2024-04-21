@@ -246,7 +246,6 @@ class ParentModel:
             raise CustomException(message="Parent does not exist", status_code=404)
 
         _user = Helper.get_user(Parent, user.parents.id)
-
         return {
             **_user.to_dict(),
             **_user.user.as_dict(),

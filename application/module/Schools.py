@@ -56,6 +56,7 @@ class SchoolModel:
 
         # Collecting students per month for each project
         students_per_month = defaultdict(int)
+        file_path = FileFolder.school(_school.name)
 
         for project in _school.projects:
             for student in project.students:
@@ -97,7 +98,9 @@ class SchoolModel:
                 }
             },
             "students_per_month": students_per_month,
-            **_school.to_dict(add_filter=False)
+            **_school.to_dict(add_filter=False),
+            "logo": FileHandler.get_file_url(file_path),
+
         }
 
     @classmethod
