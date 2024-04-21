@@ -52,7 +52,7 @@ class SystemAdmins:
         if not user.admins:
             raise CustomException(message="Admin does not exist", status_code=404)
 
-        profile_url, _ = FileHandler.upload_file(profile_image, FileFolder.admin_profile(user.email))
+        profile_url, _ = FileHandler.update_file(profile_image, FileFolder.admin_profile(user.email))
 
         user.admins.profile_image = profile_url
         db.session.commit()

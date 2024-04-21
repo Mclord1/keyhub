@@ -135,7 +135,7 @@ class SchoolModel:
                                   status_code=403)
 
         if req_school.logo:
-            profile_url, _ = FileHandler.upload_file(req_school.logo, FileFolder.school(school.name))
+            profile_url, _ = FileHandler.update_file(req_school.logo, FileFolder.school(school.name))
             data['logo'] = profile_url
 
         school.update_table(data)

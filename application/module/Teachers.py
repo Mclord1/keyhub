@@ -137,7 +137,7 @@ class TeacherModel:
 
         file_path = FileFolder.teacher_profile(user.teachers.schools[0].name, user.email)
 
-        profile_url, _ = FileHandler.upload_file(profile_image, file_path)
+        profile_url, _ = FileHandler.update_file(profile_image, file_path)
 
         user.teachers.profile_image = profile_url
         db.session.commit()

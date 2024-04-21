@@ -178,7 +178,7 @@ class StudentModel:
 
         file_path = FileFolder.student_profile(user.students.schools.name, user.email)
 
-        profile_url, _ = FileHandler.upload_file(profile_image, file_path)
+        profile_url, _ = FileHandler.update_file(profile_image, file_path)
 
         user.students.profile_image = profile_url
         db.session.commit()
