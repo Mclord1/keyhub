@@ -34,7 +34,14 @@ def update_password():
 
 
 @auth_blueprint.route('/set-password', methods=['POST'])
-def set_password():
+def admin_set_password():
+    req = request.json
+    email = req.get('email')
+    password = req.get('password')
+    return authenticationModel.admin_set_up_password(email, password)
+
+@auth_blueprint.route('/set-user-password', methods=['POST'])
+def set_user_password():
     req = request.json
     email = req.get('email')
     password = req.get('password')
