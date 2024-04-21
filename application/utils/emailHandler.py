@@ -205,7 +205,7 @@ class EmailHandler:
                         <td>
                             <h2 class="bold">{subject}</h2>
     
-                            <p>Hello<span class="bold">{username}</span>,</p>
+                            <p>Hello <span class="bold">{username}</span>,</p>
                             
                             {body}
     
