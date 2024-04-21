@@ -40,6 +40,7 @@ def admin_set_password():
     password = req.get('password')
     return authenticationModel.admin_set_up_password(email, password)
 
+
 @auth_blueprint.route('/set-user-password', methods=['POST'])
 def set_user_password():
     req = request.json

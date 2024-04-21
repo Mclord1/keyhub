@@ -7,8 +7,8 @@ from pathlib import Path
 import os
 import mailtrap as mt
 
-from application import SECRET_KEY, jwt
-
+from application import SECRET_KEY
+import jwt
 load_dotenv()
 
 token = "f45fb90ea2ca196d3e67ae7c4ef78389"
