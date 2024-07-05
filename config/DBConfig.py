@@ -1,34 +1,37 @@
+import os
+
+DBHOST = os.getenv('DBHOST')
+DBPORT = os.getenv('DBPORT')
+DBUSERNAME = os.getenv('DBUSERNAME')
+DBPASSWORD = os.getenv('DBPASSWORD')
+
 DB_SETUP = {
     "local": {
-        "username": 'keyhub',
-        "password": 'keyhub',
-        "host": 'localhost',
-        "port": 5431,
+        "username": DBUSERNAME,
+        "password": DBPASSWORD,
+        "host": DBHOST,
+        "port": DBPORT,
         'database': 'keyhub'
     },
     "development": {
-        "username": 'keyhub',
-        "password": 'keyhub',
-        "host": 'localhost',
-        "port": 5431,
-        'database': 'keyhub'
+        "username": DBUSERNAME,
+        "password": DBPASSWORD,
+        "host": DBHOST,
+        "port": DBPORT,
+        'database': 'keyhubdev'
     },
     "stage": {
-        "username": 'keyhub123',
-        "password": 'keyhub123',
-        "host": 'localhost',
-        "port": 5431,
-        'database': 'keyhub'
+        "username": DBUSERNAME,
+        "password": DBPASSWORD,
+        "host": DBHOST,
+        "port": DBPORT,
+        'database': 'keyhubstage'
     },
     "production": {
-        "username": 'keyhub123',
-        "password": 'keyhub123',
-        "host": 'localhost',
-        "port": 5431,
-        'database': 'keyhub'
+        "username": DBUSERNAME,
+        "password": DBPASSWORD,
+        "host": DBHOST,
+        "port": DBPORT,
+        'database': 'keyhubprod'
     },
 }
-
-# 3.145.101.11
-
-

@@ -169,7 +169,6 @@ class Seed:
     @staticmethod
     def populate_states():
         country_data = countries_data['data']
-
         for x in country_data:
             fetch_country = Country.query.filter_by(country_name=x['name']).first()
             for y in x['states']:
@@ -192,8 +191,8 @@ class Seed:
         self.AddTeacherPermission()
         self.AddSchoolPermission()
         self.AddAdmin()
-        # self.populate_country()
-        # self.populate_states()
+        self.populate_country()
+        self.populate_states()
 
 
 with app.app_context():

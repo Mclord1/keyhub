@@ -223,6 +223,8 @@ class EmailHandler:
                     <img src="{base_url}images/old_logo.png" alt="Logo">
                 </footer>
             </div>
+            
+            
     
 
             </body>

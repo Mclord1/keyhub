@@ -24,11 +24,13 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 CORS(app, origins="*")
 app.app_context().push()
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = os.getenv('SECRET_KEY')
 app.config['SECRET_KEY'] = SECRET_KEY
-app.config["ENVIRONMENT"] = os.environ.get("environment", "development")
+app.config["ENVIRONMENT"] = os.getenv("ENVIRONMENT", "development")
 environment = str(app.config["ENVIRONMENT"]).lower()
-if environment != "local":
+print(f"APPLICATION IS RUNNING ON : {environment}")
+
+if environment not in ["development", "local"]:
     dictConfig({
         'version': 1,
         'disable_existing_loggers': False,
