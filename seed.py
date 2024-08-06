@@ -169,12 +169,19 @@ class Seed:
     @staticmethod
     def populate_states():
         country_data = countries_data['data']
+        state_length = len(country_data)
+        print()
+        count = 0
         for x in country_data:
             fetch_country = Country.query.filter_by(country_name=x['name']).first()
             for y in x['states']:
+                count += 1
                 try:
-                    add_state = State(state_name=y['name'], country=fetch_country)
-                    add_state.save(refresh=True)
+                    state_exist = State.query.filter_by(state_name=y['name']).first()
+                    if not state_exist:
+                        add_state = State(state_name=y['name'], country=fetch_country)
+                        add_state.save(refresh=True)
+                    print(f'{count} of {state_length} states have been added successfully')
                 except IntegrityError:
                     db.session.rollback()
                     continue
@@ -186,12 +193,12 @@ class Seed:
              Implementation scripts to automate the creation of the database and seeding with initial data.
              This ensures that all developers have the same initial data for testing and development.
         """
-        self.AddRole()
-        self.AddPermission()
-        self.AddTeacherPermission()
-        self.AddSchoolPermission()
-        self.AddAdmin()
-        self.populate_country()
+        # self.AddRole()
+        # self.AddPermission()
+        # self.AddTeacherPermission()
+        # self.AddSchoolPermission()
+        # self.AddAdmin()
+        # self.populate_country()
         self.populate_states()
 
 

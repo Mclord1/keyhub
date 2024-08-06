@@ -11,21 +11,21 @@ DB_SETUP = {
         "password": DBPASSWORD,
         "host": DBHOST,
         "port": DBPORT,
-        'database': 'keyhub'
+        'database': 'defaultdb'
     },
     "development": {
         "username": DBUSERNAME,
         "password": DBPASSWORD,
         "host": DBHOST,
         "port": DBPORT,
-        'database': 'keyhubdev'
+        'database': 'defaultdb'
     },
     "stage": {
         "username": DBUSERNAME,
         "password": DBPASSWORD,
         "host": DBHOST,
         "port": DBPORT,
-        'database': 'keyhubstage'
+        'database': 'defaultdb'
     },
     "production": {
         "username": DBUSERNAME,
