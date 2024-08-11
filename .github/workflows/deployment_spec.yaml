@@ -1,0 +1,25 @@
+on:
+  push:
+    branches:
+      - dev
+      - stage
+      - main
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Fetch the Latest branch
+        run: |
+          cd ~/keyhub-backend
+          git restore .
+          git pull origin dev
+
+      - name: Install dependencies
+        run: |
+          cd ~/keyhub-backend
+          source ./venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Restart Application
+        run: |
+          sudo systemctl restart keyhub-backend
