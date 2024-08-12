@@ -1,3 +1,8 @@
+import logging
+
+from flask import g
+from sqlalchemy.orm import Session, make_transient
+
 from . import *
 
 
@@ -7,7 +12,8 @@ class StudentModel:
     def get_all_students(cls, page, per_page):
         page = int(page)
         per_page = int(per_page)
-        _students = Student.query.order_by(desc(Student.created_at)).paginate(page=page, per_page=per_page, error_out=False)
+        _students = Student.query.order_by(desc(Student.created_at)).paginate(page=page, per_page=per_page,
+                                                                              error_out=False)
         total_items = _students.total
         results = [item for item in _students.items]
         total_pages = (total_items - 1) // per_page + 1
@@ -53,81 +59,7 @@ class StudentModel:
         Audit.add_audit('Updated Student Information', current_user, user.to_dict())
         return {**user.students.to_dict(), "user_id": user.id}
 
-    @classmethod
-    def add_student(cls, data):
-        req: StudentSchema = validator.validate_data(StudentSchema, data)
 
-        if req.email and req.msisdn:
-            Helper.User_Email_OR_Msisdn_Exist(req.email, req.msisdn)
-
-        role = Role.GetRoleByName(BasicRoles.STUDENT.value)
-
-        school: School = School.GetSchool(req.school_id)
-
-        if req.profile_image:
-
-            file_path = FileFolder.student_profile(school.name, req.email)
-
-            profile_url, _ = FileHandler.upload_file(req.profile_image, file_path)
-        else:
-            profile_url = None
-
-        _parent = []
-        if req.parent:
-            u_parent: User = User.GetUser(req.parent)
-
-            if not u_parent.parents:
-                raise CustomException(message="Parent not found", status_code=404)
-
-            _parent = [u_parent.parents]
-
-        new_student = User(email=req.email, msisdn=req.msisdn, password=None)
-        new_student.roles = role
-        db.session.add(new_student)
-        db.session.commit()
-        db.session.refresh(new_student)
-
-        try:
-
-            if new_student:
-                student_data = {
-                    field: getattr(req, field)
-                    for field in req.model_fields.keys()
-                }
-                # Remove None values for optional fields
-                student_data = {k: v for k, v in student_data.items() if v is not None}
-
-                # Add additional data not included in StudentSchema
-                student_data.update({
-                    'user_id': new_student.id,
-                    'profile_image': profile_url,
-                    'parents': _parent,
-                    'schools': school,
-                })
-
-                # remove this as it is already added in user table
-                del student_data['email']
-                del student_data['msisdn']
-                del student_data['learning_group_id']
-
-                add_user = Student(**student_data)
-
-                if req.learning_group_id:
-                    _learning_group: LearningGroup = LearningGroup.GetLearningGroupID(req.school_id, req.learning_group_id)
-
-                    _learning_group.students.append(add_user)
-
-                add_user.save(refresh=True)
-                EmailHandler.welcome_mail(new_student.email, add_user.first_name)
-
-                return {**add_user.to_dict(), "user_id": add_user.user.id}
-
-        except Exception as e:
-            db.session.rollback()
-            # Delete the new_student instance
-            if new_student:
-                db.session.delete(new_student)
-            raise e
 
     @classmethod
     def remove_parent(cls, student_id, parent_id):
@@ -218,7 +150,13 @@ class StudentModel:
 
         _user: Student = Helper.get_user(Student, user.students.id)
 
-        file_path = FileFolder.student_profile(_user.schools.name, user.email)
+        # Get the school based on school_id
+        school_name = None
+        if _user.school_id:
+            school = db.session.query(School).get(_user.school_id)
+            school_name = school.name if school else None
+
+        file_path = FileFolder.student_profile(school_name, user.email)
 
         return {
             **_user.to_dict(),
@@ -351,3 +289,126 @@ class StudentModel:
         FileHandler.delete_file(_files.file_path)
         _files.delete()
         return "File has been deleted successfully"
+
+
+    @classmethod
+    def add_student(cls, data):
+        logger = logging.getLogger(__name__)
+        logger.propagate = True
+        logging.basicConfig(level=logging.DEBUG)
+
+        try:
+            request = validator.validate_data(StudentSchema, data)
+
+            # Check if email or msisdn already exists
+            if request.email and request.msisdn:
+                Helper.User_Email_OR_Msisdn_Exist(request.email, request.msisdn)
+
+            # Fetch student role
+            role = db.session.query(Role).filter_by(name=BasicRoles.STUDENT.value).one()
+
+            # Fetch school
+            school = db.session.query(School).get(request.school_id)
+
+            # Create new user
+            new_student = cls._create_user(request, role)
+
+            # Create student with minimal information
+            add_user = cls._create_student(new_student, request, school)
+
+            db.session.commit()
+
+            # EmailHandler.welcome_mail(new_student.email, add_user.first_name)
+
+            return {**add_user.to_dict(), "user_id": add_user.user.id}
+
+        except Exception as e:
+            logger.error(f"Error in add_student: {str(e)}", exc_info=True)
+            db.session.rollback()
+            raise CustomException(message=f"Error adding student: {str(e)}", status_code=500)
+
+
+    @classmethod
+    def _handle_profile_image(cls, school, request):
+        if request.profile_image:
+            file_path = FileFolder.student_profile(school.name, request.email)
+            return FileHandler.upload_file(request.profile_image, file_path)[0]
+        return None
+
+    @classmethod
+    def _create_user(cls, request, role):
+        new_student = User(email=request.email, msisdn=request.msisdn, password=None)
+
+        db.session.add(new_student)
+        db.session.flush()  # This will assign an ID to new_student
+
+        # Create UserRole association
+        user_role = UserRole(user_id=new_student.id, role_id=role.id)
+        db.session.add(user_role)
+
+        # Set the role directly (this should work with uselist=False)
+        new_student.roles = role
+
+        return new_student
+
+
+
+    @classmethod
+    def _create_student(cls, new_student, request, school):
+        # Log the contents of the request object
+        logger = logging.getLogger(__name__)
+        logger.propagate = True
+        logging.basicConfig(level=logging.DEBUG)
+
+        # Create the Student instance with the minimum required fields
+        student_data = {
+            'user_id': new_student.id,
+            'school_id': school.id,
+            'first_name': request.first_name,
+            'last_name': request.last_name,
+            '_gender': request.gender,
+            'dob': request.dob,
+            'age': request.age,
+            'msisdn': request.msisdn,
+            'country': request.country,
+            'state': request.state,
+            'address': request.address,
+            'profile_image': request.profile_image,  # Assuming it's a URL or file path
+            'middle_name': request.middle_name,
+            'why_use_us': request.why_use_us,
+            'interest': request.interest,
+        }
+
+        add_user = Student(**student_data)
+        db.session.add(add_user)
+
+        # Handle learning group association if provided
+        learning_group_id = getattr(request, 'learning_group_id', None)
+        logger.debug(f"learning_group_id: {learning_group_id}")
+        if learning_group_id:
+            _learning_group = LearningGroup.GetLearningGroupID(request.school_id, learning_group_id)
+            if _learning_group:
+                _learning_group.students.append(add_user)
+        else:
+            student_data.pop('learning_group_id', None)
+
+        return add_user
+
+    @classmethod
+    def _handle_parent(cls, request, add_user):
+        # Handle parent
+        if request.parent:
+            parent = db.session.query(User).get(request.parent)
+            if not parent or not parent.parents:
+                raise CustomException(message="Parent not found", status_code=404)
+            # Change this line:
+            add_user.parents = parent.parents
+
+    @classmethod
+    def _handle_learning_group(cls, request, add_user):
+        if request.learning_group_id:
+            _learning_group = db.session.query(LearningGroup).filter_by(
+                school_id=request.school_id,
+                id=request.learning_group_id
+            ).one()
+            _learning_group.students.append(add_user)

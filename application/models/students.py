@@ -24,10 +24,10 @@ class StudentFile(db.Model, GenericMixin):
     user = db.relationship("User", back_populates="student_files")
 
 
-class StudentParent(db.Model, GenericMixin):
+class StudentParent(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('student.id'))
-    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id'))
+    student_id = db.Column(db.Integer, db.ForeignKey('student.id', ondelete='CASCADE'), nullable=False)
+    parent_id = db.Column(db.Integer, db.ForeignKey('parent.id', ondelete='CASCADE'), nullable=False)
 
 
 class Student(db.Model, GenericMixin):
@@ -74,6 +74,7 @@ class Student(db.Model, GenericMixin):
     emergency_contact_last_name = db.Column(db.String(350), nullable=True)
     emergency_contact_msisdn = db.Column(db.String(350), nullable=True)
     emergency_contact_relationship = db.Column(db.String(350), nullable=True)
+    created_at = db.Column(db.DateTime, nullable=False)
 
     any_allergies = db.Column(db.Boolean, default=False, nullable=True)
     allergies = db.Column(db.Text, nullable=True)
@@ -86,7 +87,7 @@ class Student(db.Model, GenericMixin):
     more_details_about_student = db.Column(db.Text, nullable=True)
 
     parents = db.relationship("Parent", secondary='student_parent', back_populates='students')
-    schools = db.relationship("School", back_populates='students')
+    school = db.relationship("School", back_populates='students')
     teachers = db.relationship("Teacher", secondary='teacher_student', back_populates='students')
     projects = db.relationship("Project", secondary='student_project', back_populates="students")
     learning_groups = db.relationship("LearningGroup", secondary='learning_group_students', back_populates="students")
