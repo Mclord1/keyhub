@@ -10,7 +10,7 @@ from application import SECRET_KEY
 load_dotenv()
 
 token = "f45fb90ea2ca196d3e67ae7c4ef78389"
-base_url = "http://3.145.101.11:5000/"
+base_url = "https://keyhub-backend.axetechinnovations.com/"
 
 
 class EmailHandler:
