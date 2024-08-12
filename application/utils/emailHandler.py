@@ -1,14 +1,12 @@
 import datetime
 import uuid
 
-from dotenv import load_dotenv
-import base64
-from pathlib import Path
-import os
+import jwt
 import mailtrap as mt
+from dotenv import load_dotenv
 
 from application import SECRET_KEY
-import jwt
+
 load_dotenv()
 
 token = "f45fb90ea2ca196d3e67ae7c4ef78389"

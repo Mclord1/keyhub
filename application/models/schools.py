@@ -89,7 +89,7 @@ class School(db.Model, GenericMixin):
     managers = db.relationship("SchoolManager", back_populates='schools', cascade="all, delete-orphan")
     subscriptions = db.relationship("Subscription", back_populates='schools', cascade="all, delete-orphan")
     teachers = db.relationship("Teacher", secondary='school_teacher', back_populates='schools', cascade="all, delete")
-    students = db.relationship("Student", back_populates='schools', cascade="all, delete-orphan", single_parent=True)
+    students = db.relationship("Student", back_populates='school', cascade="all, delete-orphan", single_parent=True)
     parents = db.relationship("Parent", secondary='school_parent', back_populates='schools', cascade="all, delete")
     projects = db.relationship("Project", back_populates='schools', cascade="all, delete-orphan")
     reports = db.relationship("Report", back_populates='schools', cascade="all, delete-orphan")
