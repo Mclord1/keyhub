@@ -1,4 +1,6 @@
 import binascii
+import logging
+
 from dotenv import load_dotenv
 from flask import Flask, send_from_directory
 from flask_socketio import SocketIO
@@ -30,6 +32,20 @@ app.config["ENVIRONMENT"] = os.getenv("ENVIRONMENT", "development")
 environment = str(app.config["ENVIRONMENT"]).lower()
 print(f"APPLICATION IS RUNNING ON : {environment}")
 
+# Log file setup
+log_dir = '/home/ubuntu/logs'
+log_file = os.path.join(log_dir, 'flask_app.log')
+
+# Create the log directory if it doesn't exist
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir, exist_ok=True)
+
+# Create the log file if it doesn't exist
+if not os.path.exists(log_file):
+    open(log_file, 'a').close()
+    os.chmod(log_file, 0o666)  # Set read and write permissions for owner, group, and others
+
+
 if environment not in ["development", "local"]:
     dictConfig({
         'version': 1,
@@ -47,19 +63,22 @@ if environment not in ["development", "local"]:
                 'level': 'INFO',
                 'formatter': 'cloudwatch_style',  # Use the CloudWatch formatter
                 'class': 'logging.handlers.RotatingFileHandler',
-                'filename': '/home/ubuntu/logs',
+                'filename': log_file,
                 'maxBytes': 1024 * 1024,
-                'backupCount': 1,
+                'backupCount': 5,
             },
         },
         'loggers': {
             'root': {
                 'handlers': ['file_handler'],
                 'level': 'INFO',
-                'propagate': False
+                'propagate': True
             },
         }
     })
+else:
+    # Setup basic logging for development and local
+    logging.basicConfig(level=logging.INFO)
 
 jwt = JWTManager(app)
 
@@ -92,10 +111,10 @@ def serve_fonts(filename):
 
 @app.errorhandler(Exception)
 def error_handling(error):
+    app.logger.error(f"An error occurred: {str(error)}", exc_info=True)
     traceback.print_exc()
-    message = 'Internal server error!!!!!'
-    code = 500
     response_code = 1000
+
     if isinstance(error, ClientError):
         message = error.response.get('Error', {}).get('Code') + " : " + error.response.get('Error', {}).get('Message')
         code = 400
