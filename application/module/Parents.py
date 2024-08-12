@@ -1,3 +1,5 @@
+import logging
+
 from . import *
 
 
@@ -75,14 +77,6 @@ class ParentModel:
 
         _school = School.GetSchool(req.school_id)
 
-        if req.profile_image:
-
-            file_path = FileFolder.parent_profile(_school.name, req.email)
-
-            profile_url, _ = FileHandler.upload_file(req.profile_image, file_path)
-        else:
-            profile_url = None
-
         try:
 
             students_list = [User.GetUser(x).students for x in req.student] if req.student else []
@@ -100,7 +94,6 @@ class ParentModel:
                     state=req.state,
                     user_id=new_parent.id,
                     address=req.address,
-                    profile_image=profile_url,
                     gender=req.gender,
                     work_email=req.work_email,
                     work_address=req.work_address,
