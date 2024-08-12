@@ -1,4 +1,5 @@
 import datetime
+import os
 import uuid
 
 import jwt
@@ -9,7 +10,7 @@ from application import SECRET_KEY
 
 load_dotenv()
 
-token = "f45fb90ea2ca196d3e67ae7c4ef78389"
+token = os.getenv('MAILTRAP_TOKEN')
 base_url = "https://keyhub-backend.axetechinnovations.com/"
 
 

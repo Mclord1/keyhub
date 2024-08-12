@@ -1,8 +1,5 @@
 import logging
 
-from flask import g
-from sqlalchemy.orm import Session, make_transient
-
 from . import *
 
 
@@ -91,7 +88,9 @@ class StudentModel:
         if not u_parent.parents:
             raise CustomException(message="Parent does not exist", status_code=404)
 
-        if u_student.students.schools not in [x for x in u_parent.parents.schools]:
+        school = db.session.query(School).get(u_student.students.school_id)
+
+        if school not in [x for x in u_parent.parents.schools]:
             raise CustomException(message="Student must belong to same school as parent")
 
         u_student.students.parents.append(u_parent.parents)
@@ -108,7 +107,8 @@ class StudentModel:
         if not user.students:
             raise CustomException(message="Student does not exist", status_code=404)
 
-        file_path = FileFolder.student_profile(user.students.schools.name, user.email)
+        school = db.session.query(School).get(user.students.school_id)
+        file_path = FileFolder.student_profile(school.name, user.email)
         profile_url, _ = FileHandler.update_file(profile_image, file_path)
 
         user.students.profile_image = profile_url
@@ -243,7 +243,8 @@ class StudentModel:
         if not user.students:
             raise CustomException(message="Student does not exist", status_code=404)
 
-        file_path, stored_file_name = FileFolder.student_file(user.students.schools.name, user.email, file_name)
+        school = db.session.query(School).get(user.students.school_id)
+        file_path, stored_file_name = FileFolder.student_file(school.name, user.email, file_name)
 
         profile_url, content_type = FileHandler.upload_file(file, file_path)
 
