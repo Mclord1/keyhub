@@ -33,7 +33,7 @@ environment = str(app.config["ENVIRONMENT"]).lower()
 print(f"APPLICATION IS RUNNING ON : {environment}")
 
 # Log file setup
-log_dir = '/home/ubuntu/logs'
+log_dir = os.path.join(os.getcwd(), 'logs')
 log_file = os.path.join(log_dir, 'flask_app.log')
 
 # Create the log directory if it doesn't exist
