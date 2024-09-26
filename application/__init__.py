@@ -10,6 +10,7 @@ import os
 import traceback
 from logging.config import dictConfig
 
+from flask_migrate import Migrate
 from botocore.exceptions import ClientError
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
@@ -96,6 +97,7 @@ database_name = database['database']
 app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{username}:{password}@{host}:{port}/{database_name}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db: SQLAlchemy = SQLAlchemy(app)
+migrate = Migrate(app, db)
 metadata = db.metadata
 
 
